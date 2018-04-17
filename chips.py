@@ -13,8 +13,12 @@
 #
 # Chips & Circuits
 ###########################################################
+# pip3 install numpy
+# pip3 install matplotlib
 
 from numpy import genfromtxt
+import matplotlib.pyplot as plt
+
 gatesloc = genfromtxt('gates.csv', delimiter=';')
 
 class Location(object):
@@ -33,6 +37,10 @@ for line in gatesloc:
     line = Location(line[0], int(line[1]), int(line[2]), int(line[3]))
     gate.append(line)
 
-for loc in gate:
-    print(loc)
+for obj in gate:
+    plt.plot(obj.y, obj.x, 'ro')
+plt.axis([0, 17, 12, 0])
+plt.grid()
+plt.show()
+quit()
 
