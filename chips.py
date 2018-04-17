@@ -40,7 +40,7 @@ for line in gatesloc:
 for obj in gate:
     plt.plot(obj.y, obj.x, 'ro')
 plt.axis([0, 17, 12, 0])
-plt.grid()
+plt.grid(color='grey', linestyle='-', linewidth=1)
 plt.show()
 quit()
 
