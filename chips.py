@@ -13,8 +13,9 @@
 #
 # Chips & Circuits
 ###########################################################
-
+import csv
 
 from numpy import genfromtxt
 gatesloc = genfromtxt('gates.csv', delimiter=';')
 print(gatesloc[5,2])
+
