@@ -24,10 +24,9 @@ class Location(object):
         self.y = y
         self.z = z
 
-plot = []
+gate = []
 for line in gatesloc:
     line = Location(line[0], int(line[1]), int(line[2]), int(line[3]))
-    plot.append(line)
+    gate.append(line)
 
-print(plot[2].y)
 
