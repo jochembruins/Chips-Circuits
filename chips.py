@@ -21,9 +21,6 @@ from numpy import genfromtxt
 import numpy as np
 import matplotlib.pyplot as plt
 
-# read gates data
-gatesloc = genfromtxt('gates.csv', delimiter=';')
-
 # make objects per gate
 class Location(object):
     def __init__(self, gate, x, y, z):
@@ -35,26 +32,47 @@ class Location(object):
     def __str__(self):
         return "gate: %i, x: %i, y: %i, z: %i" % (self.gate, self.x, self.y, self.z)
 
-gates = []
-for line in gatesloc:
-    line = Location(line[0], int(line[1]), int(line[2]), int(line[3]))
-    gates.append(line)
+def main():
+    # read gates data
+    gatesloc = genfromtxt('gates.csv', delimiter=';')
+    gates = makeLocations(gatesloc)
+    printPlot(gates)
+    grid = gridMat(gates)
+    print(grid)
 
-fig = plt.figure()
-ax = fig.add_subplot(1, 1, 1)
 
-# Define ticks
-major_ticks = np.arange(0, 18, 1)
-ax.set_xticks(major_ticks)
-ax.set_yticks(major_ticks)
+def makeLocations(data)
+    gates = []
+    for line in data:
+        line = Location(line[0], int(line[1]), int(line[2]), int(line[3]))
+        gates.append(line)
+    return gates
 
-for obj in gates:
-    plt.plot(obj.x, obj.y, 'ro')    # WAAR KOMEN FIG EN PLOT SAMEN?
-    plt.annotate(int(obj.gate), xy=(obj.x, obj.y))
+def printPlot(gates)
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
 
-# And a corresponding grid
-plt.grid(which='both')
-plt.axis([0, 17, 12, 0])
-plt.show()
-quit()
+    # Define ticks
+    major_ticks = np.arange(0, 18, 1)
+    ax.set_xticks(major_ticks)
+    ax.set_yticks(major_ticks)
 
+    for obj in gates:
+        plt.plot(obj.x, obj.y, 'ro')    # WAAR KOMEN FIG EN PLOT SAMEN?
+        plt.annotate(int(obj.gate), xy=(obj.x, obj.y))
+
+    And a corresponding grid
+    plt.grid(which='both')
+    plt.axis([0, 17, 12, 0])
+    plt.show()
+    return
+
+def gridMat(gates)
+    # make matrix of grid
+    matgrid = np.zeros([13,18])
+    for gate in gates:
+        matgrid[gate.y,gate.x] = gate.gate
+    return matgrid
+
+if __name__ == "__main__":
+    main()
