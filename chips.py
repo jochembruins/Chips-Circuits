@@ -54,8 +54,8 @@ ax.set_yticks(minor_ticks, minor=True)
 ax.grid(which='both')
 
 for obj in gates:
-    plt.plot(obj.y, obj.x, 'ro')
-    plt.annotate(int(obj.gate), xy=(obj.y, obj.x))
+    plt.plot(obj.x, obj.y, 'ro')
+    plt.annotate(int(obj.gate), xy=(obj.x, obj.y))
 plt.axis([0, 17, 12, 0])
 plt.show()
 quit()
