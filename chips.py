@@ -39,7 +39,7 @@ def main():
     gates = makeLocations(gatesloc)
     
     printPlot(gates)
-    
+
     grid = gridMat(gates)
     
     print(grid)
@@ -60,9 +60,9 @@ def printPlot(gates):
     ax = fig.add_subplot(1, 1, 1)
 
     # Define ticks
-    major_ticks = np.arange(0, 18, 1)
-    ax.set_xticks(major_ticks)
-    ax.set_yticks(major_ticks)
+    ticks = np.arange(0, 18, 1)
+    ax.set_xticks(ticks)
+    ax.set_yticks(ticks)
 
     for obj in gates:
         plt.plot(obj.x, obj.y, 'ro')    # WAAR KOMEN FIG EN PLOT SAMEN?
