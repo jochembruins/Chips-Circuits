@@ -38,11 +38,13 @@ def main():
     
     gates = makeLocations(gatesloc)
     
+    printPlot(gates)
+    
     grid = gridMat(gates)
     
     print(grid)
     
-    printPlot(gates)
+
     
 
 
