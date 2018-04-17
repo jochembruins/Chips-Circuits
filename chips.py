@@ -16,17 +16,26 @@
 
 from numpy import genfromtxt
 gatesloc = genfromtxt('gates.csv', delimiter=';')
-print(gatesloc[5,2])
 
 print(gatesloc)
 
 plot = []
-
 for line in gatesloc:
-	plot.append({
-		'gate' : int(line[0]),
-		'x' : int(line[1]),
-		'y' : int(line[2]),
-		'z' : int(line[3])})
+    plot.append({
+        'gate': int(line[0]),
+        'x': int(line[1]),
+        'y': int(line[2]),
+        'z': int(line[3])})
 
-print(plot)
+
+class location(object):
+    def __init__(self, gate, x, y, z):
+        self.__dict__ = self
+        self.gate = gate
+        self.x = x
+        self.y = y
+        self.z = z
+
+grid = []
+for line in gatesloc:
+    grid[location.x,location.y] = 1
