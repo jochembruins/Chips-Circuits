@@ -13,3 +13,9 @@
 #
 # Chips & Circuits
 ###########################################################
+
+import csv
+import numpy
+
+reader = csv.reader(open("gates.csv", "rb"), delimiter=";")
+print(reader)
