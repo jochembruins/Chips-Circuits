@@ -17,6 +17,7 @@
 # pip3 install numpy
 # pip3 install matplotlib
 
+
 from numpy import genfromtxt
 import numpy as np
 import matplotlib.pyplot as plt
