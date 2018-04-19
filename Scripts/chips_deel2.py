@@ -72,20 +72,22 @@ print("hoi")
 print("hoi")
 print(gate[0].x)
 print("hoi")
-count=20
+
+
+
+# maak een groot minimum aan
 minimum = 1000
 numbernetlist = 0
 
-for i in range(0, 20):
+for j in range(0, 20):
     minimum = 1000
-    for i in range(0, count):
-        count = count - 1
+    numbernetlist = 0
+    for i in range(0, 20-j):
         listelement1 = netlist_1version2[i][0]
         listelement2 = netlist_1version2[i][1]
         x_verschil = abs(gate[listelement1].x - gate[listelement2].x)
         y_verschil = abs(gate[listelement1].y - gate[listelement2].y)
         som = x_verschil + y_verschil
-        print(som)
 
         if(som < minimum):
             minimum = som
@@ -93,9 +95,11 @@ for i in range(0, 20):
 
     print(minimum)
     netlist_1version3.append(netlist_1version2[numbernetlist])
-    del netlist_1version2[numbernetlist]
+    netlist_1version2.pop(numbernetlist)
 
 print(netlist_1version3)
+print(gate[5])
 
+print(netlist_1[i])
 # split python
 # hill climbing algoritme

@@ -76,9 +76,15 @@ def route(gates,grid):
 
         # print(locfrom)
     return grid
+
 def changeMat(newloc, grid):
     print(grid)
     print("\n")
     grid[newloc] = 50
 
     return grid
+
+def plotMatrix(grid):
+    plt.imshow(grid)
+    plt.show()
+
