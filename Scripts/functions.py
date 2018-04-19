@@ -53,12 +53,9 @@ def gridMat(gates):
 
     for gate in gates:
         matgrid[gate.y,gate.x] = gate.gate
-<<<<<<< HEAD
     return matgrid 
 
 def plotMatrix(grid):
     plt.imshow(grid)
     plt.show()
-=======
-    return matgrid
->>>>>>> 854cf867153165ab76ce757a7c8225a3a915d5ec
+
