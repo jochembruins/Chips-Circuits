@@ -32,6 +32,7 @@ grid = gridMat(gates)
 route(gates,grid)
 # print(grid)
 
-# plotMatrix(grid)
+
+plotMatrix(grid)
 
 

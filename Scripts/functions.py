@@ -56,11 +56,11 @@ def gridMat(gates):
     return matgrid
 
 def route(gates,grid):
-    locfrom = [gates[4].x, gates[4].y]
-    locto = [gates[0].x, gates[0].y]
+    locfrom = [gates[4].y, gates[4].x]
+    locto = [gates[0].y, gates[0].x]
 
     # print(locfrom)
-    while locfrom != locto:
+    while abs(locto[0] - locfrom[0]) + abs(locto[1] - locfrom[1]) > 1:
         if abs(locto[0] - locfrom[0]) > abs(locto[1] - locfrom[1]):
             if locto[0] > locfrom[0]:
                 locfrom[0] += 1
@@ -78,10 +78,7 @@ def route(gates,grid):
     return grid
 
 def changeMat(newloc, grid):
-    print(grid)
-    print("\n")
-    grid[newloc] = 50
-
+    grid[newloc[0], newloc[1]] = 50
     return grid
 
 def plotMatrix(grid):
