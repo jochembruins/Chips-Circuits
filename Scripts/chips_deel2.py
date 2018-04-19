@@ -99,5 +99,7 @@ for j in range(0, 20):
 
 print(netlist_1version3)
 print(gate[5])
+
+print(netlist_1[i])
 # split python
 # hill climbing algoritme
