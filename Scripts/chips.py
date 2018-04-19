@@ -14,19 +14,17 @@
 ###########################################################
 
 from numpy import genfromtxt
-import functions
-
-def main():
-    # read gates data
-    gatesloc = genfromtxt('../Data/gates.csv', delimiter=';')
-
-    gates = makeLocations(gatesloc)
-
-    printPlot(gates)
-
-    grid = gridMat(gates)
-
-    print(grid)
+from functions import *
 
 
-main()
+gatesloc = genfromtxt('../Data/gates.csv', delimiter=';')
+
+gates = makeLocations(gatesloc)
+
+printPlot(gates)
+
+grid = gridMat(gates)
+
+print(grid)
+
+
