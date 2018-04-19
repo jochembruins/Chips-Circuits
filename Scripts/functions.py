@@ -48,7 +48,6 @@ def printPlot(gates):
 
 def gridMat(gates):
     # make matrix of grid
-    matgrid = np.zeros([13,18])
     matgrid = np.zeros([13,18]) + 99
 
 
