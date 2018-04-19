@@ -34,7 +34,7 @@ class Location(object):
 
 def main():
     # read gates data
-    gatesloc = genfromtxt('gates.csv', delimiter=';')
+    gatesloc = genfromtxt('../Data/gates.csv', delimiter=';')
     
     gates = makeLocations(gatesloc)
     
@@ -43,9 +43,6 @@ def main():
     grid = gridMat(gates)
     
     print(grid)
-    
-
-    
 
 
 def makeLocations(data):
