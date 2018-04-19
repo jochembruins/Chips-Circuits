@@ -78,6 +78,7 @@ numbernetlist = 0
 
 for i in range(0, 20):
     minimum = 1000
+    numbernetlist = 0
     for i in range(0, count):
         count = count - 1
         listelement1 = netlist_1version2[i][0]
@@ -93,9 +94,9 @@ for i in range(0, 20):
 
     print(minimum)
     netlist_1version3.append(netlist_1version2[numbernetlist])
-    del netlist_1version2[numbernetlist]
+    netlist_1version2.pop(numbernetlist)
 
 print(netlist_1version3)
-
+print(gate[5])
 # split python
 # hill climbing algoritme
