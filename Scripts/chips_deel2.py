@@ -69,27 +69,32 @@ netlist_6 = [(16, 10), (25, 17), (1, 11), (32, 2), (1, 20), (12, 36), (34, 19), 
 #de dalton-methode
 netlist_1version2 = netlist_1
 netlist_1version3 = []
+print(netlist_1version2[1])
+print("hoi")
 print("hoi")
 print(gate[0].x)
 print("hoi")
 count=20
-minimum = 100
+minimum = 1000
 numbernetlist = 0
 
 for i in range(0, 20):
+    minimum = 1000
     for i in range(0, count):
         count = count - 1
         listelement1 = netlist_1version2[i][0]
         listelement2 = netlist_1version2[i][1]
-        x_verschil = gate[listelement1].x - gate[listelement2].x
-        y_verschil = gate[listelement1].y - gate[listelement2].y
-        som = (x_verschil + y_verschil)
+        x_verschil = abs(gate[listelement1].x - gate[listelement2].x)
+        y_verschil = abs(gate[listelement1].y - gate[listelement2].y)
+        som = x_verschil + y_verschil
+        print(som)
 
         if(som < minimum):
             minimum = som
             numbernetlist = i
 
-    netlist_1version3.append(netlist_1version2[i])
+    print(minimum)
+    netlist_1version3.append(netlist_1version2[numbernetlist])
     del netlist_1version2[numbernetlist]
 
 print(netlist_1version3)
