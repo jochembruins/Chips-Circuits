@@ -17,7 +17,7 @@
 ###########################################################
 import numpy as np
 import matplotlib.pyplot as plt
-# from classes.py import *
+from classes import *
 
 def makeLocations(data):
     gates = []
@@ -31,6 +31,7 @@ def printPlot(gates):
     ax = fig.add_subplot(1, 1, 1)
 
     # Define ticks
+    ticks = np.arange(0, 18, 1)
     ticks = np.arange(0, 18, 1)
     ax.set_xticks(ticks)
     ax.set_yticks(ticks)

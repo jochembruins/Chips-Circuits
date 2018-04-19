@@ -1,4 +1,3 @@
-# python script
 ###########################################################
 # chips.py
 #
@@ -15,20 +14,19 @@
 ###########################################################
 
 from numpy import genfromtxt
-from functions.py import *
+import functions
 
 def main():
     # read gates data
     gatesloc = genfromtxt('../Data/gates.csv', delimiter=';')
-    
+
     gates = makeLocations(gatesloc)
-    
+
     printPlot(gates)
 
     grid = gridMat(gates)
-    
+
     print(grid)
 
 
-if __name__ == "__main__":
-    main()
+main()
