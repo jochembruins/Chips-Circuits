@@ -17,20 +17,19 @@ from numpy import genfromtxt
 from functions import *
 import matplotlib.pyplot as plt
 
-
+# make appropriate format of gate locations
 gatesloc = genfromtxt('../Data/gates.csv', delimiter=';')
-
 gates = makeLocations(gatesloc)
 
 # show plot of gates in grid
 #printPlot(gates)
 
-# print grid in matrix
+# print grid in matrixform
 grid = gridMat(gates)
 #print(grid)
 
+# connect gates
 route(gates,grid)
-# print(grid)
 
 
 plotMatrix(grid)
