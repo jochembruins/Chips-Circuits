@@ -72,11 +72,15 @@ print("hoi")
 print("hoi")
 print(gate[0].x)
 print("hoi")
+
+# index variable aanmaken
 count=20
+
+# maak een groot minimum aan
 minimum = 1000
 numbernetlist = 0
 
-for i in range(0, 20):
+for j in range(0, 20):
     minimum = 1000
     numbernetlist = 0
     for i in range(0, count):
@@ -87,6 +91,8 @@ for i in range(0, 20):
         y_verschil = abs(gate[listelement1].y - gate[listelement2].y)
         som = x_verschil + y_verschil
         print(som)
+        print("hoifdsfdsa")
+        print(count)
 
         if(som < minimum):
             minimum = som
