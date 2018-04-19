@@ -15,6 +15,7 @@
 
 from numpy import genfromtxt
 from functions import *
+import matplotlib.pyplot as plt
 
 
 gatesloc = genfromtxt('../Data/gates.csv', delimiter=';')
@@ -26,5 +27,7 @@ printPlot(gates)
 grid = gridMat(gates)
 
 print(grid)
+
+plotMatrix(grid)
 
 
