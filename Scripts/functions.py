@@ -52,29 +52,36 @@ def gridMat(gates):
 
 
     for gate in gates:
-        matgrid[gate.y,gate.x] = gate.gate
+        matgrid[gate.y, gate.x] = gate.gate
     return matgrid
 
-def route(gates,grid):
-    locfrom = [gates[4].y, gates[4].x]
-    locto = [gates[0].y, gates[0].x]
-
-    # print(locfrom)
-    while abs(locto[0] - locfrom[0]) + abs(locto[1] - locfrom[1]) > 1:
-        if abs(locto[0] - locfrom[0]) > abs(locto[1] - locfrom[1]):
-            if locto[0] > locfrom[0]:
-                locfrom[0] += 1
+def route(gates,grid, netlist):
+    route = []
+    totalscore = []
+    for wire in netlist:
+        score = 1
+        locfrom = [gates[wire[0]].y, gates[wire[0]].x]
+        locto = [gates[wire[1]].y, gates[wire[1]].x]
+        route.append(locfrom)
+        while abs(locto[0] - locfrom[0]) + abs(locto[1] - locfrom[1]) > 1:
+            if abs(locto[0] - locfrom[0]) > abs(locto[1] - locfrom[1]):
+                if locto[0] > locfrom[0]:
+                    locfrom[0] += 1
+                else:
+                    locfrom[0] -= 1
+                changeMat(locfrom,grid)
             else:
-                locfrom[0] -= 1
-            changeMat(locfrom,grid)
-        else:
-            if locto[1] > locfrom[1]:
-                locfrom[1] += 1
-            else:
-                locfrom[1] -= 1
-            changeMat(locfrom,grid)
-
-        # print(locfrom)
+                if locto[1] > locfrom[1]:
+                    locfrom[1] += 1
+                else:
+                    locfrom[1] -= 1
+                changeMat(locfrom, grid)
+            score += 1
+            route.append(locfrom)
+        totalscore.append(score)
+        route.append(locto)
+        route.append(score)
+    # print(totalscore)
     return grid
 
 def changeMat(newloc, grid):
@@ -86,17 +93,16 @@ def plotMatrix(grid):
     plt.show()
 
 def daltonMethod(netlist, gate):
-    netlist_1version2 = netlist
-    netlist_1version3 = []
-    k = netlist.amount()
-
+    netlistversion2 = netlist
+    netlistversion3 = []
+    k = len(netlist)
 
     for j in range(0, k):
         minimum = 1000
         numbernetlist = 0
         for i in range(0, k - j):
-            listelement1 = netlist_1version2[i][0]
-            listelement2 = netlist_1version2[i][1]
+            listelement1 = netlistversion2[i][0]
+            listelement2 = netlistversion2[i][1]
             x_verschil = abs(gate[listelement1].x - gate[listelement2].x)
             y_verschil = abs(gate[listelement1].y - gate[listelement2].y)
             som = x_verschil + y_verschil
@@ -105,8 +111,7 @@ def daltonMethod(netlist, gate):
                 minimum = som
                 numbernetlist = i
 
-        print(minimum)
-        netlist_1version3.append(netlist_1version2[numbernetlist])
-        netlist_1version2.pop(numbernetlist)
+        netlistversion3.append(netlistversion2[numbernetlist])
+        netlistversion2.pop(numbernetlist)
 
-    return(netlist_1version3)
+    return(netlistversion3)
