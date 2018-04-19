@@ -19,7 +19,7 @@
 from numpy import genfromtxt
 import matplotlib.pyplot as plt
 
-gatesloc = genfromtxt('gates.csv', delimiter=';')
+gatesloc = genfromtxt('../Data/gates.csv', delimiter=';')
 
 class Location(object):
     def __init__(self, gate, x, y, z):
@@ -85,3 +85,4 @@ for i in range(0, 20):
         numbernetlist = i
 
 # split python
+# hill climbing algoritme
