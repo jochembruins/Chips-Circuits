@@ -13,9 +13,6 @@
 #
 # Chips & Circuits
 ###########################################################
-# instalrequirements:
-# pip3 install numpy
-# pip3 install matplotlib
 
 from numpy import genfromtxt
 import numpy as np
