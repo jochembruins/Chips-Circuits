@@ -14,12 +14,8 @@
 # Chips & Circuits
 ###########################################################
 
-
 from numpy import genfromtxt
-import numpy as np
-import matplotlib.pyplot as plt
-import classes.py
-import functions.py
+from functions.py import *
 
 def main():
     # read gates data

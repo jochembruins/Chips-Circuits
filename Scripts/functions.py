@@ -15,6 +15,9 @@
 #
 # Contains all functions used in chips.py
 ###########################################################
+import numpy as np
+import matplotlib.pyplot as plt
+# from classes.py import *
 
 def makeLocations(data):
     gates = []
