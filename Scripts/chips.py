@@ -21,10 +21,12 @@ gatesloc = genfromtxt('../Data/gates.csv', delimiter=';')
 
 gates = makeLocations(gatesloc)
 
-printPlot(gates)
+# show plot of gates in grid
+#printPlot(gates)
 
+# print grid in matrix
 grid = gridMat(gates)
+#print(grid)
 
-print(grid)
-
-
+route(gates,grid)
+# print(grid)

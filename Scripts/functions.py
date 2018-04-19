@@ -54,3 +54,31 @@ def gridMat(gates):
     for gate in gates:
         matgrid[gate.y,gate.x] = gate.gate
     return matgrid
+
+def route(gates,grid):
+    locfrom = [gates[4].x, gates[4].y]
+    locto = [gates[0].x, gates[0].y]
+
+    # print(locfrom)
+    while locfrom != locto:
+        if abs(locto[0] - locfrom[0]) > abs(locto[1] - locfrom[1]):
+            if locto[0] > locfrom[0]:
+                locfrom[0] += 1
+            else:
+                locfrom[0] -= 1
+            changeMat(locfrom,grid)
+        else:
+            if locto[1] > locfrom[1]:
+                locfrom[1] += 1
+            else:
+                locfrom[1] -= 1
+            changeMat(locfrom,grid)
+
+        # print(locfrom)
+    return grid
+def changeMat(newloc, grid):
+    print(grid)
+    print("\n")
+    grid[newloc] = 50
+
+    return grid
