@@ -1,3 +1,21 @@
+# python script
+###########################################################
+# functions.py
+#
+# Jochem Bruins
+# 10578811
+#
+# Melle Gelok
+# 11013893
+#
+# Noah van Grinsven
+# 10501916
+#
+# Chips & Circuits
+#
+# Contains all functions used in chips.py
+###########################################################
+
 def makeLocations(data):
     gates = []
     for line in data:

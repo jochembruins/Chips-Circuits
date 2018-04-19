@@ -1,3 +1,21 @@
+# python script
+###########################################################
+# classes.py
+#
+# Jochem Bruins
+# 10578811
+#
+# Melle Gelok
+# 11013893
+#
+# Noah van Grinsven
+# 10501916
+#
+# Chips & Circuits
+#
+# Contains all classes used in chips.py
+###########################################################
+
 # make objects per gate
 class Location(object):
     def __init__(self, gate, x, y, z):
