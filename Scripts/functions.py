@@ -85,3 +85,28 @@ def plotMatrix(grid):
     plt.imshow(grid)
     plt.show()
 
+def daltonMethod(netlist, gate):
+    netlist_1version2 = netlist
+    netlist_1version3 = []
+    k = netlist.amount()
+
+
+    for j in range(0, k):
+        minimum = 1000
+        numbernetlist = 0
+        for i in range(0, k - j):
+            listelement1 = netlist_1version2[i][0]
+            listelement2 = netlist_1version2[i][1]
+            x_verschil = abs(gate[listelement1].x - gate[listelement2].x)
+            y_verschil = abs(gate[listelement1].y - gate[listelement2].y)
+            som = x_verschil + y_verschil
+
+            if (som < minimum):
+                minimum = som
+                numbernetlist = i
+
+        print(minimum)
+        netlist_1version3.append(netlist_1version2[numbernetlist])
+        netlist_1version2.pop(numbernetlist)
+
+    return(netlist_1version3)
