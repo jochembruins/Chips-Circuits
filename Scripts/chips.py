@@ -27,7 +27,7 @@ gates = makeLocations(gatesLoc)
 
 # print grid in matrixform
 grid = gridMat(gates)
-print(grid)
+# print(grid)
 
 # sort netlist by dalton-method
 netlistDalton = daltonMethod(netlist_1, gates)
@@ -36,15 +36,19 @@ netlistDalton = daltonMethod(netlist_1, gates)
 routeBook = []
 totalscore = 0
 for wire in netlistDalton:
-    route = routeFinder(gates, wire)
+    # find best route for wire
+    route = routeFinder(gates, wire, grid)
+
+    # save route and total score
     routeBook.append(route)
     totalscore += len(route) - 1
-print(totalscore)
-print(routeBook)
 
-
-# changeMat(locfrom, grid)
-# route.append(locfrom)
+    # change matrix for steps in route
+    changeMat(route, grid)
+    # print(route)
+# print(grid)
+# print(routeBook)
+# print(totalscore)
 
 # plot grid, voor 3d watch https://www.youtube.com/watch?v=ZlpFQNVhB7I
 #plotMatrix(grid)
@@ -54,4 +58,5 @@ print("hoi")
 print(grid)
 print("hoi")
 print(grid[1][10])
+
 
