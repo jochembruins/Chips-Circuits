@@ -107,9 +107,9 @@ def daltonMethod(netlist, gate):
 
         # itereren over lengte netlist min j
         for i in range(0, k - j):
-            # de eerste factor van netlistconnectie opslaan in listelement1
+            # de eerste factor van wire opslaan in listelement1
             listelement1 = netlistversion2[i][0]
-            # de tweede factor van netlistconnectie opslaan in listelement2
+            # de tweede factor van wire opslaan in listelement2
             listelement2 = netlistversion2[i][1]
 
             # verschil in x-waarden netconnecties opslaan in x_verschil
@@ -162,9 +162,9 @@ def UIMethod_forprint1(netlist, gate):
 
         # itereren over lengte netlist min j
         for i in range(0, k - j):
-            # de eerste factor van netlistconnectie opslaan in listelement1
+            # de eerste factor van wire opslaan in listelement1
             listelement1 = netlistversion2[i][0]
-            # de tweede factor van netlistconnectie opslaan in listelement2
+            # de tweede factor van wire opslaan in listelement2
             listelement2 = netlistversion2[i][1]
 
             # check of de x-waarde in de eerste helft valt
@@ -209,3 +209,24 @@ def UIMethod_forprint1(netlist, gate):
 
     # return nieuwe netlist
     return (netlistversion3)
+
+def randomroute(gates, wire):
+    route = []
+    locfrom = [gates[wire[0]].y, gates[wire[0]].x]
+    cursor = locfrom
+    locto = [gates[wire[1]].y, gates[wire[1]].x]
+
+    while abs(locto[0] - cursor[0]) + abs(locto[1] - cursor[1]) > 1:
+        if abs(locto[0] - cursor[0]) > abs(locto[1] - cursor[1]):
+            if locto[0] > cursor[0]:
+                cursor[0] += 1
+            else:
+                cursor[0] -= 1
+        else:
+            if locto[1] > cursor[1]:
+                cursor[1] += 1
+            else:
+                cursor[1] -= 1
+        route.append(cursor)
+        print(route)
+    return route
