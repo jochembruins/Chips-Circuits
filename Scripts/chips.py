@@ -51,6 +51,7 @@ print(routeBook)
 
 #	plotLines(gates)
 print("hoi")
+print(grid)
 print("hoi")
 print(grid[1][10])
 
