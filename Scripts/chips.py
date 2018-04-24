@@ -47,6 +47,6 @@ print(routeBook)
 # route.append(locfrom)
 
 # plot grid, voor 3d watch https://www.youtube.com/watch?v=ZlpFQNVhB7I
-plotMatrix(grid)
+#plotMatrix(grid)
 
-plotLines(gates)
+#	plotLines(gates)
