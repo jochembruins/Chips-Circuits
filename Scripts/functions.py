@@ -58,31 +58,42 @@ def gridMat(gates):
         matgrid[gate.y, gate.x] = gate.gate
     return matgrid
 
-def routeFinder(gates, wire):
+def routeFinder(gates, wire, grid):
     route = []
-    locfrom = [gates[wire[0]].y, gates[wire[0]].x]
+    locfrom = [gates[wire[0]].z, gates[wire[0]].y, gates[wire[0]].x]
     cursor = locfrom
-    locto = [gates[wire[1]].y, gates[wire[1]].x]
+    locto = [gates[wire[1]].z, gates[wire[1]].y, gates[wire[1]].x]
 
-    route.append([cursor[0], cursor[1]])
-    while abs(locto[0] - cursor[0]) + abs(locto[1] - cursor[1]) > 1:
-        if abs(locto[0] - cursor[0]) > abs(locto[1] - cursor[1]):
-            if locto[0] > cursor[0]:
-                cursor[0] += 1
-            else:
-                cursor[0] -= 1
-        else:
+    # add begin point to route
+    # route.append([cursor[0], cursor[1], cursor[2]])
+
+    # look for best step until 1 step away from endpoint
+    while abs(locto[1] - cursor[1]) + abs(locto[2] - cursor[2]) > 1:
+        # check if steps in y direction is bigger than x direction
+        if abs(locto[1] - cursor[1]) > abs(locto[2] - cursor[2]):
+            # step along y axis
             if locto[1] > cursor[1]:
                 cursor[1] += 1
             else:
                 cursor[1] -= 1
-        route.append([cursor[0],cursor[1]])
-    route.append(locto)
+        else:
+            # step along x axis
+            if locto[2] > cursor[2]:
+                cursor[2] += 1
+            else:
+                cursor[2] -= 1
+
+        route.append([cursor[0],cursor[1], cursor[2]])
+    # add end point to route
+    # route.append(locto)
     return route
 
-def changeMat(newloc, grid):
-    grid[newloc[0], newloc[1]] = 50
-    return grid
+def changeMat(route, grid):
+    for step in route:
+        print(step)
+        print(grid[0, 9, 2])
+        # grid[step[0], step[1], step[2]] = 50
+        return grid
 
 def plotMatrix(grid):
     plt.imshow(grid)
