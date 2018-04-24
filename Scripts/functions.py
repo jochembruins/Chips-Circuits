@@ -213,7 +213,6 @@ def UIMethod_forprint1(netlist, gate):
     # return nieuwe netlist
     return (netlistversion3)
 
-def randomroute(gates, wire, grid):
 
 def plotLines (gates):
     fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
