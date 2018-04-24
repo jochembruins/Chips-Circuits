@@ -17,7 +17,10 @@
 ###########################################################
 import numpy as np
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d.axes3d import Axes3D
 from classes import *
+
+
 
 def makeLocations(data):
     gates = []
@@ -61,6 +64,7 @@ def routeFinder(gates, wire):
     cursor = locfrom
     locto = [gates[wire[1]].y, gates[wire[1]].x]
 
+    route.append([cursor[0], cursor[1]])
     while abs(locto[0] - cursor[0]) + abs(locto[1] - cursor[1]) > 1:
         if abs(locto[0] - cursor[0]) > abs(locto[1] - cursor[1]):
             if locto[0] > cursor[0]:
@@ -72,8 +76,8 @@ def routeFinder(gates, wire):
                 cursor[1] += 1
             else:
                 cursor[1] -= 1
-        route.append(cursor)
-        print(route)
+        route.append([cursor[0],cursor[1]])
+    route.append(locto)
     return route
 
 def changeMat(newloc, grid):
@@ -206,9 +210,19 @@ def UIMethod_forprint1(netlist, gate):
         netlistversion3.append(netlistversion2[numbernetlist])
         # haalde aangewezen element uit netlistversion2
         netlistversion2.pop(numbernetlist)
-
     # return nieuwe netlist
     return (netlistversion3)
+
+def randomroute(gates, wire, grid):
+
+def plotLines (gates):
+    fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
+
+    for gate in gates:
+        ax.plot(gate.x, gate.y, 0)
+
+    plt.show()
+
 
 def randomroute(gates, wire):
     route = []
@@ -230,3 +244,4 @@ def randomroute(gates, wire):
         route.append(cursor)
         print(route)
     return route
+
