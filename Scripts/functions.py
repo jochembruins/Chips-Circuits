@@ -61,6 +61,7 @@ def routeFinder(gates, wire):
     cursor = locfrom
     locto = [gates[wire[1]].y, gates[wire[1]].x]
 
+    route.append([cursor[0], cursor[1]])
     while abs(locto[0] - cursor[0]) + abs(locto[1] - cursor[1]) > 1:
         if abs(locto[0] - cursor[0]) > abs(locto[1] - cursor[1]):
             if locto[0] > cursor[0]:
@@ -72,8 +73,8 @@ def routeFinder(gates, wire):
                 cursor[1] += 1
             else:
                 cursor[1] -= 1
-        route.append(cursor)
-        print(route)
+        route.append([cursor[0],cursor[1]])
+    route.append(locto)
     return route
 
 def changeMat(newloc, grid):
