@@ -65,7 +65,7 @@ def routeFinder(gates, wire, grid):
     locfrom = [gates[wire[0]].z, gates[wire[0]].y, gates[wire[0]].x]
     cursor = locfrom
     locto = [gates[wire[1]].z, gates[wire[1]].y, gates[wire[1]].x]
-
+    print(wire, locfrom, locto)
     # add begin point to route
     # route.append([cursor[0], cursor[1], cursor[2]])
 
@@ -74,7 +74,7 @@ def routeFinder(gates, wire, grid):
         if grid[cursor[0], cursor[1], cursor[2]] != 99.0 and cursor != locfrom:
             print("up")
             cursor[0] += 1
-        elif grid[cursor[0]-1, cursor[1], cursor[2]] == 99.0 and cursor[0] > 0:
+        if grid[cursor[0]-1, cursor[1], cursor[2]] == 99.0 and cursor[0] > 0:
             print("down")
             cursor[0] -= 1
         else:
@@ -92,6 +92,7 @@ def routeFinder(gates, wire, grid):
                 else:
                     cursor[2] -= 1
             if grid[cursor[0], cursor[1], cursor[2]] != 99:
+                print("up")
                 cursor[0] += 1
         print(cursor)
         route.append([cursor[0],cursor[1], cursor[2]])
