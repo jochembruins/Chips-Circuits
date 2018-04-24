@@ -50,3 +50,7 @@ print(routeBook)
 #plotMatrix(grid)
 
 #	plotLines(gates)
+print("hoi")
+print("hoi")
+print(grid[1][10])
+
