@@ -55,34 +55,26 @@ def gridMat(gates):
         matgrid[gate.y, gate.x] = gate.gate
     return matgrid
 
-def route(gates,grid, netlist):
+def routeFinder(gates, wire):
     route = []
-    totalscore = []
-    for wire in netlist:
-        score = 1
-        locfrom = [gates[wire[0]].y, gates[wire[0]].x]
-        locto = [gates[wire[1]].y, gates[wire[1]].x]
-        route.append(locfrom)
-        while abs(locto[0] - locfrom[0]) + abs(locto[1] - locfrom[1]) > 1:
-            if abs(locto[0] - locfrom[0]) > abs(locto[1] - locfrom[1]):
-                if locto[0] > locfrom[0]:
-                    locfrom[0] += 1
-                else:
-                    locfrom[0] -= 1
-                changeMat(locfrom,grid)
+    locfrom = [gates[wire[0]].y, gates[wire[0]].x]
+    cursor = locfrom
+    locto = [gates[wire[1]].y, gates[wire[1]].x]
+
+    while abs(locto[0] - cursor[0]) + abs(locto[1] - cursor[1]) > 1:
+        if abs(locto[0] - cursor[0]) > abs(locto[1] - cursor[1]):
+            if locto[0] > cursor[0]:
+                cursor[0] += 1
             else:
-                if locto[1] > locfrom[1]:
-                    locfrom[1] += 1
-                else:
-                    locfrom[1] -= 1
-                changeMat(locfrom, grid)
-            score += 1
-            route.append(locfrom)
-        totalscore.append(score)
-        route.append(locto)
-        route.append(score)
-    # print(totalscore)
-    return grid
+                cursor[0] -= 1
+        else:
+            if locto[1] > cursor[1]:
+                cursor[1] += 1
+            else:
+                cursor[1] -= 1
+        route.append(cursor)
+        print(route)
+    return route
 
 def changeMat(newloc, grid):
     grid[newloc[0], newloc[1]] = 50

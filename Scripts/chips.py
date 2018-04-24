@@ -33,7 +33,15 @@ print(grid)
 netlistDalton = daltonMethod(netlist_1, gates)
 
 # connect gates
-route(gates, grid, netlistDalton)
+routeBook = []
+totalscore = []
+# for wire in netlistDalton:
+wire = [0,4]
+route1 = routeFinder(gates, wire)
+
+# print(route1)
+# changeMat(locfrom, grid)
+# route.append(locfrom)
 
 # plot grid, voor 3d watch https://www.youtube.com/watch?v=ZlpFQNVhB7I
-# plotMatrix(grid)
+plotMatrix(grid)
