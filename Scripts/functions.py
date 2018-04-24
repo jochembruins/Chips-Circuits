@@ -69,12 +69,13 @@ def routeFinder(gates, wire, grid):
     # add begin point to route
     # route.append([cursor[0], cursor[1], cursor[2]])
 
+    # HIERIN NOG PROBLEEM DAT ER BIJ STAP OPHOOG 2 STAPPEN IN 1 WORDEN GEDAAN
     # look for best step until 1 step away from endpoint
     while abs(locto[1] - cursor[1]) + abs(locto[2] - cursor[2]) > 1:
         if grid[cursor[0], cursor[1], cursor[2]] != 99.0 and cursor != locfrom:
             print("up")
             cursor[0] += 1
-        if grid[cursor[0]-1, cursor[1], cursor[2]] == 99.0 and cursor[0] > 0:
+        elif grid[cursor[0]-1, cursor[1], cursor[2]] == 99.0 and cursor[0] > 0:
             print("down")
             cursor[0] -= 1
         else:
