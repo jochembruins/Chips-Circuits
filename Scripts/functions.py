@@ -17,7 +17,10 @@
 ###########################################################
 import numpy as np
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d.axes3d import Axes3D
 from classes import *
+
+
 
 def makeLocations(data):
     gates = []
@@ -157,3 +160,11 @@ def UIMethod_forprint1(netlist, gate):
         netlistversion2.pop(numbernetlist)
 
     return(netlistversion3)
+
+def plotLines (gates):
+    fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
+
+    for gate in gates:
+        ax.plot(gate.x, gate.y, 0)
+
+    plt.show()

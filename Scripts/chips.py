@@ -45,3 +45,5 @@ route1 = routeFinder(gates, wire)
 
 # plot grid, voor 3d watch https://www.youtube.com/watch?v=ZlpFQNVhB7I
 plotMatrix(grid)
+
+plotLines(gates)
