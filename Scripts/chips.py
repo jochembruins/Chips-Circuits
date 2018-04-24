@@ -32,14 +32,17 @@ print(grid)
 # sort netlist by dalton-method
 netlistDalton = daltonMethod(netlist_1, gates)
 
-# connect gates
+# connect gates in netlist
 routeBook = []
-totalscore = []
-# for wire in netlistDalton:
-wire = [0,4]
-route1 = routeFinder(gates, wire)
+totalscore = 0
+for wire in netlistDalton:
+    route = routeFinder(gates, wire)
+    routeBook.append(route)
+    totalscore += len(route) - 1
+print(totalscore)
+print(routeBook)
 
-# print(route1)
+
 # changeMat(locfrom, grid)
 # route.append(locfrom)
 

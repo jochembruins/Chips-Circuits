@@ -64,6 +64,171 @@ def routeFinder(gates, wire):
     cursor = locfrom
     locto = [gates[wire[1]].y, gates[wire[1]].x]
 
+    route.append([cursor[0], cursor[1]])
+    while abs(locto[0] - cursor[0]) + abs(locto[1] - cursor[1]) > 1:
+        if abs(locto[0] - cursor[0]) > abs(locto[1] - cursor[1]):
+            if locto[0] > cursor[0]:
+                cursor[0] += 1
+            else:
+                cursor[0] -= 1
+        else:
+            if locto[1] > cursor[1]:
+                cursor[1] += 1
+            else:
+                cursor[1] -= 1
+        route.append([cursor[0],cursor[1]])
+    route.append(locto)
+    return route
+
+def changeMat(newloc, grid):
+    grid[newloc[0], newloc[1]] = 50
+    return grid
+
+def plotMatrix(grid):
+    plt.imshow(grid)
+    plt.show()
+
+
+# deze functie ordent de netlist
+# hierbij wordt er geordend op lengte van een netlistelementconnectie (blauwe lijn)
+# als argument wordt een netlist genomen + de gates
+def daltonMethod(netlist, gate):
+
+    # tweede versie van netlist opgeslagen
+    netlistversion2 = netlist
+    # lege derde versie van te definiëren netlist opgeslagen
+    netlistversion3 = []
+    # lengte netlist berekend
+    k = len(netlist)
+
+    # itereren over lengte netlist
+    for j in range(0, k):
+
+        # het minimum worddt op een hoog getal gezet
+        minimum = 1000
+        # numbernetlist wordt 0
+        numbernetlist = 0
+
+        # itereren over lengte netlist min j
+        for i in range(0, k - j):
+            # de eerste factor van wire opslaan in listelement1
+            listelement1 = netlistversion2[i][0]
+            # de tweede factor van wire opslaan in listelement2
+            listelement2 = netlistversion2[i][1]
+
+            # verschil in x-waarden netconnecties opslaan in x_verschil
+            x_verschil = abs(gate[listelement1].x - gate[listelement2].x)
+            # verschil in y-waarden netconnecties opslaan in y_verschil
+            y_verschil = abs(gate[listelement1].y - gate[listelement2].y)
+            som = x_verschil + y_verschil
+
+            # als de som van x_verschil en y_verschil kleiner dan minimum
+            if (som < minimum):
+                minimum = som
+                numbernetlist = i
+
+        # zet zojuist bepaalde netlistelement in netlistversion3
+        netlistversion3.append(netlistversion2[numbernetlist])
+        # haalde aangewezen element uit netlistversion2
+        netlistversion2.pop(numbernetlist)
+
+    # return nieuwe netlist
+    return(netlistversion3)
+
+
+
+# deze functie ordent de netlist
+# hierbij wordt er geordend of een netlistelementconnectie (blauwe lijn) aan de buitenkant ligt
+# als argument wordt een netlist genomen + de gates
+def UIMethod_forprint1(netlist, gate):
+    # tweede versie van netlist opgeslagen
+    netlistversion2 = netlist
+    # lege derde versie van te definiëren netlist opgeslagen
+    netlistversion3 = []
+    # lengte netlist berekend
+    k = len(netlist)
+
+    # de breedte van het eerste veld is 17 (tellend vanaf 0)
+    breedte = 17
+    # de hoogte van het eerste veld is 12 (tellend vanaf 0)
+    hoogte = 12
+
+    # helftbreedte en hoogte worden berekend om het bord te scheiden
+    helftbreedte = breedte / 2
+    helfthoogte = hoogte / 2
+
+    # itereren over lengte netlist
+    for j in range(0, k):
+        # het minimum worddt op een hoog getal gezet
+        minimum = 1000
+        # numbernetlist wordt 0
+        numbernetlist = 0
+
+        # itereren over lengte netlist min j
+        for i in range(0, k - j):
+            # de eerste factor van wire opslaan in listelement1
+            listelement1 = netlistversion2[i][0]
+            # de tweede factor van wire opslaan in listelement2
+            listelement2 = netlistversion2[i][1]
+
+            # check of de x-waarde in de eerste helft valt
+            if (gate[listelement1].x <= helftbreedte):
+                x1waarde = gate[listelement1].x
+            else:
+                # anders wordt de waarde breedte minus x-element
+                x1waarde = breedte - gate[listelement1].x
+
+            if (gate[listelement1].y <= helfthoogte):
+                y1waarde = gate[listelement1].y
+            else:
+                y1waarde = hoogte - gate[listelement1].y
+
+            # de waarde van de eerste gate is het minimum van de x1- en y1waarde
+            waarde1 = min(x1waarde, y1waarde)
+
+            if (gate[listelement2].x <= helftbreedte):
+                x2waarde = gate[listelement2].x
+            else:
+                x2waarde = breedte - gate[listelement2].x
+
+            if (gate[listelement2].y <= helfthoogte):
+                y2waarde = gate[listelement2].y
+            else:
+                y2waarde = hoogte - gate[listelement2].y
+
+            # de waarde van de tweede gate is het minimum van de x2- en y2waarde
+            waarde2 = min(x2waarde, y2waarde)
+
+            som = waarde1 + waarde2
+
+            # als de som kleiner is dan het minimum
+            if (som < minimum):
+                minimum = som
+                numbernetlist = i
+
+        # zet zojuist bepaalde netlistelement in netlistversion3
+        netlistversion3.append(netlistversion2[numbernetlist])
+        # haalde aangewezen element uit netlistversion2
+        netlistversion2.pop(numbernetlist)
+    # return nieuwe netlist
+    return (netlistversion3)
+
+
+def plotLines (gates):
+    fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
+
+    for gate in gates:
+        ax.plot(gate.x, gate.y, 0)
+
+    plt.show()
+
+
+def randomroute(gates, wire):
+    route = []
+    locfrom = [gates[wire[0]].y, gates[wire[0]].x]
+    cursor = locfrom
+    locto = [gates[wire[1]].y, gates[wire[1]].x]
+
     while abs(locto[0] - cursor[0]) + abs(locto[1] - cursor[1]) > 1:
         if abs(locto[0] - cursor[0]) > abs(locto[1] - cursor[1]):
             if locto[0] > cursor[0]:
@@ -79,92 +244,3 @@ def routeFinder(gates, wire):
         print(route)
     return route
 
-def changeMat(newloc, grid):
-    grid[newloc[0], newloc[1]] = 50
-    return grid
-
-def plotMatrix(grid):
-    plt.imshow(grid)
-    plt.show()
-
-def daltonMethod(netlist, gate):
-    netlistversion2 = netlist
-    netlistversion3 = []
-    k = len(netlist)
-
-    for j in range(0, k):
-        minimum = 1000
-        numbernetlist = 0
-        for i in range(0, k - j):
-            listelement1 = netlistversion2[i][0]
-            listelement2 = netlistversion2[i][1]
-            x_verschil = abs(gate[listelement1].x - gate[listelement2].x)
-            y_verschil = abs(gate[listelement1].y - gate[listelement2].y)
-            som = x_verschil + y_verschil
-
-            if (som < minimum):
-                minimum = som
-                numbernetlist = i
-
-        netlistversion3.append(netlistversion2[numbernetlist])
-        netlistversion2.pop(numbernetlist)
-
-    return(netlistversion3)
-
-def UIMethod_forprint1(netlist, gate):
-    netlistversion2 = netlist
-    netlistversion3 = []
-    k = len(netlist)
-    breedte = 17
-    hoogte = 12
-    helftbreedte = breedte / 2
-    helfthoogte = hoogte / 2
-
-    for j in range(0, k):
-        minimum = 1000
-        numbernetlist = 0
-        for i in range(0, k - j):
-            listelement1 = netlistversion2[i][0]
-            listelement2 = netlistversion2[i][1]
-
-            if (gate[listelement1].x <= helftbreedte):
-                x1waarde = gate[listelement1].x
-            else:
-                x1waarde = breedte - gate[listelement1].x
-
-            if (gate[listelement1].y <= helfthoogte):
-                y1waarde = gate[listelement1].y
-            else:
-                y1waarde = hoogte - gate[listelement1].y
-
-
-
-            if (gate[listelement2].x <= helftbreedte):
-                x2waarde = gate[listelement2].x
-            else:
-                x2waarde = breedte - gate[listelement2].x
-
-            if (gate[listelement2].y <= helfthoogte):
-                y2waarde = gate[listelement2].y
-            else:
-                y2waarde = hoogte - gate[listelement2].y
-
-
-            som = x1waarde + x2waarde + y1waarde +y2waarde
-
-            if (som < minimum):
-                minimum = som
-                numbernetlist = i
-
-        netlistversion3.append(netlistversion2[numbernetlist])
-        netlistversion2.pop(numbernetlist)
-
-    return(netlistversion3)
-
-def plotLines (gates):
-    fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
-
-    for gate in gates:
-        ax.plot(gate.x, gate.y, 0)
-
-    plt.show()
