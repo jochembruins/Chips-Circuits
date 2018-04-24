@@ -107,3 +107,53 @@ def daltonMethod(netlist, gate):
         netlistversion2.pop(numbernetlist)
 
     return(netlistversion3)
+
+def UIMethod_forprint1(netlist, gate):
+    netlistversion2 = netlist
+    netlistversion3 = []
+    k = len(netlist)
+    breedte = 17
+    hoogte = 12
+    helftbreedte = breedte / 2
+    helfthoogte = hoogte / 2
+
+    for j in range(0, k):
+        minimum = 1000
+        numbernetlist = 0
+        for i in range(0, k - j):
+            listelement1 = netlistversion2[i][0]
+            listelement2 = netlistversion2[i][1]
+
+            if (gate[listelement1].x <= helftbreedte):
+                x1waarde = gate[listelement1].x
+            else:
+                x1waarde = breedte - gate[listelement1].x
+
+            if (gate[listelement1].y <= helfthoogte):
+                y1waarde = gate[listelement1].y
+            else:
+                y1waarde = hoogte - gate[listelement1].y
+
+
+
+            if (gate[listelement2].x <= helftbreedte):
+                x2waarde = gate[listelement2].x
+            else:
+                x2waarde = breedte - gate[listelement2].x
+
+            if (gate[listelement2].y <= helfthoogte):
+                y2waarde = gate[listelement2].y
+            else:
+                y2waarde = hoogte - gate[listelement2].y
+
+
+            som = x1waarde + x2waarde + y1waarde +y2waarde
+
+            if (som < minimum):
+                minimum = som
+                numbernetlist = i
+
+        netlistversion3.append(netlistversion2[numbernetlist])
+        netlistversion2.pop(numbernetlist)
+
+    return(netlistversion3)
