@@ -20,6 +20,8 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.axes3d import Axes3D
 from classes import *
 
+np.set_printoptions(threshold=np.nan)
+np.set_printoptions(linewidth=180)
 
 
 def makeLocations(data):
@@ -51,11 +53,11 @@ def printPlot(gates):
 
 def gridMat(gates):
     # make matrix of grid
-    matgrid = np.zeros([13,18]) + 99
+    matgrid = np.zeros([7, 13, 18]) + 99
 
 
     for gate in gates:
-        matgrid[gate.y, gate.x] = gate.gate
+        matgrid[gate.z, gate.y, gate.x] = gate.gate
     return matgrid
 
 def routeFinder(gates, wire, grid):
@@ -224,12 +226,24 @@ def UIMethod_forprint1(netlist, gate):
     # return nieuwe netlist
     return (netlistversion3)
 
+def randomroute(gates, wire, grid):
 
 def plotLines (gates):
-    fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection = '3d')
+    ax.set_xlim([0,18])
+    ax.set_ylim([0,13])
+    ax.set_zlim([0,7])
+    ax.set_xticks(np.arange(0, 18, 1))
+    ax.set_yticks(np.arange(0, 13, 1))
+    ax.set_zticks(np.arange(0, 7, 1))
+    ax.set_xlabel('x-axis')
+    ax.set_ylabel('y-axis')
+    ax.set_zlabel('z-axis')
+
 
     for gate in gates:
-        ax.plot(gate.x, gate.y, 0)
+        ax.scatter(gate.x, gate.y, 0)
 
     plt.show()
 
