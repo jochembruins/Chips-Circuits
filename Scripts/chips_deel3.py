@@ -91,7 +91,7 @@ for j in range(0, k):
         else:
             y1waarde = hoogte - gate[listelement1].y
 
-
+        waarde1 = min(x1waarde, y1waarde)
 
         if (gate[listelement2].x <= helftbreedte):
             x2waarde = gate[listelement2].x
@@ -103,8 +103,8 @@ for j in range(0, k):
         else:
             y2waarde = hoogte - gate[listelement2].y
 
-
-        som = x1waarde + x2waarde + y1waarde +y2waarde
+        waarde2 = min(x2waarde, y2waarde)
+        som = waarde1 + waarde2
 
         if (som < minimum):
             minimum = som
