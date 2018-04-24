@@ -71,20 +71,29 @@ def routeFinder(gates, wire, grid):
 
     # look for best step until 1 step away from endpoint
     while abs(locto[1] - cursor[1]) + abs(locto[2] - cursor[2]) > 1:
-        # check if steps in y direction is bigger than x direction
-        if abs(locto[1] - cursor[1]) > abs(locto[2] - cursor[2]):
-            # step along y axis
-            if locto[1] > cursor[1]:
-                cursor[1] += 1
-            else:
-                cursor[1] -= 1
+        if grid[cursor[0], cursor[1], cursor[2]] != 99.0 and cursor != locfrom:
+            print("up")
+            cursor[0] += 1
+        elif grid[cursor[0]-1, cursor[1], cursor[2]] == 99.0 and cursor[0] > 0:
+            print("down")
+            cursor[0] -= 1
         else:
-            # step along x axis
-            if locto[2] > cursor[2]:
-                cursor[2] += 1
+            # check if steps in y direction is bigger than x direction
+            if abs(locto[1] - cursor[1]) > abs(locto[2] - cursor[2]):
+                # step along y axis
+                if locto[1] > cursor[1]:
+                    cursor[1] += 1
+                else:
+                    cursor[1] -= 1
             else:
-                cursor[2] -= 1
-
+                # step along x axis
+                if locto[2] > cursor[2]:
+                    cursor[2] += 1
+                else:
+                    cursor[2] -= 1
+            if grid[cursor[0], cursor[1], cursor[2]] != 99:
+                cursor[0] += 1
+        print(cursor)
         route.append([cursor[0],cursor[1], cursor[2]])
     # add end point to route
     # route.append(locto)
@@ -92,10 +101,8 @@ def routeFinder(gates, wire, grid):
 
 def changeMat(route, grid):
     for step in route:
-        print(step)
-        print(grid[0, 9, 2])
-        # grid[step[0], step[1], step[2]] = 50
-        return grid
+        grid[step[0], step[1], step[2]] = 50
+    return grid
 
 def plotMatrix(grid):
     plt.imshow(grid)
@@ -226,8 +233,6 @@ def UIMethod_forprint1(netlist, gate):
     # return nieuwe netlist
     return (netlistversion3)
 
-def randomroute(gates, wire, grid):
-
 def plotLines (gates):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection = '3d')
@@ -266,6 +271,6 @@ def randomroute(gates, wire):
             else:
                 cursor[1] -= 1
         route.append(cursor)
-        print(route)
+        # print(route)
     return route
 
