@@ -48,7 +48,7 @@ for wire in netlistDalton:
     print(route)
 # print(grid)
 # print(routeBook)
-# print(totalscore)
+print(totalscore)
 
 # plot grid, voor 3d watch https://www.youtube.com/watch?v=ZlpFQNVhB7I
 #plotMatrix(grid)
