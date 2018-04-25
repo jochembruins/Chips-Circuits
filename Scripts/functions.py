@@ -67,17 +67,15 @@ def routeFinder(gates, wire, grid):
     locto = [gates[wire[1]].z, gates[wire[1]].y, gates[wire[1]].x]
     print(wire, locfrom, locto)
     # add begin point to route
-    # route.append([cursor[0], cursor[1], cursor[2]])
+    route.append([cursor[0], cursor[1], cursor[2]])
+    print(cursor)
 
     # HIERIN NOG PROBLEEM DAT ER BIJ STAP OPHOOG 2 STAPPEN IN 1 WORDEN GEDAAN
     # look for best step until 1 step away from endpoint
     while abs(locto[1] - cursor[1]) + abs(locto[2] - cursor[2]) > 1:
         if grid[cursor[0], cursor[1], cursor[2]] != 99.0 and cursor != locfrom:
-            print("up")
+            print("up!")
             cursor[0] += 1
-        elif grid[cursor[0]-1, cursor[1], cursor[2]] == 99.0 and cursor[0] > 0:
-            print("down")
-            cursor[0] -= 1
         else:
             # check if steps in y direction is bigger than x direction
             if abs(locto[1] - cursor[1]) > abs(locto[2] - cursor[2]):
@@ -92,13 +90,30 @@ def routeFinder(gates, wire, grid):
                     cursor[2] += 1
                 else:
                     cursor[2] -= 1
-            if grid[cursor[0], cursor[1], cursor[2]] != 99:
-                print("up")
-                cursor[0] += 1
-        print(cursor)
+
         route.append([cursor[0],cursor[1], cursor[2]])
+        print(cursor)
+
+        if grid[cursor[0], cursor[1], cursor[2]] != 99:
+            print([route[-1], "del"])
+            del route[-1]
+            print(route[-1], "new cursor")
+            # print(route)
+            cursor = [route[-1][0], route[-1][1], route[-1][2]]
+            print("up")
+            cursor[0] += 1
+            route.append([cursor[0], cursor[1], cursor[2]])
+            print(cursor)
+        elif grid[cursor[0] - 1, cursor[1], cursor[2]] == 99.0 and cursor[0] > 0:
+            print("down")
+            cursor[0] -= 1
+            route.append([cursor[0], cursor[1], cursor[2]])
+            print(cursor)
+
+
     # add end point to route
-    # route.append(locto)
+    route.append(locto)
+    print(locto)
     return route
 
 def changeMat(route, grid):

@@ -44,8 +44,8 @@ for wire in netlistDalton:
     totalscore += len(route) - 1
 
     # change matrix for steps in route
-    changeMat(route, grid)
-    # print(route)
+    changeMat(route[1:-1], grid)
+    print(route)
 # print(grid)
 # print(routeBook)
 # print(totalscore)
@@ -54,9 +54,9 @@ for wire in netlistDalton:
 #plotMatrix(grid)
 
 #	plotLines(gates)
-print("hoi")
-print(grid)
-print("hoi")
-print(grid[1][10])
+# print("hoi")
+# print(grid)
+# print("hoi")
+# print(grid[1][10])
 
 
