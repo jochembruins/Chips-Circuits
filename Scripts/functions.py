@@ -15,6 +15,7 @@
 #
 # Contains all functions used in chips.py
 ###########################################################
+
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.axes3d import Axes3D
@@ -66,16 +67,15 @@ def routeFinder(gates, wire, grid):
     locfrom = [gates[wire[0]].z, gates[wire[0]].y, gates[wire[0]].x]
     cursor = locfrom
     locto = [gates[wire[1]].z, gates[wire[1]].y, gates[wire[1]].x]
-    # print(wire, locfrom, locto)
+    print(wire, locfrom, locto)
     # add begin point to route
     route.append([cursor[0], cursor[1], cursor[2]])
-    # print(cursor)
+    print(cursor)
 
     # look for best step until 1 step away from endpoint
     # HIER MOET EIGENLIJK NOG abs(locto[0] - cursor[0]) IN WHILE STATEMENT OM Z -AS TE CHECKEN
     # DIT WERKT NOG NIET, WORDT INFINITE LOOP, MOGELIJKE OPLOSSING ZIE ONDERAAN FUNCTIE MET RANDOMSTEP
-    # MISSCHIEN OOK VOOR ALLE STAPJES EN ROUTE.APPEND IN LOSSE FUNCTIES
-    while abs(locto[1] - cursor[1]) + abs(locto[2] - cursor[2]) > 1:
+    while abs(locto[0] - cursor[0]) + abs(locto[1] - cursor[1]) + abs(locto[2] - cursor[2]) > 1:
 
         # check if steps in y direction is bigger than x direction
         if abs(locto[1] - cursor[1]) > abs(locto[2] - cursor[2]):
@@ -92,38 +92,40 @@ def routeFinder(gates, wire, grid):
                 cursor[2] -= 1
         # save step in route
         route.append([cursor[0], cursor[1], cursor[2]])
-        # print(cursor)
+        print(cursor)
 
         # check if previous step is possible else delete and go up z-axis
         if grid[cursor[0], cursor[1], cursor[2]] != 99:
-            # print([route[-1], "del"])
+            print([route[-1], "del"])
             del route[-1]
-            # print(route[-1], "new cursor")
+            print(route[-1], "new cursor")
             cursor = [route[-1][0], route[-1][1], route[-1][2]]
-            # print("up")
+            print("up")
             cursor[0] += 1
             route.append([cursor[0], cursor[1], cursor[2]])
-            # print(cursor)
+            print(cursor)
         # if step down is possible, go down
         elif grid[cursor[0] - 1, cursor[1], cursor[2]] == 99.0 and cursor[0] > 0:
-            # print("down")
+            print("down")
             cursor[0] -= 1
             route.append([cursor[0], cursor[1], cursor[2]])
-            # print(cursor)
+            print(cursor)
 
         # make random step if stuck in infinite loop (does not work yet)
-        # if len(route) >= 4 and route[-1] == route[-4]:
-        #     randomstep = randint(1, 4)
-        #     if randomstep == 1:
-        #         cursor[1] += 1
-        #     elif randomstep == 2:
-        #         cursor[1] -= 1
-        #     elif randomstep == 3:
-        #         cursor[2] += 1
-        #     else:
-        #         cursor[2] -= 1
-        #     route.append([cursor[0], cursor[1], cursor[2]])
-        #     print("randomstep")
+        if len(route) > 4 and [route[-1][0], route[-1][1], route[-1][2]] == [route[-5][0], route[-5][1], route[-5][2]]:
+            break
+            #
+            # randomstep = randint(1, 4)
+            # if randomstep == 1:
+            #     cursor[1] += 1
+            # elif randomstep == 2:
+            #     cursor[1] -= 1
+            # elif randomstep == 3:
+            #     cursor[2] += 1
+            # else:
+            #     cursor[2] -= 1
+            # route.append([cursor[0], cursor[1], cursor[2]])
+            # print("randomstep")
 
     # add end point to route
     route.append(locto)
