@@ -113,8 +113,8 @@ def routeFinder(gates, wire, grid):
 
         # make random step if stuck in infinite loop (does not work yet)
         if len(route) > 4 and [route[-1][0], route[-1][1], route[-1][2]] == [route[-5][0], route[-5][1], route[-5][2]]:
+            del route[-4:]
             break
-            #
             # randomstep = randint(1, 4)
             # if randomstep == 1:
             #     cursor[1] += 1
@@ -126,6 +126,7 @@ def routeFinder(gates, wire, grid):
             #     cursor[2] -= 1
             # route.append([cursor[0], cursor[1], cursor[2]])
             # print("randomstep")
+            # print(cursor)
 
     # add end point to route
     route.append(locto)
@@ -267,7 +268,7 @@ def UIMethod_forprint1(netlist, gate):
     return (netlistversion3)
 
 
-def plotLines (gates):
+def plotLines (gates, routeBook):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection = '3d')
     ax.set_xlim([0,18])
@@ -284,7 +285,13 @@ def plotLines (gates):
     for gate in gates:
         ax.scatter(gate.x, gate.y, 0)
 
+
+    for wire in routeBook:
+        ax.plot([step[2] for step in wire], [step[1] for step in wire], [step[0] for step in wire])
+
     plt.show()
+
+
 
 def randomroute(gates, wire):
     route = []

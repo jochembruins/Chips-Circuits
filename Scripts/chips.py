@@ -44,17 +44,18 @@ for wire in netlistDalton:
 
     # change matrix for steps in route
     changeMat(route[1:-1], grid)
-    # print(route)
+    print(route)
 
 # show needed output
 # print(grid)
+
 # print(routeBook)
 # print(totalscore)
 
 # plot grid, voor 3d watch https://www.youtube.com/watch?v=ZlpFQNVhB7I
 #plotMatrix(grid)
 
-#	plotLines(gates)
+plotLines(gates, routeBook)
 # print("hoi")
 # print(grid)
 # print("hoi")
