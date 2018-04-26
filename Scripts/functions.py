@@ -111,7 +111,7 @@ def routeFinder(gates, wire, grid):
             route.append([cursor[0], cursor[1], cursor[2]])
             print(cursor)
 
-        # make random step if stuck in infinite loop (does not work yet)
+        # make random step if stuck in infinite loop
         if len(route) > 4 and [route[-1][0], route[-1][1], route[-1][2]] == [route[-5][0], route[-5][1], route[-5][2]]:
             del route[-4:]
             break
