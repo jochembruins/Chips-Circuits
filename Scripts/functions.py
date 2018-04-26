@@ -266,23 +266,33 @@ def UIMethod_forprint1(netlist, gate):
 
 
 def plotLines (gates, routeBook):
+    # maak een nieuwe plot
     fig = plt.figure()
     ax = fig.add_subplot(111, projection = '3d')
+   
+    # definieer assen
     ax.set_xlim([0,18])
     ax.set_ylim([0,13])
     ax.set_zlim([0,7])
+    
+    # zet ticks op de assem
     ax.set_xticks(np.arange(0, 18, 1))
     ax.set_yticks(np.arange(0, 13, 1))
     ax.set_zticks(np.arange(0, 7, 1))
+    
+    # voeg labels toe
     ax.set_xlabel('x-axis')
     ax.set_ylabel('y-axis')
     ax.set_zlabel('z-axis')
 
 
+    # voeg alle gates met labels toe
     for gate in gates:
         ax.scatter(gate.x, gate.y, 0)
+        ax.text(gate.x, gate.y, 0,  '%s' % (int(gate.gate)), size=10, zorder=1, color='k') 
 
 
+    # leg wires in plot zoals in het routebook
     for wire in routeBook:
         ax.plot([step[2] for step in wire], [step[1] for step in wire], [step[0] for step in wire])
 
