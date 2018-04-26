@@ -19,7 +19,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.axes3d import Axes3D
 from classes import *
+from random import randint
 
+np.set_printoptions(threshold=np.nan)
+np.set_printoptions(linewidth=180)
 
 
 def makeLocations(data):
@@ -51,37 +54,85 @@ def printPlot(gates):
 
 def gridMat(gates):
     # make matrix of grid
-    matgrid = np.zeros([13,18]) + 99
+    matgrid = np.zeros([7, 13, 18]) + 99
 
 
     for gate in gates:
-        matgrid[gate.y, gate.x] = gate.gate
+        matgrid[gate.z, gate.y, gate.x] = gate.gate
     return matgrid
 
-def routeFinder(gates, wire):
+def routeFinder(gates, wire, grid):
     route = []
-    locfrom = [gates[wire[0]].y, gates[wire[0]].x]
+    locfrom = [gates[wire[0]].z, gates[wire[0]].y, gates[wire[0]].x]
     cursor = locfrom
-    locto = [gates[wire[1]].y, gates[wire[1]].x]
+    locto = [gates[wire[1]].z, gates[wire[1]].y, gates[wire[1]].x]
+    # print(wire, locfrom, locto)
+    # add begin point to route
+    route.append([cursor[0], cursor[1], cursor[2]])
+    # print(cursor)
 
-    route.append([cursor[0], cursor[1]])
-    while abs(locto[0] - cursor[0]) + abs(locto[1] - cursor[1]) > 1:
-        if abs(locto[0] - cursor[0]) > abs(locto[1] - cursor[1]):
-            if locto[0] > cursor[0]:
-                cursor[0] += 1
-            else:
-                cursor[0] -= 1
-        else:
+    # look for best step until 1 step away from endpoint
+    # HIER MOET EIGENLIJK NOG abs(locto[0] - cursor[0]) IN WHILE STATEMENT OM Z -AS TE CHECKEN
+    # DIT WERKT NOG NIET, WORDT INFINITE LOOP, MOGELIJKE OPLOSSING ZIE ONDERAAN FUNCTIE MET RANDOMSTEP
+    # MISSCHIEN OOK VOOR ALLE STAPJES EN ROUTE.APPEND IN LOSSE FUNCTIES
+    while abs(locto[1] - cursor[1]) + abs(locto[2] - cursor[2]) > 1:
+
+        # check if steps in y direction is bigger than x direction
+        if abs(locto[1] - cursor[1]) > abs(locto[2] - cursor[2]):
+            # step along y axis
             if locto[1] > cursor[1]:
                 cursor[1] += 1
             else:
                 cursor[1] -= 1
-        route.append([cursor[0],cursor[1]])
+        else:
+            # step along x axis
+            if locto[2] > cursor[2]:
+                cursor[2] += 1
+            else:
+                cursor[2] -= 1
+        # save step in route
+        route.append([cursor[0], cursor[1], cursor[2]])
+        # print(cursor)
+
+        # check if previous step is possible else delete and go up z-axis
+        if grid[cursor[0], cursor[1], cursor[2]] != 99:
+            # print([route[-1], "del"])
+            del route[-1]
+            # print(route[-1], "new cursor")
+            cursor = [route[-1][0], route[-1][1], route[-1][2]]
+            # print("up")
+            cursor[0] += 1
+            route.append([cursor[0], cursor[1], cursor[2]])
+            # print(cursor)
+        # if step down is possible, go down
+        elif grid[cursor[0] - 1, cursor[1], cursor[2]] == 99.0 and cursor[0] > 0:
+            # print("down")
+            cursor[0] -= 1
+            route.append([cursor[0], cursor[1], cursor[2]])
+            # print(cursor)
+
+        # make random step if stuck in infinite loop (does not work yet)
+        # if len(route) >= 4 and route[-1] == route[-4]:
+        #     randomstep = randint(1, 4)
+        #     if randomstep == 1:
+        #         cursor[1] += 1
+        #     elif randomstep == 2:
+        #         cursor[1] -= 1
+        #     elif randomstep == 3:
+        #         cursor[2] += 1
+        #     else:
+        #         cursor[2] -= 1
+        #     route.append([cursor[0], cursor[1], cursor[2]])
+        #     print("randomstep")
+
+    # add end point to route
     route.append(locto)
+    # print(locto)
     return route
 
-def changeMat(newloc, grid):
-    grid[newloc[0], newloc[1]] = 50
+def changeMat(route, grid):
+    for step in route:
+        grid[step[0], step[1], step[2]] = 50
     return grid
 
 def plotMatrix(grid):
@@ -215,13 +266,23 @@ def UIMethod_forprint1(netlist, gate):
 
 
 def plotLines (gates):
-    fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection = '3d')
+    ax.set_xlim([0,18])
+    ax.set_ylim([0,13])
+    ax.set_zlim([0,7])
+    ax.set_xticks(np.arange(0, 18, 1))
+    ax.set_yticks(np.arange(0, 13, 1))
+    ax.set_zticks(np.arange(0, 7, 1))
+    ax.set_xlabel('x-axis')
+    ax.set_ylabel('y-axis')
+    ax.set_zlabel('z-axis')
+
 
     for gate in gates:
-        ax.plot(gate.x, gate.y, 0)
+        ax.scatter(gate.x, gate.y, 0)
 
     plt.show()
-
 
 def randomroute(gates, wire):
     route = []
@@ -241,6 +302,6 @@ def randomroute(gates, wire):
             else:
                 cursor[1] -= 1
         route.append(cursor)
-        print(route)
+        # print(route)
     return route
 
