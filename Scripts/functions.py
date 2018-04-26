@@ -264,7 +264,7 @@ def UIMethod_forprint1(netlist, gate):
     # return nieuwe netlist
     return (netlistversion3)
 
-def plotLines (gates):
+def plotLines (gates, routeBook):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection = '3d')
     ax.set_xlim([0,18])
@@ -281,8 +281,11 @@ def plotLines (gates):
     for gate in gates:
         ax.scatter(gate.x, gate.y, 0)
 
-    plt.show()
 
+    for wire in routeBook:
+        ax.plot([step[2] for step in wire], [step[1] for step in wire], [step[0] for step in wire])
+
+    plt.show()
 
 def randomroute(gates, wire):
     route = []
