@@ -36,16 +36,20 @@ netlistDalton = daltonMethod(netlist_1, gates)
 routeBook = []
 totalscore = 0
 for wire in netlistDalton:
-    # find best route for wire
-    route = routeFinder(gates, wire, grid)
 
+    route = routeFinder(gates, wire, grid)
     # save route and total score
     routeBook.append(route)
     totalscore += len(route) - 1
 
     # change matrix for steps in route
     changeMat(route[1:-1], grid)
+
+    print(route)
+
+# show needed output
 # print(grid)
+
 print(routeBook)
 print(totalscore)
 
