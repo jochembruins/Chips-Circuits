@@ -312,24 +312,36 @@ def plotLines (gates, routeBook):
 
 
 
+
+# hier begint het Astar algoritme met bijbehorende functies
+# def Astar(grid, wire, gates):
 def randomroute(gates, wire):
     route = []
-    locfrom = [gates[wire[0]].y, gates[wire[0]].x]
+    locfrom = [gates[wire[0]].z, gates[wire[0]].y, gates[wire[0]].x]
     cursor = locfrom
-    locto = [gates[wire[1]].y, gates[wire[1]].x]
-
-    while abs(locto[0] - cursor[0]) + abs(locto[1] - cursor[1]) > 1:
-        if abs(locto[0] - cursor[0]) > abs(locto[1] - cursor[1]):
-            if locto[0] > cursor[0]:
-                cursor[0] += 1
-            else:
-                cursor[0] -= 1
-        else:
-            if locto[1] > cursor[1]:
-                cursor[1] += 1
-            else:
-                cursor[1] -= 1
-        route.append(cursor)
-        # print(route)
+    gridwithnodes = grid
+    locto = [gates[wire[1]].z, gates[wire[1]].y, gates[wire[1]].x]
     return route
 
+ def putnodes(start, grid, locfrom, destination):
+
+     nodes = []
+     nodelinks = [start[0], start[1], start[2]-1]
+
+     if (grid[nodelinks[0]][nodelinks[1]][nodelinks[2]] == 99):
+         grid[nodelinks[0]][nodelinks[1]][nodelinks[2]] = 100 + distance(start, locfrom) + distance(start, destination)
+
+
+         
+
+
+
+
+ def distance(location, destination):
+    z_dist = abs(destination[0] - location[0])
+    y_dist = abs(destination[1] - location[1])
+    x_dist = abs(destination[2] - location[2])
+    distancee = z_dist + y_dist + x_dist
+    return distancee
+
+def checkexistance(node):

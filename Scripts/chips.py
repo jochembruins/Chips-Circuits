@@ -44,10 +44,15 @@ for wire in netlistDalton:
 
     # change matrix for steps in route
     changeMat(route[1:-1], grid)
-    print(route)
+
+    # print(route)
+print(grid)
+print(grid[0][1][6])
+print(route)
 
 # show needed output
 # print(grid)
+
 
 # print(routeBook)
 # print(totalscore)
