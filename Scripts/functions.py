@@ -70,11 +70,9 @@ def routeFinder(gates, wire, grid):
     print(wire, locfrom, locto)
     # add begin point to route
     route.append([cursor[0], cursor[1], cursor[2]])
-    print(cursor)
+    # print(cursor)
 
     # look for best step until 1 step away from endpoint
-    # HIER MOET EIGENLIJK NOG abs(locto[0] - cursor[0]) IN WHILE STATEMENT OM Z -AS TE CHECKEN
-    # DIT WERKT NOG NIET, WORDT INFINITE LOOP, MOGELIJKE OPLOSSING ZIE ONDERAAN FUNCTIE MET RANDOMSTEP
     while abs(locto[0] - cursor[0]) + abs(locto[1] - cursor[1]) + abs(locto[2] - cursor[2]) > 1:
 
         # check if steps in y direction is bigger than x direction
@@ -92,46 +90,57 @@ def routeFinder(gates, wire, grid):
                 cursor[2] -= 1
         # save step in route
         route.append([cursor[0], cursor[1], cursor[2]])
-        print(cursor)
+        # print(cursor)
 
         # check if previous step is possible else delete and go up z-axis
         if grid[cursor[0], cursor[1], cursor[2]] != 99:
-            print([route[-1], "del"])
+            # print([route[-1], "del"])
             del route[-1]
-            print(route[-1], "new cursor")
+            # print(route[-1], "new cursor")
             cursor = [route[-1][0], route[-1][1], route[-1][2]]
-            print("up")
+            # print("up")
             cursor[0] += 1
             route.append([cursor[0], cursor[1], cursor[2]])
-            print(cursor)
+            # print(cursor)
         # if step down is possible, go down
         elif grid[cursor[0] - 1, cursor[1], cursor[2]] == 99.0 and cursor[0] > 0:
-            print("down")
+            # print("down")
             cursor[0] -= 1
             route.append([cursor[0], cursor[1], cursor[2]])
-            print(cursor)
+            # print(cursor)
 
-        # make random step if stuck in infinite loop
+        # make random step if stuck in infinite loop (break moet eruit)
+        # DIT MOET IN APARTE FUNCTIE
+        # ONDERAAN IN "IF" STATEMENT OPNIEUW FUNCTIE AAN LATEN ROEPEN
+        # NA IEDERE RANDOMSTEP --> STEP DOWN, CHECKEN OF MOGELIJK
         if len(route) > 4 and [route[-1][0], route[-1][1], route[-1][2]] == [route[-5][0], route[-5][1], route[-5][2]]:
             del route[-4:]
             break
-            # randomstep = randint(1, 4)
-            # if randomstep == 1:
-            #     cursor[1] += 1
-            # elif randomstep == 2:
-            #     cursor[1] -= 1
-            # elif randomstep == 3:
-            #     cursor[2] += 1
-            # else:
-            #     cursor[2] -= 1
-            # route.append([cursor[0], cursor[1], cursor[2]])
+            randomstep = randint(1, 4)
+            if randomstep == 1:
+                cursor[1] += 1
+            elif randomstep == 2:
+                cursor[1] -= 1
+            elif randomstep == 3:
+                cursor[2] += 1
+            else:
+                cursor[2] -= 1
+            route.append([cursor[0], cursor[1], cursor[2]])
             # print("randomstep")
             # print(cursor)
+
+            # if grid[cursor[0], cursor[1], cursor[2]] != 99:
+            #     print([route[-1], "del"])
+            #     del route[-1]
+            #     print(route[-1], "new cursor")
+            #     cursor = [route[-1][0], route[-1][1], route[-1][2]]
 
     # add end point to route
     route.append(locto)
     # print(locto)
     return route
+
+
 
 def changeMat(route, grid):
     for step in route:
