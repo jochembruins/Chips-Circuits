@@ -27,36 +27,28 @@ gates = makeLocations(gatesLoc)
 
 # print grid in matrixform
 grid = gridMat(gates)
-# print(grid)
 
 # sort netlist by dalton-method
 netlistDalton = daltonMethod(netlist_1, gates)
 
-routeBook = []
-totalscore = 0
+# make objects of netlist
+routeBook = makeObjects(netlistDalton, gates)
+
+
 # connect gates in netlist
-for wire in netlistDalton:
-
-    route = routeFinder(gates, wire, grid, routeBook)
-
-    # save route and total score
-    routeBook.append(route)
-    totalscore += len(route) - 1
-
-    # change matrix for steps in route
-    changeMat(route[1:-1], grid)
-
-    # print route per wire
-    print(route)
+routeBook = routeFinder(routeBook, grid)
+totalScore = 0
+for route in routeBook:
+    # print(route)
+    totalScore += len(route.route) - 1
 
 # show needed output
 # print(grid)
-# print(routeBook)
-# print(totalscore)
-
-
-# uitprobeersel Melle
+# print(totalScore)
 plotLines(gates, routeBook)
+
+
+# probeersel Melle
 # print("hoi")
 # print(grid)
 # print("hoi")

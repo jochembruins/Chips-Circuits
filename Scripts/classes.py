@@ -26,3 +26,13 @@ class Location(object):
 
     def __str__(self):
         return "gate: %i, x: %i, y: %i, z: %i" % (self.gate, self.x, self.y, self.z)
+
+class wire(object):
+    def __init__(self, netPoint, locFrom, locTo, route):
+        self.netPoint = netPoint
+        self.locFrom = locFrom
+        self.locTo = locTo
+        self.route = route
+
+    def __str__(self):
+        return "netPoint: %s, locFrom: %s, locTo: %s, route: %s" % (self.netPoint, self.locFrom, self.locTo, self.route)
