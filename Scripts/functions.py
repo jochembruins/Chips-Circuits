@@ -62,12 +62,12 @@ def gridMat(gates):
         matgrid[gate.z, gate.y, gate.x] = gate.gate
     return matgrid
 
-def routeFinder(gates, wire, grid):
+def routeFinder(gates, wire, grid, routebook):
     route = []
     locfrom = [gates[wire[0]].z, gates[wire[0]].y, gates[wire[0]].x]
     cursor = locfrom
     locto = [gates[wire[1]].z, gates[wire[1]].y, gates[wire[1]].x]
-    print(wire, locfrom, locto)
+    # print(wire, locfrom, locto)
     # add begin point to route
     route.append([cursor[0], cursor[1], cursor[2]])
     # print(cursor)
@@ -129,11 +129,9 @@ def routeFinder(gates, wire, grid):
             # print("randomstep")
             # print(cursor)
 
-            # if grid[cursor[0], cursor[1], cursor[2]] != 99:
-            #     print([route[-1], "del"])
-            #     del route[-1]
-            #     print(route[-1], "new cursor")
-            #     cursor = [route[-1][0], route[-1][1], route[-1][2]]
+        if len(route) > 4 and [route[-1][0], route[-1][1], route[-1][2]] == [route[-5][0], route[-5][1], route[-5][2]]:
+
+                del route[-4:]
 
     # add end point to route
     route.append(locto)
@@ -323,25 +321,25 @@ def randomroute(gates, wire):
     locto = [gates[wire[1]].z, gates[wire[1]].y, gates[wire[1]].x]
     return route
 
- def putnodes(start, grid, locfrom, destination):
-
-     nodes = []
-     nodelinks = [start[0], start[1], start[2]-1]
-
-     if (grid[nodelinks[0]][nodelinks[1]][nodelinks[2]] == 99):
-         grid[nodelinks[0]][nodelinks[1]][nodelinks[2]] = 100 + distance(start, locfrom) + distance(start, destination)
-
-
-         
-
-
-
-
- def distance(location, destination):
-    z_dist = abs(destination[0] - location[0])
-    y_dist = abs(destination[1] - location[1])
-    x_dist = abs(destination[2] - location[2])
-    distancee = z_dist + y_dist + x_dist
-    return distancee
-
-def checkexistance(node):
+#  def putnodes(start, grid, locfrom, destination):
+#
+#      nodes = []
+#      nodelinks = [start[0], start[1], start[2]-1]
+#
+#      if (grid[nodelinks[0]][nodelinks[1]][nodelinks[2]] == 99):
+#          grid[nodelinks[0]][nodelinks[1]][nodelinks[2]] = 100 + distance(start, locfrom) + distance(start, destination)
+#
+#
+#
+#
+#
+#
+#
+#  def distance(location, destination):
+#     z_dist = abs(destination[0] - location[0])
+#     y_dist = abs(destination[1] - location[1])
+#     x_dist = abs(destination[2] - location[2])
+#     distancee = z_dist + y_dist + x_dist
+#     return distancee
+#
+# def checkexistance(node):
