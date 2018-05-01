@@ -20,17 +20,18 @@ pip install -r requirements.txt
 
 ### Structuur
 
-In de folder 'scripts' staan alle scripten die nodig zijn om het programma te laten draaien. 
+In de hoofdfolder verschillende subfolders:
 
-* chips.py - hoofdfunctie. Dit bestand draaien om het programma te starten
-* functions.py - alle functies gebruikt in het programma
-* netlists.py - alle netlists zoals gegeven in de opdracht
+* Data - Hierin bevinden zich alle datafiles zoals de netlist en de gates
+* Scripts - alle scripts die gebruikt worden om het programma te laten draaien
+* Presentaties - alle netlists zoals gegeven in de opdracht
 
 ### Testen
 
 Voer de volgende command uit om het programma te laten draaien:
 ```
-python main.py
+cd scripts
+python3 chips.py
 ```
 
 ## Dank
