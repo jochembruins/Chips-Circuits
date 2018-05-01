@@ -28,7 +28,7 @@ In de folder 'scripts' staan alle scripten die nodig zijn om het programma te la
 
 ### Testen
 
-Voor de volgende command uit om het programma te laten draaien:
+Voer de volgende command uit om het programma te laten draaien:
 ```
 python main.py
 ```
