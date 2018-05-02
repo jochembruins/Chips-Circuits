@@ -33,6 +33,21 @@ def makeLocations(data):
         gates.append(line)
     return gates
 
+
+def makeObjects(netlist, gates):
+    emptyRouteBook = []
+
+    for point in netlist:
+        locFrom = [gates[point[0]].z, gates[point[0]].y, gates[point[0]].x]
+        locTo = [gates[point[1]].z, gates[point[1]].y, gates[point[1]].x]
+        route = []
+        emptyRoute = wire(point, locFrom, locTo, route)
+        # print(emptyRoute)
+        emptyRouteBook.append(emptyRoute)
+
+    return emptyRouteBook
+
+
 def printPlot(gates):
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
@@ -44,7 +59,7 @@ def printPlot(gates):
     ax.set_yticks(ticks)
 
     for obj in gates:
-        plt.plot(obj.x, obj.y, 'ro')    # WAAR KOMEN FIG EN PLOT SAMEN?
+        plt.plot(obj.x, obj.y, 'ro')  # WAAR KOMEN FIG EN PLOT SAMEN?
         plt.annotate(int(obj.gate), xy=(obj.x, obj.y))
 
     # And a corresponding grid
@@ -53,101 +68,106 @@ def printPlot(gates):
     plt.show()
     return
 
+
 def gridMat(gates):
     # make matrix of grid
     matgrid = np.zeros([7, 13, 18]) + 99
-
 
     for gate in gates:
         matgrid[gate.z, gate.y, gate.x] = gate.gate
     return matgrid
 
-def routeFinder(gates, wire, grid):
-    route = []
-    locfrom = [gates[wire[0]].z, gates[wire[0]].y, gates[wire[0]].x]
-    cursor = locfrom
-    locto = [gates[wire[1]].z, gates[wire[1]].y, gates[wire[1]].x]
-    print(wire, locfrom, locto)
-    # add begin point to route
-    route.append([cursor[0], cursor[1], cursor[2]])
-    print(cursor)
 
-    # look for best step until 1 step away from endpoint
-    # HIER MOET EIGENLIJK NOG abs(locto[0] - cursor[0]) IN WHILE STATEMENT OM Z -AS TE CHECKEN
-    # DIT WERKT NOG NIET, WORDT INFINITE LOOP, MOGELIJKE OPLOSSING ZIE ONDERAAN FUNCTIE MET RANDOMSTEP
-    while abs(locto[0] - cursor[0]) + abs(locto[1] - cursor[1]) + abs(locto[2] - cursor[2]) > 1:
-
-        # check if steps in y direction is bigger than x direction
-        if abs(locto[1] - cursor[1]) > abs(locto[2] - cursor[2]):
-            # step along y axis
-            if locto[1] > cursor[1]:
-                cursor[1] += 1
-            else:
-                cursor[1] -= 1
-        else:
-            # step along x axis
-            if locto[2] > cursor[2]:
-                cursor[2] += 1
-            else:
-                cursor[2] -= 1
-        # save step in route
+def routeFinder(routeBook, grid):
+    for netPoint in routeBook:
+        route = []
+        cursor = [netPoint.locFrom[0], netPoint.locFrom[1], netPoint.locFrom[2]]
+        # add begin point to route
         route.append([cursor[0], cursor[1], cursor[2]])
-        print(cursor)
+        # print(cursor)
 
-        # check if previous step is possible else delete and go up z-axis
-        if grid[cursor[0], cursor[1], cursor[2]] != 99:
-            print([route[-1], "del"])
-            del route[-1]
-            print(route[-1], "new cursor")
-            cursor = [route[-1][0], route[-1][1], route[-1][2]]
-            print("up")
-            cursor[0] += 1
-            route.append([cursor[0], cursor[1], cursor[2]])
-            print(cursor)
-        # if step down is possible, go down
-        elif grid[cursor[0] - 1, cursor[1], cursor[2]] == 99.0 and cursor[0] > 0:
-            print("down")
-            cursor[0] -= 1
-            route.append([cursor[0], cursor[1], cursor[2]])
-            print(cursor)
+        # look for best step until 1 step away from endpoint
+        while abs(netPoint.locTo[0] - cursor[0]) + abs(netPoint.locTo[1] - cursor[1]) + abs(netPoint.locTo[2] - cursor[2]) > 1:
 
-        # make random step if stuck in infinite loop
-        if len(route) > 4 and [route[-1][0], route[-1][1], route[-1][2]] == [route[-5][0], route[-5][1], route[-5][2]]:
-            del route[-4:]
-            break
-            # randomstep = randint(1, 4)
-            # if randomstep == 1:
-            #     cursor[1] += 1
-            # elif randomstep == 2:
-            #     cursor[1] -= 1
-            # elif randomstep == 3:
-            #     cursor[2] += 1
-            # else:
-            #     cursor[2] -= 1
-            # route.append([cursor[0], cursor[1], cursor[2]])
-            # print("randomstep")
+            # check if steps in y direction is bigger than x direction
+            if abs(netPoint.locTo[1] - cursor[1]) > abs(netPoint.locTo[2] - cursor[2]):
+                # step along y axis
+                if netPoint.locTo[1] > cursor[1]:
+                    cursor[1] += 1
+                else:
+                    cursor[1] -= 1
+            else:
+                # step along x axis
+                if netPoint.locTo[2] > cursor[2]:
+                    cursor[2] += 1
+                else:
+                    cursor[2] -= 1
+            # save step in route
+            route.append([cursor[0], cursor[1], cursor[2]])
             # print(cursor)
 
-    # add end point to route
-    route.append(locto)
-    # print(locto)
-    return route
+            # check if previous step is possible else delete and go up z-axis
+            if grid[cursor[0], cursor[1], cursor[2]] != 99:
+                # print([route[-1], "del"])
+                del route[-1]
+                # print(route[-1], "new cursor")
+                cursor = [route[-1][0], route[-1][1], route[-1][2]]
+                # print("up")
+                cursor[0] += 1
+                route.append([cursor[0], cursor[1], cursor[2]])
+                # print(cursor)
+            # if step down is possible, go down
+            elif grid[cursor[0] - 1, cursor[1], cursor[2]] == 99.0 and cursor[0] > 0:
+                # print("down")
+                cursor[0] -= 1
+                route.append([cursor[0], cursor[1], cursor[2]])
+                # print(cursor)
+
+            # make random step if stuck in infinite loop (break moet eruit)
+            # DIT MOET IN APARTE FUNCTIE
+            # ONDERAAN IN "IF" STATEMENT OPNIEUW FUNCTIE AAN LATEN ROEPEN
+            # NA IEDERE RANDOMSTEP --> STEP DOWN, CHECKEN OF MOGELIJK
+            if len(route) > 4 and [route[-1][0], route[-1][1], route[-1][2]] == [route[-5][0], route[-5][1], route[-5][2]]:
+                del route[-4:]
+                break
+                randomstep = randint(1, 4)
+                if randomstep == 1:
+                    cursor[1] += 1
+                elif randomstep == 2:
+                    cursor[1] -= 1
+                elif randomstep == 3:
+                    cursor[2] += 1
+                else:
+                    cursor[2] -= 1
+                route.append([cursor[0], cursor[1], cursor[2]])
+                # print("randomstep")
+                # print(cursor)
+
+                # if grid[cursor[0], cursor[1], cursor[2]] != 99:
+                #     print([route[-1], "del"])
+                #     del route[-1]
+                #     print(route[-1], "new cursor")
+                #     cursor = [route[-1][0], route[-1][1], route[-1][2]]
+
+        # add end point to route
+        route.append(netPoint.locTo)
+        # print(locto)
+
+        netPoint.route = route
+        changeMat(netPoint.route[1:-1], grid)
+    return routeBook
+
 
 def changeMat(route, grid):
     for step in route:
         grid[step[0], step[1], step[2]] = 50
     return grid
 
-def plotMatrix(grid):
-    plt.imshow(grid)
-    plt.show()
-
 
 # deze functie ordent de netlist
 # hierbij wordt er geordend op lengte van een netlistelementconnectie (blauwe lijn)
 # als argument wordt een netlist genomen + de gates
 def daltonMethod(netlist, gate):
-
     # tweede versie van netlist opgeslagen
     netlistversion2 = netlist
     # lege derde versie van te definiëren netlist opgeslagen
@@ -187,8 +207,7 @@ def daltonMethod(netlist, gate):
         netlistversion2.pop(numbernetlist)
 
     # return nieuwe netlist
-    return(netlistversion3)
-
+    return (netlistversion3)
 
 
 # deze functie ordent de netlist
@@ -268,42 +287,53 @@ def UIMethod_forprint1(netlist, gate):
     return (netlistversion3)
 
 
-def plotLines (gates, routeBook):
+def plotLines(gates, routeBook):
     # maak een nieuwe plot
     fig = plt.figure()
-    ax = fig.add_subplot(111, projection = '3d')
-   
+    ax = fig.add_subplot(111, projection='3d')
+
     # definieer assen
-    ax.set_xlim([0,18])
-    ax.set_ylim([0,13])
-    ax.set_zlim([0,7])
-    
+    ax.set_xlim([0, 18])
+    ax.set_ylim([0, 13])
+    ax.set_zlim([0, 7])
+
     # zet ticks op de assem
     ax.set_xticks(np.arange(0, 18, 1))
     ax.set_yticks(np.arange(0, 13, 1))
     ax.set_zticks(np.arange(0, 7, 1))
-    
+
     # voeg labels toe
     ax.set_xlabel('x-axis')
     ax.set_ylabel('y-axis')
     ax.set_zlabel('z-axis')
 
-
     # voeg alle gates met labels toe
     for gate in gates:
         ax.scatter(gate.x, gate.y, 0)
-        ax.text(gate.x, gate.y, 0,  '%s' % (int(gate.gate)), size=10, zorder=1, color='k') 
+        ax.text(gate.x, gate.y, 0, '%s' % (int(gate.gate)), size=10, zorder=1, color='k')
 
-
-    # leg wires in plot zoals in het routebook
-    for wire in routeBook:
-        ax.plot([step[2] for step in wire], [step[1] for step in wire], [step[0] for step in wire])
+        # leg wires in plot zoals in het routebook
+    for netPoint in routeBook:
+        ax.plot([step[2] for step in netPoint.route], [step[1] for step in netPoint.route], [step[0] for step in netPoint.route])
 
     plt.show()
 
+# # hier begint het Astar algoritme met bijbehorende functies
+# # def Astar(grid, wire, gates):
+# def randomroute(gates, wire):
+#     route = []
+#     locfrom = [gates[wire[0]].z, gates[wire[0]].y, gates[wire[0]].x]
+#     cursor = locfrom
+#     gridwithnodes = grid
+#     locto = [gates[wire[1]].z, gates[wire[1]].y, gates[wire[1]].x]
+#     return route
 
+#  def putnodes(start, grid, locfrom, destination):
 
+#      nodes = []
+#      nodelinks = [start[0], start[1], start[2]-1]
 
+<<<<<<< HEAD
 # hier begint het Astar algoritme met bijbehorende functies
 # def Astar(grid, wire, gates):
 def randomroute(gates, wire):
@@ -356,13 +386,17 @@ def randomroute(gates, wire):
 
 
 
+=======
+#      if (grid[nodelinks[0]][nodelinks[1]][nodelinks[2]] == 99):
+#          grid[nodelinks[0]][nodelinks[1]][nodelinks[2]] = 100 + distance(start, locfrom) + distance(start, destination)
+>>>>>>> fe863cdcba41fe5c7aa29b3f3c890b2309b66b02
 
 
- def distance(location, destination):
-    z_dist = abs(destination[0] - location[0])
-    y_dist = abs(destination[1] - location[1])
-    x_dist = abs(destination[2] - location[2])
-    distancee = z_dist + y_dist + x_dist
-    return distancee
+#  def distance(location, destination):
+#     z_dist = abs(destination[0] - location[0])
+#     y_dist = abs(destination[1] - location[1])
+#     x_dist = abs(destination[2] - location[2])
+#     distancee = z_dist + y_dist + x_dist
+#     return distancee
 
-def checkexistance(node):
+# def checkexistance(node):

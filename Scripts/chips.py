@@ -27,40 +27,28 @@ gates = makeLocations(gatesLoc)
 
 # print grid in matrixform
 grid = gridMat(gates)
-# print(grid)
 
 # sort netlist by dalton-method
 netlistDalton = daltonMethod(netlist_1, gates)
 
+# make objects of netlist
+routeBook = makeObjects(netlistDalton, gates)
+
+
 # connect gates in netlist
-routeBook = []
-totalscore = 0
-for wire in netlistDalton:
-
-    route = routeFinder(gates, wire, grid)
-    # save route and total score
-    routeBook.append(route)
-    totalscore += len(route) - 1
-
-    # change matrix for steps in route
-    changeMat(route[1:-1], grid)
-
+routeBook = routeFinder(routeBook, grid)
+totalScore = 0
+for route in routeBook:
     # print(route)
-print(grid)
-print(grid[0][1][6])
-print(route)
+    totalScore += len(route.route) - 1
 
 # show needed output
 # print(grid)
-
-
-# print(routeBook)
-# print(totalscore)
-
-# plot grid, voor 3d watch https://www.youtube.com/watch?v=ZlpFQNVhB7I
-#plotMatrix(grid)
-
+# print(totalScore)
 plotLines(gates, routeBook)
+
+
+# probeersel Melle
 # print("hoi")
 # print(grid)
 # print("hoi")

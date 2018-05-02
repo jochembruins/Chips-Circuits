@@ -1,13 +1,43 @@
 # Chips & Circuits
-Groepsproject voor Heuristieken door Melle, Noah en Jochem
 
-In Chips & Circuits wordt gezocht naar de meest optimale manier om gates op een fictieve chip te verbinden.
+Groepsproject voor Heuristieken waarbij wordt gezocht naar de meest optimale manier om gates op een fictieve chip te verbinden.
 
-## Install requirements
+## Auteurs / Veganboyz
+
+* Noah van Grinsven (Veganboy 1)
+* Melle Gelok (Veganboy 2)
+* Jochem Bruins (Veganboy 3)
+
+## Aan de slag
+
+### Vereisten
+
+Onze code is volledig geschreven in Python 3. In requirements.txt staat alle packages die nodig zijn om de code succesvol te laten draaien. Installatie is mogelijk met pip. 
+
 ```
-pip3 install numpy
-pip3 install matplotlib
+pip install -r requirements.txt
 ```
+
+### Structuur
+
+In de hoofdfolder verschillende subfolders:
+
+* Data - Hierin bevinden zich alle datafiles zoals de netlist en de gates
+* Scripts - alle scripts die gebruikt worden om het programma te laten draaien
+* Presentaties - alle netlists zoals gegeven in de opdracht
+
+### Testen
+
+Voer de volgende command uit om het programma te laten draaien:
+```
+cd scripts
+python3 chips.py
+```
+
+## Dank
+
+* Nicole Silverio - begeleider
+
 
 
 
