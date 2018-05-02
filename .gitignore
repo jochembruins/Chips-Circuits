@@ -6,4 +6,9 @@ Scripts/__pycache__/functions.cpython-36.pyc
 *.iml
 *.xml
 *.pyc
+<<<<<<< HEAD
 Scripts/__pycache__/classes.cpython-36.pyc
+=======
+*.pyc
+*.pyc
+>>>>>>> 6877f3b72c57babdce313342b67b8c9891b6cf65

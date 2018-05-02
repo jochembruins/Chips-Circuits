@@ -316,14 +316,44 @@ def randomroute(gates, wire):
 
  def putnodes(start, grid, locfrom, destination):
 
-     nodes = []
-     nodelinks = [start[0], start[1], start[2]-1]
+    nodes = []
+    nodelinks = [start[0], start[1], start[2]-1]
+    noderechts = [start[0], start[1], start[2]+1]
+    nodeboven = [start[0]+1, start[1], start[2]]
+    nodebeneden = [start[0]-1, start[1], start[2]]
+    nodevoor = [start[0], start[1] + 1, start[2]]
+    nodeachter = [start[0], start[1] - 1, start[2]]
 
-     if (grid[nodelinks[0]][nodelinks[1]][nodelinks[2]] == 99):
-         grid[nodelinks[0]][nodelinks[1]][nodelinks[2]] = 100 + distance(start, locfrom) + distance(start, destination)
+    if (grid[nodelinks[0]][nodelinks[1]][nodelinks[2]] == 99):
+        grid[nodelinks[0]][nodelinks[1]][nodelinks[2]] = 100 + distance(start, nodelinks) + distance(nodelinks, destination)
+        nodes.append(nodelinks)
+
+    if (grid[noderechts[0]][noderechts[1]][noderechts[2]] == 99):
+        grid[noderechts[0]][noderechts[1]][noderechts[2]] = 100 + distance(noderechts, locfrom) + distance(noderechts, destination)
+        nodes.append(noderechts)
+
+    if (grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] == 99):
+        grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 100 + distance(nodeboven, locfrom) + distance(nodeboven, destination)
+        nodes.append(nodeboven)
+
+    if (grid[nodebeneden[0]][nodebeneden[1]][nodebeneden[2]] == 99):
+        grid[nodebeneden[0]][nodebeneden[1]][nodebeneden[2]] = 100 + distance(start, nodebeneden) + distance(nodebeneden,
+                                                                                                     destination)
+        nodes.append(nodebeneden)
+
+    if (grid[nodevoor[0]][nodevoor[1]][nodevoor[2]] == 99):
+        grid[nodevoor[0]][nodevoor[1]][nodevoor[2]] = 100 + distance(noderechts, locfrom) + distance(noderechts,
+                                                                                                           destination)
+        nodes.append(noderechts)
+
+    if (grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] == 99):
+        grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 100 + distance(nodeboven, locfrom) + distance(nodeboven,
+                                                                                                       destination)
+        nodes.append(nodeboven)
 
 
-         
+
+
 
 
 
