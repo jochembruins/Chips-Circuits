@@ -334,8 +334,63 @@ def plotLines(gates, routeBook):
 #      nodes = []
 #      nodelinks = [start[0], start[1], start[2]-1]
 
+<<<<<<< HEAD
+# hier begint het Astar algoritme met bijbehorende functies
+# def Astar(grid, wire, gates):
+def randomroute(gates, wire):
+    route = []
+    locfrom = [gates[wire[0]].z, gates[wire[0]].y, gates[wire[0]].x]
+    cursor = locfrom
+    gridwithnodes = grid
+    locto = [gates[wire[1]].z, gates[wire[1]].y, gates[wire[1]].x]
+    return route
+
+ def putnodes(start, grid, locfrom, destination):
+
+    nodes = []
+    nodelinks = [start[0], start[1], start[2]-1]
+    noderechts = [start[0], start[1], start[2]+1]
+    nodeboven = [start[0]+1, start[1], start[2]]
+    nodebeneden = [start[0]-1, start[1], start[2]]
+    nodevoor = [start[0], start[1] + 1, start[2]]
+    nodeachter = [start[0], start[1] - 1, start[2]]
+
+    if (grid[nodelinks[0]][nodelinks[1]][nodelinks[2]] == 99):
+        grid[nodelinks[0]][nodelinks[1]][nodelinks[2]] = 100 + distance(start, nodelinks) + distance(nodelinks, destination)
+        nodes.append(nodelinks)
+
+    if (grid[noderechts[0]][noderechts[1]][noderechts[2]] == 99):
+        grid[noderechts[0]][noderechts[1]][noderechts[2]] = 100 + distance(noderechts, locfrom) + distance(noderechts, destination)
+        nodes.append(noderechts)
+
+    if (grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] == 99):
+        grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 100 + distance(nodeboven, locfrom) + distance(nodeboven, destination)
+        nodes.append(nodeboven)
+
+    if (grid[nodebeneden[0]][nodebeneden[1]][nodebeneden[2]] == 99):
+        grid[nodebeneden[0]][nodebeneden[1]][nodebeneden[2]] = 100 + distance(start, nodebeneden) + distance(nodebeneden,
+                                                                                                     destination)
+        nodes.append(nodebeneden)
+
+    if (grid[nodevoor[0]][nodevoor[1]][nodevoor[2]] == 99):
+        grid[nodevoor[0]][nodevoor[1]][nodevoor[2]] = 100 + distance(noderechts, locfrom) + distance(noderechts,
+                                                                                                           destination)
+        nodes.append(noderechts)
+
+    if (grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] == 99):
+        grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 100 + distance(nodeboven, locfrom) + distance(nodeboven,
+                                                                                                       destination)
+        nodes.append(nodeboven)
+
+
+
+
+
+
+=======
 #      if (grid[nodelinks[0]][nodelinks[1]][nodelinks[2]] == 99):
 #          grid[nodelinks[0]][nodelinks[1]][nodelinks[2]] = 100 + distance(start, locfrom) + distance(start, destination)
+>>>>>>> fe863cdcba41fe5c7aa29b3f3c890b2309b66b02
 
 
 #  def distance(location, destination):
