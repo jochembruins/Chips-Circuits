@@ -327,7 +327,6 @@ def plotLines(gates, routeBook):
 #     gridwithnodes = grid
 #     locto = [gates[wire[1]].z, gates[wire[1]].y, gates[wire[1]].x]
 #     return route
-<<<<<<< HEAD
 
 #  def putnodes(start, grid, locfrom, destination):
 
