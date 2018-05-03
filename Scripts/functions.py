@@ -80,80 +80,78 @@ def gridMat(gates):
 
 
 def routeFinder(routeBook, grid):
-    for netPoint in routeBook:
-        route = []
-        deleted = []
-        cursor = [netPoint.locFrom[0], netPoint.locFrom[1], netPoint.locFrom[2]]
-        # add begin point to route
-        route.append([cursor[0], cursor[1], cursor[2]])
-        # print(cursor)
-
-        # look for best step until 1 step away from endpoint
-        while abs(netPoint.locTo[0] - cursor[0]) + abs(netPoint.locTo[1] - cursor[1]) + \
-                abs(netPoint.locTo[2] - cursor[2]) > 1:
-
-            # check if steps in y direction is bigger than x direction
-            if abs(netPoint.locTo[1] - cursor[1]) > abs(netPoint.locTo[2] - cursor[2]):
-                # step along y axis
-                if netPoint.locTo[1] > cursor[1]:
-                    cursor[1] += 1
-                else:
-                    cursor[1] -= 1
-            else:
-                # step along x axis
-                if netPoint.locTo[2] > cursor[2]:
-                    cursor[2] += 1
-                else:
-                    cursor[2] -= 1
-            # save step in route
+    routeBookEmpty = routeBook
+    routeBookDone = []
+    while routeBookEmpty != []:
+        for netPoint in routeBookEmpty:
+            route = []
+            deleted = []
+            cursor = [netPoint.locFrom[0], netPoint.locFrom[1], netPoint.locFrom[2]]
+            # add begin point to route
             route.append([cursor[0], cursor[1], cursor[2]])
-            # print(cursor)
 
-            # check if previous step is possible else delete and go up z-axis
-            if grid[cursor[0], cursor[1], cursor[2]] != 99:
-                # print([route[-1], "del"])
-                deleted.append(route[-1])
-                del route[-1]
-                # print(route[-1], "new cursor")
-                cursor = [route[-1][0], route[-1][1], route[-1][2]]
-                # print("up")
-                cursor[0] += 1
+            # look for best step until 1 step away from endpoint
+            while abs(netPoint.locTo[0] - cursor[0]) + abs(netPoint.locTo[1] - cursor[1]) + \
+                    abs(netPoint.locTo[2] - cursor[2]) > 1:
+
+                # check if steps in y direction is bigger than x direction
+                if abs(netPoint.locTo[1] - cursor[1]) > abs(netPoint.locTo[2] - cursor[2]):
+                    # step along y axis
+                    if netPoint.locTo[1] > cursor[1]:
+                        cursor[1] += 1
+                    else:
+                        cursor[1] -= 1
+                else:
+                    # step along x axis
+                    if netPoint.locTo[2] > cursor[2]:
+                        cursor[2] += 1
+                    else:
+                        cursor[2] -= 1
+                # save step in route
                 route.append([cursor[0], cursor[1], cursor[2]])
-                # print(cursor)
-            # if step down is possible, go down
-            # HIER WHILE LOOP VAN MAKEN??
-            elif grid[cursor[0] - 1, cursor[1], cursor[2]] == 99.0 and cursor[0] > 0:
-                # print("down")
-                cursor[0] -= 1
-                route.append([cursor[0], cursor[1], cursor[2]])
-                # print(cursor)
 
-            # HIERIN WORDEN EEN PAAR DINGEN NIET GOED VERWIJDERD, WEET NIET WAAROM
-            if len(deleted) > 2  and deleted[-1] == deleted[-2]:
-                for netPoint in routeBook:
-                    for routepoint in netPoint.route:
-                        if deleted[-1] == [routepoint[0], routepoint[1], routepoint[2]]:
-                            # print("liep vast")
-                            grid = delRoute(netPoint.route[1:-1], grid)
-                            netPoint.route = []
-                            routeBook.append(netPoint)
-                            # print(routeBook[routeBook.index(netPoint)])
-                            del routeBook[routeBook.index(netPoint)]
-                # Dit hieronder moet in de IF statement hierboven, nu wordt er gek genoeg 2x del route[-5:] gedaan.
-                # Probleem is dat er dan weer een inf loop ontstaat omdat de cursor boven de eindgate uitkomt maar niet omlaag kan.
-                # mogelijke oplossing: na elif hierboven nieuwe if statement met als dit gebeurt de lijn eronder weghalen
-                cursor[0] -= 1
-                # print(cursor)
-                del route[-5:]
-                route.append([deleted[-1][0], deleted[-1][1], deleted[-1][2]])
+                # check if previous step is possible else delete and go up z-axis
+                if grid[cursor[0], cursor[1], cursor[2]] != 99:
+                    deleted.append(route[-1])
+                    del route[-1]
+                    cursor = [route[-1][0], route[-1][1], route[-1][2]]
+                    cursor[0] += 1
+                    route.append([cursor[0], cursor[1], cursor[2]])
+                # if step down is possible, go down
+                # HIER WHILE LOOP VAN MAKEN??
+                elif grid[cursor[0] - 1, cursor[1], cursor[2]] == 99.0 and cursor[0] > 0:
+                    cursor[0] -= 1
+                    route.append([cursor[0], cursor[1], cursor[2]])
 
-        # add end point to route
-        route.append(netPoint.locTo)
+                # HIERIN WORDEN EEN PAAR DINGEN NIET GOED VERWIJDERD, WEET NIET WAAROM
+                if len(deleted) > 2 and deleted[-1] == deleted[-2]:
+                    for netPointToDelete in routeBookDone:
+                        for routepoint in netPointToDelete.route:
+                            # probeer verwijderen met kleine lijst
+                            if deleted[-1] == [routepoint[0], routepoint[1], routepoint[2]]:
+                                grid = delRoute(netPointToDelete.route[1:-1], grid)
+                                netPointToDelete.route = []
+                                routeBookEmpty.append(netPointToDelete)
+                                print("Dit is weg", routeBookDone.index(netPointToDelete))
+                                del routeBookDone[routeBookDone.index(netPointToDelete)]
+                    # Dit hieronder moet in de IF statement hierboven, nu wordt er gek genoeg 2x del route[-5:] gedaan.
+                    # Probleem is dat er dan weer een inf loop ontstaat omdat de cursor boven de eindgate uitkomt maar niet omlaag kan.
+                    # mogelijke oplossing: na elif hierboven nieuwe if statement met als dit gebeurt de lijn eronder weghalen
+                    cursor[0] -= 1
+                    del route[-5:]
+                    route.append([deleted[-1][0], deleted[-1][1], deleted[-1][2]])
 
-        netPoint.route = route
-        changeMat(netPoint.route[1:-1], grid)
-    return routeBook, grid
+            # add end point to route
+            route.append(netPoint.locTo)
+            netPoint.route = route
 
+            print(routeBookEmpty.index(netPoint))
+            doneWire = routeBookEmpty.pop(routeBookEmpty.index(netPoint))
+            print(doneWire)
+            routeBookDone.append(doneWire)
+
+            changeMat(netPoint.route[1:-1], grid)
+    return routeBookEmpty, routeBookDone, grid
 
 def changeMat(route, grid):
     for step in route:
@@ -493,12 +491,3 @@ def plotLines(gates, routeBook):
         return minimumclosednode
 
 '''
-
-
-
-
-
-
-
-
-

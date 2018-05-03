@@ -49,8 +49,9 @@ grid = gridMat(gates)
 # DIT MOET IN WHILE LOOP
 # HIERIN LOOP DIE CHECKT OF IIG 1 VAN DE ROUTES LEEG IS (,als in die zijn erachter geplakt), ANDERS OPNIEUW AANROEPEN MET NIEUWE ROUTEBOOK
 routeBook = routeFinder(routeBook, grid)[0]
-for route in routeBook:
-    print(route)
+
+# for route in routeBook:
+#     print(route)
     # print(grid, "vol")
 
 
