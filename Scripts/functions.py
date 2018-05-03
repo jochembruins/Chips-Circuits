@@ -320,8 +320,10 @@ def plotLines(gates, routeBook):
 
 '''
 # hier begint het Astar algoritme met bijbehorende functies
-# def Astar(grid, wire, gates):
-    def randomroute(gates, wire, grid):
+# 
+
+# Astar returned uiteindelijk de wire/route van A*
+    def Astar(gates, wire, grid):
      locfrom = [gates[wire[0]].x, gates[wire[0]].y, gates[wire[0]].z]
      gridwithnodes = grid
      locto = [gates[wire[0]].x, gates[wire[1]].y, gates[wire[1]].z]
@@ -329,6 +331,7 @@ def plotLines(gates, routeBook):
      route = putwire(gridwithnodes, locfrom, locto)
      return route
 
+# putwire plaatst nodes totdat de locatie bereikt is
     def putwire(gridwithnodes, locfrom, locto):
         start = locfrom
         while (distance(start, locto) != 1):
@@ -337,8 +340,8 @@ def plotLines(gates, routeBook):
         route = findroute(gridwithnodes, locfrom, locto)
         return route
 
-    # deepcopy
 #  nodes plaatsen
+# ook nog oorspronkelijke start toevoegen om daadwerkelijk distance te bepalen
     def putnodes(start, grid, destination):
 
         nodelinks = [start[0]-1, start[1], start[2]]
@@ -347,10 +350,12 @@ def plotLines(gates, routeBook):
         nodebeneden = [start[0], start[1], start[2]-1]
         nodevoor = [start[0], start[1] + 1, start[2]]
         nodeachter = [start[0], start[1] - 1, start[2]]
-
+        
+        # een niet gesloten node is groter dan 100 kleiner dan 10000
         if check_isempty(nodelinks, grid) and checkexistance(nodelinks):
          grid[nodelinks[0]][nodelinks[1]][nodelinks[2]] = 100 + distance(start, nodelinks) + distance(nodelinks, destination)
-
+        
+         # een niet gesloten node is groter 10000
         elif check_not_closed_node(nodelinks, grid) and checkexistance(nodelinks):
          grid[nodelinks[0]][nodelinks[1]][nodelinks[2]] = 10000 + distance(start, nodelinks) + distance(nodelinks, destination)
 
@@ -433,7 +438,7 @@ def plotLines(gates, routeBook):
       else:
           return False
 
-
+    # node met laagste f cost is het nieuwe startpunt waaruit nodes geplaatst worden
     def minimumnodes(grid):
         minimum = 10000
         xvalue = 0
@@ -451,7 +456,7 @@ def plotLines(gates, routeBook):
         coordinates = [xvalue, yvalue , zvalue]
         return coordinates
 
-
+    # route wordt geplaatst, alle nodes zijn gegeven
     def findroute(gridwithnodes, locfrom, locto):
         route = []
         start = locto
@@ -461,7 +466,8 @@ def plotLines(gates, routeBook):
             start = routeelement
 
         return route
-
+    
+    # closednode met laagste f cost, grenzend aan bepaald punt wordt bepaald
     def checkminimumclosednode(gridwithnodes, start):
         minimum = 100000
         minimumclosednode = [start[0]-1][start[1]][start[2]]
