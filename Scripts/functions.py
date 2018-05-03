@@ -15,6 +15,7 @@
 #
 # Contains all functions used in chips.py
 ###########################################################
+from typing import List
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -319,106 +320,185 @@ def plotLines(gates, routeBook):
 
     plt.show()
 
-
+'''
 # hier begint het Astar algoritme met bijbehorende functies
 # def Astar(grid, wire, gates):
-# def randomroute(gates, wire):
-#     route = []
-#     locfrom = [gates[wire[0]].z, gates[wire[0]].y, gates[wire[0]].x]
-#     cursor = locfrom
-#     gridwithnodes = grid
-#     locto = [gates[wire[1]].z, gates[wire[1]].y, gates[wire[1]].x]
-#     return route
-#
+    def randomroute(gates, wire, grid):
+     locfrom = [gates[wire[0]].x, gates[wire[0]].y, gates[wire[0]].z]
+     gridwithnodes = grid
+     locto = [gates[wire[0]].x, gates[wire[1]].y, gates[wire[1]].z]
+
+     route = putwire(gridwithnodes, locfrom, locto)
+     return route
+
+    def putwire(gridwithnodes, locfrom, locto):
+        start = locfrom
+        while (distance(start, locto) != 1):
+            gridwithnodes = putnodes(start, gridwithnodes, locto)
+            start = minimumnodes(gridwithnodes)
+        route = findroute(gridwithnodes, locfrom, locto)
+        return route
+
+    # deepcopy
 #  nodes plaatsen
-#  def putnodes(start, grid, destination):
-#
-#     nodelinks = [start[0], start[1], start[2]-1]
-#     noderechts = [start[0], start[1], start[2]+1]
-#     nodeboven = [start[0]+1, start[1], start[2]]
-#     nodebeneden = [start[0]-1, start[1], start[2]]
-#     nodevoor = [start[0], start[1] + 1, start[2]]
-#     nodeachter = [start[0], start[1] - 1, start[2]]
-#
-#     if check_isempty(nodelinks, grid) and checkexistance(nodelinks):
-#         grid[nodelinks[0]][nodelinks[1]][nodelinks[2]] = 100 + distance(start, nodelinks) + distance(nodelinks, destination)
-#
-#     elif check_not_closed_node(nodelinks, grid) and checkexistance(nodelinks):
-#         grid[nodelinks[0]][nodelinks[1]][nodelinks[2]] = 100 + distance(start, nodelinks) + distance(nodelinks, destination)
-#
-#
-#     if check_isempty(noderechts, grid) and checkexistance(noderechts):
-#         grid[noderechts[0]][noderechts[1]][noderechts[2]] = 100 + distance(start, noderechts) + distance(noderechts, destination)
-#     elif check_not_closed_node(noderechts, grid) and checkexistance(noderechts):
-#         grid[noderechts[0]][noderechts[1]][noderechts[2]] = 100 + distance(start, noderechts) + distance(noderechts, destination)
-#
-#
-#     if check_isempty(nodeboven, grid) and checkexistance(nodeboven):
-#         grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 100 + distance(start, nodeboven) + distance(nodeboven, destination)
-#     elif check_not_closed_node(nodeboven, grid) and checkexistance(nodeboven):
-#         grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 100 + distance(start, nodeboven) + distance(nodeboven,
-#                                                                                                      destination)
-#
-#     if check_isempty(nodeboven, grid) and checkexistance(nodeboven):
-#         grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 100 + distance(start, nodeboven) + distance(nodeboven, destination)
-#     elif check_not_closed_node(nodeboven, grid) and checkexistance(nodeboven):
-#         grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 100 + distance(start, nodeboven) + distance(nodeboven, destination)
-#
-#
-#     if check_isempty(nodebeneden, grid) and checkexistance(nodebeneden):
-#         grid[nodebeneden[0]][nodebeneden[1]][nodebeneden[2]] = 100 + distance(start, nodebeneden) + distance(nodebeneden,
-#                                                                                                      destination)
-#     elif check_not_closed_node(nodebeneden, grid) and checkexistance(nodebeneden):
-#         grid[nodebeneden[0]][nodebeneden[1]][nodebeneden[2]] = 100 + distance(start, nodebeneden) + distance(nodebeneden,
-#                                                                                                      destination)
-#
-#
-#     if check_isempty(nodevoor, grid) and checkexistance(nodevoor):
-#         grid[nodevoor[0]][nodevoor[1]][nodevoor[2]] = 100 + distance(start, noderechts) + distance(noderechts,
-#                                                                                                    destination)
-#     elif check_not_closed_node(nodevoor, grid) and checkexistance(nodevoor):
-#         grid[nodevoor[0]][nodevoor[1]][nodevoor[2]] = 100 + distance(start, noderechts) + distance(noderechts,
-#                                                                                                    destination)
-#
-#     if check_isempty(nodeboven, grid) and checkexistance(nodeboven):
-#         grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 100 + distance(start, nodeboven) + distance(nodeboven,
-#                                                                                                        destination)
-#     elif check_not_closed_node(nodeboven, grid) and checkexistance(nodeboven):
-#         grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 100 + distance(start, nodeboven) + distance(nodeboven,
-#                                                                                                        destination)
-#
-#     if check_isempty(nodeachter, grid) and checkexistance(nodeachter):
-#         grid[nodeachter[0]][nodeachter[1]][nodeachter[2]] = 100 + distance(start, nodeachter) + distance(nodeachter,
-#                                                                                                        destination)
-#     elif check_not_closed_node(nodeachter, grid) and checkexistance(nodeachter):
-#         grid[nodeachter[0]][nodeachter[1]][nodeachter[2]] = 100 + distance(start, nodeachter) + distance(nodeachter,
-#                                                                                                        destination)
-# disntance berekenen tussen twee punten
-#
-#  def distance(location, destination):
-#      z_dist = abs(destination[0] - location[0])
-#      y_dist = abs(destination[1] - location[1])
-#      x_dist = abs(destination[2] - location[2])
-#      distancee = z_dist + y_dist + x_dist
-#      return distancee
-#
-#  kijken of de te plaatsen node zich wel in het veld bevindt
-#  def checkexistance(node):
-#      if (node[0]<7 and node[0]>=0 and node[1]<18 and node[1]>=0 and node[2]>=0 and node[2]<13):
-#          return True
-#      else:
-#          return False
-#
-# # als een element in matrix gelijk is aan 99 dan wordt is daar geen wire node of gate
-#  def check_isempty(node, grid):
-#      if grid[node[0]][node[1]][node[2]] == 99:
-#          return True
-#      else:
-#          return False
-#
-# als een element groter is dan 100 is er node geplaatst
-#  def check_not_closed_node(node, grid):
-#      if grid[node[0]][node[1]][node[2]] >= 100:
-#          return True
-#      else:
-#          return False
+    def putnodes(start, grid, destination):
+
+        nodelinks = [start[0]-1, start[1], start[2]]
+        noderechts = [start[0]+1, start[1], start[2]]
+        nodeboven = [start[0], start[1], start[2]+1]
+        nodebeneden = [start[0], start[1], start[2]-1]
+        nodevoor = [start[0], start[1] + 1, start[2]]
+        nodeachter = [start[0], start[1] - 1, start[2]]
+
+        if check_isempty(nodelinks, grid) and checkexistance(nodelinks):
+         grid[nodelinks[0]][nodelinks[1]][nodelinks[2]] = 100 + distance(start, nodelinks) + distance(nodelinks, destination)
+
+        elif check_not_closed_node(nodelinks, grid) and checkexistance(nodelinks):
+         grid[nodelinks[0]][nodelinks[1]][nodelinks[2]] = 10000 + distance(start, nodelinks) + distance(nodelinks, destination)
+
+
+        if check_isempty(noderechts, grid) and checkexistance(noderechts):
+         grid[noderechts[0]][noderechts[1]][noderechts[2]] = 100 + distance(start, noderechts) + distance(noderechts, destination)
+        elif check_not_closed_node(noderechts, grid) and checkexistance(noderechts):
+         grid[noderechts[0]][noderechts[1]][noderechts[2]] = 10000 + distance(start, noderechts) + distance(noderechts, destination)
+
+
+        if check_isempty(nodeboven, grid) and checkexistance(nodeboven):
+         grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 100 + distance(start, nodeboven) + distance(nodeboven, destination)
+        elif check_not_closed_node(nodeboven, grid) and checkexistance(nodeboven):
+         grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 10000 + distance(start, nodeboven) + distance(nodeboven,
+                                                                                                      destination)
+
+        if check_isempty(nodeboven, grid) and checkexistance(nodeboven):
+         grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 100 + distance(start, nodeboven) + distance(nodeboven, destination)
+        elif check_not_closed_node(nodeboven, grid) and checkexistance(nodeboven):
+         grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 10000 + distance(start, nodeboven) + distance(nodeboven, destination)
+
+
+        if check_isempty(nodebeneden, grid) and checkexistance(nodebeneden):
+         grid[nodebeneden[0]][nodebeneden[1]][nodebeneden[2]] = 100 + distance(start, nodebeneden) + distance(nodebeneden,
+                                                                                                      destination)
+        elif check_not_closed_node(nodebeneden, grid) and checkexistance(nodebeneden):
+         grid[nodebeneden[0]][nodebeneden[1]][nodebeneden[2]] = 10000 + distance(start, nodebeneden) + distance(nodebeneden,
+                                                                                                      destination)
+
+
+        if check_isempty(nodevoor, grid) and checkexistance(nodevoor):
+         grid[nodevoor[0]][nodevoor[1]][nodevoor[2]] = 100 + distance(start, noderechts) + distance(noderechts,
+                                                                                                    destination)
+        elif check_not_closed_node(nodevoor, grid) and checkexistance(nodevoor):
+         grid[nodevoor[0]][nodevoor[1]][nodevoor[2]] = 10000 + distance(start, noderechts) + distance(noderechts,
+                                                                                                    destination)
+
+        if check_isempty(nodeboven, grid) and checkexistance(nodeboven):
+         grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 100 + distance(start, nodeboven) + distance(nodeboven,
+                                                                                                        destination)
+        elif check_not_closed_node(nodeboven, grid) and checkexistance(nodeboven):
+         grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 10000 + distance(start, nodeboven) + distance(nodeboven,
+                                                                                                        destination)
+
+        if check_isempty(nodeachter, grid) and checkexistance(nodeachter):
+         grid[nodeachter[0]][nodeachter[1]][nodeachter[2]] = 100 + distance(start, nodeachter) + distance(nodeachter,
+                                                                                                        destination)
+        elif check_not_closed_node(nodeachter, grid) and checkexistance(nodeachter):
+         grid[nodeachter[0]][nodeachter[1]][nodeachter[2]] = 10000 + distance(start, nodeachter) + distance(nodeachter,
+                                                                                                     destination)
+        return grid
+
+ # disntance berekenen tussen twee punten
+
+  def distance(location, destination):
+      x_dist = abs(destination[0] - location[0])
+      y_dist = abs(destination[1] - location[1])
+      z_dist = abs(destination[2] - location[2])
+      distancee = z_dist + y_dist + x_dist
+      return distancee
+
+  # kijken of de te plaatsen node zich wel in het veld bevindt
+    def checkexistance(node):
+        if (node[2]<7 and node[2]>=0 and node[1]<18 and node[1]>=0 and node[0]>=0 and node[0]<13):
+            return True
+        else:
+            return False
+
+# als een element in matrix gelijk is aan 99 dan wordt is daar geen wire node of gate
+  def check_isempty(node, grid):
+      if grid[node[0]][node[1]][node[2]] == 99:
+          return True
+      else:
+          return False
+
+ # als een element groter is dan 100 is er node geplaatst
+  def check_not_closed_node(node, grid):
+      if grid[node[0]][node[1]][node[2]] >= 100:
+          return True
+      else:
+          return False
+
+
+    def minimumnodes(grid):
+        minimum = 10000
+        xvalue = 0
+        yvalue = 0
+        zvalue = 0
+        for x in range(13):
+            for y in range(18):
+                for z in range (7):
+                    if grid[x][y][z] < minimum and grid[x][y][z]>100:
+                        minimum = grid[x][y][z]
+                        xvalue = x
+                        yvalue = y
+                        zvalue = z
+
+        coordinates = [xvalue, yvalue , zvalue]
+        return coordinates
+
+
+    def findroute(gridwithnodes, locfrom, locto):
+        route = []
+        start = locto
+        while distance(start, locfrom) != 1:
+            routeelement = checkminimumclosednode(gridwithnodes, start)
+            route.append(routeelement)
+            start = routeelement
+
+        return route
+
+    def checkminimumclosednode(gridwithnodes, start):
+        minimum = 100000
+        minimumclosednode = [start[0]-1][start[1]][start[2]]
+        if checkexistance([start[0] - 1][start[1]][start[2]]) and 10000 < gridwithnodes[start[0] - 1][start[1]][start[2]] < minimum:
+            minimum = gridwithnodes[start[0]-1][start[1]][start[2]]
+            minimumclosednode = [start[0]-1][start[1]][start[2]]
+
+        if checkexistance([start[0] + 1][start[1]][start[2]]) and 10000 < gridwithnodes[start[0] + 1][start[1]][start[2]] < minimum:
+            minimum = gridwithnodes[start[0]+1][start[1]][start[2]]
+            minimumclosednode = [start[0]+1][start[1]][start[2]]
+
+        if checkexistance([start[0]][start[1] - 1][start[2]]) and 10000 < gridwithnodes[start[0]][start[1]-1][start[2]] < minimum:
+            minimum = gridwithnodes[start[0]][start[1]-1][start[2]]
+            minimumclosednode = [start[0]][start[1]-1][start[2]]
+
+        if checkexistance([start[0]][start[1] + 1][start[2]]) and 10000 < gridwithnodes[start[0]][start[1]+1][start[2]] < minimum:
+            minimum = gridwithnodes[start[0]][start[1]+1][start[2]]
+            minimumclosednode = [start[0]][start[1]+1][start[2]]
+
+        if checkexistance([start[0]][start[1]][start[2] - 1]) and 10000 < gridwithnodes[start[0]][start[1]][start[2]-1] < minimum:
+            minimum = gridwithnodes[start[0]][start[1]][start[2]-1]
+            minimumclosednode = [start[0]][start[1]][start[2]-1]
+
+        if checkexistance([start[0]][start[1]][start[2] + 1]) and 10000 < gridwithnodes[start[0]][start[1]][start[2]+1] < minimum:
+            minimumclosednode = [start[0]][start[1]][start[2]+1]
+
+        return minimumclosednode
+
+'''
+
+
+
+
+
+
+
+
+
