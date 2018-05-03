@@ -30,9 +30,9 @@ gates = makeLocations(gatesLoc)
 
 # sort netlist by dalton-method
 netlistDalton = daltonMethod(netlist_1, gates)
-
+print(netlistDalton)
 # make objects of netlist
-routeBook = makeObjects(netlistDalton, gates)
+# routeBook = makeObjects(netlistDalton, gates)
 
 
 # connect gates in netlist
@@ -48,7 +48,7 @@ grid = gridMat(gates)
 
 # DIT MOET IN WHILE LOOP
 # HIERIN LOOP DIE CHECKT OF IIG 1 VAN DE ROUTES LEEG IS (,als in die zijn erachter geplakt), ANDERS OPNIEUW AANROEPEN MET NIEUWE ROUTEBOOK
-routeBook = routeFinder(routeBook, grid)[0]
+# routeBook = routeFinder(routeBook, grid)[0]
 
 # for route in routeBook:
 #     print(route)
@@ -63,7 +63,7 @@ routeBook = routeFinder(routeBook, grid)[0]
 # show needed output
 # print(grid)
 # print(totalScore)
-plotLines(gates, routeBook)
+# plotLines(gates, routeBook)
 
 
 # probeersel Melle
@@ -71,7 +71,6 @@ plotLines(gates, routeBook)
 # print(grid)
 # print("hoi")
 # print(grid[1][10])
-
-
-
-
+print(gates)
+hoi = Astar(gates, (42, 3), grid)
+print(hoi)
