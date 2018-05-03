@@ -335,14 +335,13 @@ def plotLines(gates, routeBook):
     def putwire(gridwithnodes, locfrom, locto):
         start = locfrom
         while (distance(start, locto) != 1):
-            gridwithnodes = putnodes(start, gridwithnodes, locto)
+            gridwithnodes = putnodes(start, gridwithnodes, locto, locfrom)
             start = minimumnodes(gridwithnodes)
         route = findroute(gridwithnodes, locfrom, locto)
         return route
 
 #  nodes plaatsen
-# ook nog oorspronkelijke start toevoegen om daadwerkelijk distance te bepalen
-    def putnodes(start, grid, destination):
+    def putnodes(start, grid, destination, locfrom):
 
         nodelinks = [start[0]-1, start[1], start[2]]
         noderechts = [start[0]+1, start[1], start[2]]
@@ -353,58 +352,58 @@ def plotLines(gates, routeBook):
         
         # een niet gesloten node is groter dan 100 kleiner dan 10000
         if check_isempty(nodelinks, grid) and checkexistance(nodelinks):
-         grid[nodelinks[0]][nodelinks[1]][nodelinks[2]] = 100 + distance(start, nodelinks) + distance(nodelinks, destination)
+         grid[nodelinks[0]][nodelinks[1]][nodelinks[2]] = 100 + distance(locfrom, nodelinks) + distance(nodelinks, destination)
         
          # een niet gesloten node is groter 10000
         elif check_not_closed_node(nodelinks, grid) and checkexistance(nodelinks):
-         grid[nodelinks[0]][nodelinks[1]][nodelinks[2]] = 10000 + distance(start, nodelinks) + distance(nodelinks, destination)
+         grid[nodelinks[0]][nodelinks[1]][nodelinks[2]] = 10000 + distance(locfrom, nodelinks) + distance(nodelinks, destination)
 
 
         if check_isempty(noderechts, grid) and checkexistance(noderechts):
-         grid[noderechts[0]][noderechts[1]][noderechts[2]] = 100 + distance(start, noderechts) + distance(noderechts, destination)
+         grid[noderechts[0]][noderechts[1]][noderechts[2]] = 100 + distance(locfrom, noderechts) + distance(noderechts, destination)
         elif check_not_closed_node(noderechts, grid) and checkexistance(noderechts):
-         grid[noderechts[0]][noderechts[1]][noderechts[2]] = 10000 + distance(start, noderechts) + distance(noderechts, destination)
+         grid[noderechts[0]][noderechts[1]][noderechts[2]] = 10000 + distance(locfrom, noderechts) + distance(noderechts, destination)
 
 
         if check_isempty(nodeboven, grid) and checkexistance(nodeboven):
-         grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 100 + distance(start, nodeboven) + distance(nodeboven, destination)
+         grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 100 + distance(locfrom, nodeboven) + distance(nodeboven, destination)
         elif check_not_closed_node(nodeboven, grid) and checkexistance(nodeboven):
-         grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 10000 + distance(start, nodeboven) + distance(nodeboven,
+         grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 10000 + distance(locfrom, nodeboven) + distance(nodeboven,
                                                                                                       destination)
 
         if check_isempty(nodeboven, grid) and checkexistance(nodeboven):
-         grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 100 + distance(start, nodeboven) + distance(nodeboven, destination)
+         grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 100 + distance(locfrom, nodeboven) + distance(nodeboven, destination)
         elif check_not_closed_node(nodeboven, grid) and checkexistance(nodeboven):
-         grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 10000 + distance(start, nodeboven) + distance(nodeboven, destination)
+         grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 10000 + distance(locfrom, nodeboven) + distance(nodeboven, destination)
 
 
         if check_isempty(nodebeneden, grid) and checkexistance(nodebeneden):
-         grid[nodebeneden[0]][nodebeneden[1]][nodebeneden[2]] = 100 + distance(start, nodebeneden) + distance(nodebeneden,
+         grid[nodebeneden[0]][nodebeneden[1]][nodebeneden[2]] = 100 + distance(locfrom, nodebeneden) + distance(nodebeneden,
                                                                                                       destination)
         elif check_not_closed_node(nodebeneden, grid) and checkexistance(nodebeneden):
-         grid[nodebeneden[0]][nodebeneden[1]][nodebeneden[2]] = 10000 + distance(start, nodebeneden) + distance(nodebeneden,
+         grid[nodebeneden[0]][nodebeneden[1]][nodebeneden[2]] = 10000 + distance(locfrom, nodebeneden) + distance(nodebeneden,
                                                                                                       destination)
 
 
         if check_isempty(nodevoor, grid) and checkexistance(nodevoor):
-         grid[nodevoor[0]][nodevoor[1]][nodevoor[2]] = 100 + distance(start, noderechts) + distance(noderechts,
+         grid[nodevoor[0]][nodevoor[1]][nodevoor[2]] = 100 + distance(locfrom, noderechts) + distance(noderechts,
                                                                                                     destination)
         elif check_not_closed_node(nodevoor, grid) and checkexistance(nodevoor):
-         grid[nodevoor[0]][nodevoor[1]][nodevoor[2]] = 10000 + distance(start, noderechts) + distance(noderechts,
+         grid[nodevoor[0]][nodevoor[1]][nodevoor[2]] = 10000 + distance(locfrom, noderechts) + distance(noderechts,
                                                                                                     destination)
 
         if check_isempty(nodeboven, grid) and checkexistance(nodeboven):
-         grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 100 + distance(start, nodeboven) + distance(nodeboven,
+         grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 100 + distance(locfrom, nodeboven) + distance(nodeboven,
                                                                                                         destination)
         elif check_not_closed_node(nodeboven, grid) and checkexistance(nodeboven):
-         grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 10000 + distance(start, nodeboven) + distance(nodeboven,
+         grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 10000 + distance(locfrom, nodeboven) + distance(nodeboven,
                                                                                                         destination)
 
         if check_isempty(nodeachter, grid) and checkexistance(nodeachter):
-         grid[nodeachter[0]][nodeachter[1]][nodeachter[2]] = 100 + distance(start, nodeachter) + distance(nodeachter,
+         grid[nodeachter[0]][nodeachter[1]][nodeachter[2]] = 100 + distance(locfrom, nodeachter) + distance(nodeachter,
                                                                                                         destination)
         elif check_not_closed_node(nodeachter, grid) and checkexistance(nodeachter):
-         grid[nodeachter[0]][nodeachter[1]][nodeachter[2]] = 10000 + distance(start, nodeachter) + distance(nodeachter,
+         grid[nodeachter[0]][nodeachter[1]][nodeachter[2]] = 10000 + distance(locfrom, nodeachter) + distance(nodeachter,
                                                                                                      destination)
         return grid
 
