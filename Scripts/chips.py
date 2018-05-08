@@ -17,6 +17,7 @@ from numpy import genfromtxt
 from functions import *
 import matplotlib.pyplot as plt
 from netlists import *
+from classes import *
 
 # make appropriate format of gate locations
 gatesLoc = genfromtxt('../Data/gates.csv', delimiter=';')
@@ -29,7 +30,7 @@ gates = makeLocations(gatesLoc)
 grid = gridMat(gates)
 
 # sort netlist by dalton-method
-netlistDalton = daltonMethod(netlist_1, gates)
+netlistDalton = wire.daltonMethod(netlist_1, gates)
 # make objects of netlist
 routeBook = makeObjects(netlistDalton, gates)
 
