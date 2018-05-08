@@ -16,6 +16,8 @@
 # Contains all classes used in chips.py
 ###########################################################
 
+import random
+
 # make objects per gate
 class Location(object):
     def __init__(self, gate, x, y, z):
@@ -79,6 +81,7 @@ class wire(object):
 
             # zet zojuist bepaalde netlistelement in netlistversion3
             netlistversion3.append(netlistversion2[numbernetlist])
+            
             # haalde aangewezen element uit netlistversion2
             netlistversion2.pop(numbernetlist)
 
@@ -161,3 +164,22 @@ class wire(object):
             netlistversion2.pop(numbernetlist)
         # return nieuwe netlist
         return (netlistversion3)
+
+
+    def changeRouteBook(routeBook):
+        
+        # set indexes to zero
+        index1 = 0
+        index2 = 0
+
+        # loop to make sure indexes are not the same
+        while index1 == index2:
+            index1 = random.randrange(0,len(routeBook))
+            index2 = random.randrange(0,len(routeBook))
+
+        # swap routes in routebook
+        tmp = routeBook[index1]
+        routeBook[index1] = routeBook[index2]
+        routeBook[index2] = tmp
+
+        return routeBook

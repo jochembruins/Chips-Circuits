@@ -22,6 +22,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.axes3d import Axes3D
 from classes import *
 from random import randint
+from copy import deepcopy
 
 np.set_printoptions(threshold=np.nan)
 np.set_printoptions(linewidth=180)
@@ -90,6 +91,7 @@ def gridMat(gates):
 
 
 def routeFinder(routeBook, grid):
+    print('in routefinder')
     routeBookEmpty = routeBook
     routeBookDone = []
     while routeBookEmpty != []:
@@ -218,128 +220,6 @@ def delRoute(route, grid):
 
     return grid
 
-# deze functie ordent de netlist
-# hierbij wordt er geordend op lengte van een netlistelementconnectie (blauwe lijn)
-# als argument wordt een netlist genomen + de gates
-def daltonMethod(netlist, gate):
-    # tweede versie van netlist opgeslagen
-    netlistversion2 = netlist
-    # lege derde versie van te definiëren netlist opgeslagen
-    netlistversion3 = []
-    # lengte netlist berekend
-    k = len(netlist)
-
-    # itereren over lengte netlist
-    for j in range(0, k):
-
-        # het minimum worddt op een hoog getal gezet
-        minimum = 1000
-        # numbernetlist wordt 0
-        numbernetlist = 0
-
-        # itereren over lengte netlist min j
-        for i in range(0, k - j):
-            # de eerste factor van wire opslaan in listelement1
-            listelement1 = netlistversion2[i][0]
-            # de tweede factor van wire opslaan in listelement2
-            listelement2 = netlistversion2[i][1]
-
-            # verschil in x-waarden netconnecties opslaan in x_verschil
-            x_verschil = abs(gate[listelement1].x - gate[listelement2].x)
-            # verschil in y-waarden netconnecties opslaan in y_verschil
-            y_verschil = abs(gate[listelement1].y - gate[listelement2].y)
-            som = x_verschil + y_verschil
-
-            # als de som van x_verschil en y_verschil kleiner dan minimum
-            if (som < minimum):
-                minimum = som
-                numbernetlist = i
-
-        # zet zojuist bepaalde netlistelement in netlistversion3
-        netlistversion3.append(netlistversion2[numbernetlist])
-        # haalde aangewezen element uit netlistversion2
-        netlistversion2.pop(numbernetlist)
-
-    # return nieuwe netlist
-    return (netlistversion3)
-
-
-# deze functie ordent de netlist
-# hierbij wordt er geordend of een netlistelementconnectie (blauwe lijn) aan de buitenkant ligt
-# als argument wordt een netlist genomen + de gates
-def UIMethod_forprint1(netlist, gate):
-    # tweede versie van netlist opgeslagen
-    netlistversion2 = netlist
-    # lege derde versie van te definiëren netlist opgeslagen
-    netlistversion3 = []
-    # lengte netlist berekend
-    k = len(netlist)
-
-    # de breedte van het eerste veld is 17 (tellend vanaf 0)
-    breedte = 17
-    # de hoogte van het eerste veld is 12 (tellend vanaf 0)
-    hoogte = 12
-
-    # helftbreedte en hoogte worden berekend om het bord te scheiden
-    helftbreedte = breedte / 2
-    helfthoogte = hoogte / 2
-
-    # itereren over lengte netlist
-    for j in range(0, k):
-        # het minimum worddt op een hoog getal gezet
-        minimum = 1000
-        # numbernetlist wordt 0
-        numbernetlist = 0
-
-        # itereren over lengte netlist min j
-        for i in range(0, k - j):
-            # de eerste factor van wire opslaan in listelement1
-            listelement1 = netlistversion2[i][0]
-            # de tweede factor van wire opslaan in listelement2
-            listelement2 = netlistversion2[i][1]
-
-            # check of de x-waarde in de eerste helft valt
-            if (gate[listelement1].x <= helftbreedte):
-                x1waarde = gate[listelement1].x
-            else:
-                # anders wordt de waarde breedte minus x-element
-                x1waarde = breedte - gate[listelement1].x
-
-            if (gate[listelement1].y <= helfthoogte):
-                y1waarde = gate[listelement1].y
-            else:
-                y1waarde = hoogte - gate[listelement1].y
-
-            # de waarde van de eerste gate is het minimum van de x1- en y1waarde
-            waarde1 = min(x1waarde, y1waarde)
-
-            if (gate[listelement2].x <= helftbreedte):
-                x2waarde = gate[listelement2].x
-            else:
-                x2waarde = breedte - gate[listelement2].x
-
-            if (gate[listelement2].y <= helfthoogte):
-                y2waarde = gate[listelement2].y
-            else:
-                y2waarde = hoogte - gate[listelement2].y
-
-            # de waarde van de tweede gate is het minimum van de x2- en y2waarde
-            waarde2 = min(x2waarde, y2waarde)
-
-            som = waarde1 + waarde2
-
-            # als de som kleiner is dan het minimum
-            if (som < minimum):
-                minimum = som
-                numbernetlist = i
-
-        # zet zojuist bepaalde netlistelement in netlistversion3
-        netlistversion3.append(netlistversion2[numbernetlist])
-        # haalde aangewezen element uit netlistversion2
-        netlistversion2.pop(numbernetlist)
-    # return nieuwe netlist
-    return (netlistversion3)
-
 
 def plotLines(gates, routeBook):
     # maak een nieuwe plot
@@ -371,6 +251,56 @@ def plotLines(gates, routeBook):
         ax.plot([step[2] for step in netPoint.route], [step[1] for step in netPoint.route], [step[0] for step in netPoint.route])
 
     plt.show()
+
+def getScore(routeBook):
+    score = 0
+    for route in routeBook:
+        score += (len(route.route) - 1)
+    return score
+
+
+def hillClimb(routeBook, score, gates, steps=1000):
+    bestRouteBook = deepcopy(routeBook)
+    for i in range(0, 1000):
+        for route in bestRouteBook:
+            route.route = []
+            print(route.netPoint)
+
+        grid = gridMat(gates)
+        
+        newRouteBook = wire.changeRouteBook(bestRouteBook)
+        
+        tmp_newRouteBook = deepcopy(newRouteBook)
+        
+        print('lengte new routebook:  %i' % len(tmp_newRouteBook))   
+        
+        newRouteFound = []
+        newScore = score
+        finished = False
+      
+        try:
+            newRouteFound = routeFinder(tmp_newRouteBook, grid)[1]
+            finished = True
+        except:
+            print('not possible')
+            
+            
+        if finished: 
+            print('lengte new routebook 1:  %i' % len(tmp_newRouteBook))
+            
+            newScore = getScore(newRouteFound)
+            print(newScore)
+        
+            if newScore < score:
+                bestRouteBook = tmp_newRouteBook
+                score = newScore
+            else:
+                print('hoger')
+
+
+    return routeBook, score
+
+
 
 
 # hier begint het Astar algoritme met bijbehorende functies

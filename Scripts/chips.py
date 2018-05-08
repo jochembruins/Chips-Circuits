@@ -18,6 +18,7 @@ from functions import *
 import matplotlib.pyplot as plt
 from netlists import *
 from classes import *
+from copy import deepcopy
 
 # make appropriate format of gate locations
 gatesLoc = genfromtxt('../Data/gates.csv', delimiter=';')
@@ -28,15 +29,23 @@ gates = makeLocations(gatesLoc)
 
 # print grid in matrixform
 grid = gridMat(gates)
+emptyGrid = deepcopy(grid)
 
 # sort netlist by dalton-method
 netlistDalton = wire.daltonMethod(netlist_1, gates)
+
 # make objects of netlist
 routeBook = makeObjects(netlistDalton, gates)
-
+routeBookempty = deepcopy(routeBook)
 
 # connect gates in netlist
 routeBook = routeFinder(routeBook, grid)[1]
+
+score = getScore(routeBook)
+print(score)
+
+
+# HillClimber = hillClimb(routeBookempty, score, gates)
 
 # for route in routeBook:
 #     print(route)
