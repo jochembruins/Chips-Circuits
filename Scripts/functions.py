@@ -83,7 +83,7 @@ def printPlot(gates):
 
 def gridMat(gates):
     # make matrix of grid
-    matgrid = np.zeros([8, 13, 18]) + 99
+    matgrid = np.zeros([12, 13, 18]) + 99
 
     for gate in gates:
         matgrid[gate.z, gate.y, gate.x] = gate.gate
@@ -172,6 +172,10 @@ def routeFinder(routeBook, grid):
                     cursor[0] += 1
                     route.append([cursor[0], cursor[1], cursor[2]])
 
+                    # check if route has already been there when cursor up in previous step
+                    if len(route) > 3 and route[-1] == route[-3]:
+                        del route[-2:]
+
                 # if step down is possible, go down
                 elif grid[cursor[0] - 1, cursor[1], cursor[2]] == 99.0 and cursor[0] > 0:
                     while grid[cursor[0] - 1, cursor[1], cursor[2]] == 99.0 and cursor[0] > 0:
@@ -179,7 +183,7 @@ def routeFinder(routeBook, grid):
                         route.append([cursor[0], cursor[1], cursor[2]])
 
                 # if above endpoint, go down and delete all blocking lines
-                elif [cursor[1], cursor[2]] == [locTo[1], locTo[2]]:
+                if [cursor[1], cursor[2]] == [locTo[1], locTo[2]]:
                     for netPointToDelete in routeBookDone:
                         for routepoint in netPointToDelete.route:
                             if [cursor[0] - 1, cursor[1], cursor[2]] == [routepoint[0], routepoint[1], routepoint[2]]:
@@ -197,6 +201,9 @@ def routeFinder(routeBook, grid):
             # add end point to route
             route.append(locTo)
             route.append(netPoint.locTo)
+
+            # print(netPoint, "locto=", locTo)
+            # print(route)
 
             # save route in netPoint object
             netPoint.route = route
@@ -229,12 +236,12 @@ def plotLines(gates, routeBook):
     # definieer assen
     ax.set_xlim([0, 18])
     ax.set_ylim([0, 13])
-    ax.set_zlim([0, 7])
+    ax.set_zlim([0, 9])
 
     # zet ticks op de assem
     ax.set_xticks(np.arange(0, 18, 1))
     ax.set_yticks(np.arange(0, 13, 1))
-    ax.set_zticks(np.arange(0, 7, 1))
+    ax.set_zticks(np.arange(0, 9, 1))
 
     # voeg labels toe
     ax.set_xlabel('x-axis')
