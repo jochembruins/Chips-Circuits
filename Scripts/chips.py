@@ -48,13 +48,13 @@ grid2 = gridMat2(gates)
 #                 print(" grid: ", end='')
 #                 print(grid2[x][y][z])
 #
-# print("man man man")
-wire= [23, 4]
-print("Astar")
+# # print("man man man")
+# wire= [23, 4]
+# print("Astar")
 
-hoi = Astar(gates, [3, 23], grid2)
-print("route")
-print(hoi)
+# hoi = Astar(gates, [3, 23], grid2)
+# print("route")
+# print(hoi)
 
 # show plot of gates in grid
 # printPlot(gates)
@@ -74,13 +74,13 @@ routeBookempty = deepcopy(routeBook)
 
 
 # connect gates in netlist
-routeBook = routeFinder(routeBook, grid)[1]
-score = getScore(routeBook)
+#routeBook = routeFinder(routeBook, grid)[1]
+#score = getScore(routeBook)
 # print(score)
-
+score = 1000
 
 # laat hilclimber werken
-HillClimber = hillClimb(routeBookempty, score, gates, 1000)
+HillClimber = hillClimb(routeBookempty, score, gates, 5000)
 
 routeBookBest = HillClimber[0]
 for route in routeBookBest:
@@ -91,10 +91,9 @@ print(HillClimber[1])
 lol = checker(routeBookBest)
 print(lol)
 
-
-for route in routeBook:
-    print(route)
-    # print(grid, "vol")
+# for route in routeBook:
+#     print(route)
+#     # print(grid, "vol")
 
 
 # show needed output
@@ -113,8 +112,7 @@ plotLines(gates, routeBookBest)
 # hoi = Astar(gates, (42, 3), grid)
 # print(hoi)
 
-netlistDalton = daltonMethod(netlist_1, gates)
-# print(netlistDalton)
+## print(netlistDalton)
 # make objects of netlist
 # routeBook = makeObjects(netlistDalton, gates)
 
