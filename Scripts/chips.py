@@ -21,8 +21,40 @@ from classes import *
 from copy import deepcopy
 
 # make appropriate format of gate locations
+
 gatesLoc = genfromtxt('../Data/gates.csv', delimiter=';')
 gates = makeLocations(gatesLoc)
+# for gate in gates:
+#     print(gate)
+# quit()
+grid = gridMat(gates)
+grid2 = gridMat2(gates)
+
+
+# netlistDalton = daltonMethod(netlist_1, gates)
+# print(netlistDalton)
+# quit()
+# print("man man man")
+# for x in range(18):
+#     for y in range(13):
+#         for z in range(7):
+#             if grid2[x][y][0] != 99:
+#                 print("x: ", end='')
+#                 print(x, end='')
+#                 print(" y: ", end='')
+#                 print(y, end='')
+#                 print(" z: ", end='')
+#                 print(z, end='')
+#                 print(" grid: ", end='')
+#                 print(grid2[x][y][z])
+#
+# print("man man man")
+wire= [23, 4]
+print("Astar")
+
+hoi = Astar(gates, [3, 23], grid2)
+print("route")
+print(hoi)
 
 # show plot of gates in grid
 # printPlot(gates)
@@ -43,7 +75,6 @@ routeBookempty = deepcopy(routeBook)
 
 # connect gates in netlist
 routeBook = routeFinder(routeBook, grid)[1]
-
 score = getScore(routeBook)
 # print(score)
 
@@ -61,8 +92,8 @@ lol = checker(routeBookBest)
 print(lol)
 
 
-# for route in routeBook:
-#     print(route)
+for route in routeBook:
+    print(route)
     # print(grid, "vol")
 
 
@@ -77,6 +108,25 @@ plotLines(gates, routeBookBest)
 # print(grid)
 # print("hoi")
 # print(grid[1][10])
+
 # print(gates)
 # hoi = Astar(gates, (42, 3), grid)
 # print(hoi)
+
+netlistDalton = daltonMethod(netlist_1, gates)
+# print(netlistDalton)
+# make objects of netlist
+# routeBook = makeObjects(netlistDalton, gates)
+
+
+# connect gates in netlist
+# done = 2
+# while done != 0:
+#     for wire in routeBook:
+#         if wire.route == []:
+#             done = 1
+#         else:
+#             done = 0
+# grid = gridMat(gates)
+    # print(grid, "leeg")
+
