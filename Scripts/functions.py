@@ -17,6 +17,7 @@
 ###########################################################
 from typing import List
 
+import csv
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.axes3d import Axes3D
@@ -269,11 +270,13 @@ def getScore(routeBook):
     return score
 
 
-def hillClimb(routeBook, score, gates, steps=1000):
+def hillClimb(routeBook, score, gates, steps=100):
     
     # maak variabele om beste route book op te slaan
     bestRouteBook = routeBook
-    
+    file  = open('hill.csv', "w")
+    writer = csv.writer(file, delimiter=',')
+
     # loop voor het aantal stappen
     for i in range(0, steps):
         
@@ -314,9 +317,29 @@ def hillClimb(routeBook, score, gates, steps=1000):
                 print('lager')
             else:
                 print('hoger')
-
+        
+        
+        writer.writerow([i,score])
+    file.close()
     return bestRouteFound, score
 
+
+def checker (routeBook):
+    seen = []
+    repeated = []
+
+    for route in routeBook:
+      for step in route.route[1:-1]:
+        if step in seen:
+          repeated.append(step)
+        else:
+          seen.append(step)
+
+    if len(repeated) == 0:
+        return True
+    else:
+        print(repeated)
+        return False
 
 
 

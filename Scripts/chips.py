@@ -53,10 +53,12 @@ HillClimber = hillClimb(routeBookempty, score, gates, 1000)
 
 routeBookBest = HillClimber[0]
 for route in routeBookBest:
-	print(route)
+	print(route.route)
 
 print(HillClimber[1])
 
+lol = checker(routeBookBest)
+print(lol)
 
 
 # for route in routeBook:
