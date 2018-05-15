@@ -17,6 +17,8 @@ from numpy import genfromtxt
 from functions import *
 import matplotlib.pyplot as plt
 from netlists import *
+from classes import *
+from copy import deepcopy
 
 # make appropriate format of gate locations
 
@@ -58,9 +60,57 @@ print(hoi)
 # printPlot(gates)
 
 # print grid in matrixform
-# grid = gridMat(gates)
+grid = gridMat(gates)
+emptyGrid = deepcopy(grid)
 
 # sort netlist by dalton-method
+netlistDalton = wire.daltonMethod(netlist_1, gates)
+
+
+# # make objects of netlist
+routeBook = makeObjects(netlistDalton, gates)
+
+routeBookempty = deepcopy(routeBook)
+
+
+# connect gates in netlist
+routeBook = routeFinder(routeBook, grid)[1]
+score = getScore(routeBook)
+# print(score)
+
+
+# laat hilclimber werken
+HillClimber = hillClimb(routeBookempty, score, gates, 1000)
+
+routeBookBest = HillClimber[0]
+for route in routeBookBest:
+	print(route)
+
+print(HillClimber[1])
+
+
+
+# for route in routeBook:
+#     print(route)
+    # print(grid, "vol")
+
+
+# show needed output
+# print(grid)
+# print(totalScore)
+plotLines(gates, routeBookBest)
+
+
+# probeersel Melle
+# print("hoi")
+# print(grid)
+# print("hoi")
+# print(grid[1][10])
+
+# print(gates)
+# hoi = Astar(gates, (42, 3), grid)
+# print(hoi)
+
 netlistDalton = daltonMethod(netlist_1, gates)
 # print(netlistDalton)
 # make objects of netlist
@@ -77,30 +127,4 @@ netlistDalton = daltonMethod(netlist_1, gates)
 #             done = 0
 # grid = gridMat(gates)
     # print(grid, "leeg")
-
-# DIT MOET IN WHILE LOOP
-# HIERIN LOOP DIE CHECKT OF IIG 1 VAN DE ROUTES LEEG IS (,als in die zijn erachter geplakt), ANDERS OPNIEUW AANROEPEN MET NIEUWE ROUTEBOOK
-# routeBook = routeFinder(routeBook, grid)[0]
-
-# for route in routeBook:
-#     print(route)
-    # print(grid, "vol")
-
-
-    # totalScore = 0
-# for route in routeBook:
-#     print(route)
-#     totalScore += len(route.route) - 1
-
-# show needed output
-# print(grid)
-# print(totalScore)
-# plotLines(gates, routeBook)
-
-
-# probeersel Melle
-# print("hoi")
-# print(grid)
-# print("hoi")
-# print(grid[1][10])
 

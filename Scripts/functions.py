@@ -22,6 +22,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.axes3d import Axes3D
 from classes import *
 from random import randint
+from copy import deepcopy
 
 np.set_printoptions(threshold=np.nan)
 np.set_printoptions(linewidth=180)
@@ -41,8 +42,19 @@ def makeObjects(netlist, gates):
     for point in netlist:
         locFrom = [gates[point[0]].z, gates[point[0]].y, gates[point[0]].x]
         locTo = [gates[point[1]].z, gates[point[1]].y, gates[point[1]].x]
+        # surrounding gridpoints of start/end point
+        fromSurround = [[gates[point[0]].z, gates[point[0]].y + 1, gates[point[0]].x],
+                      [gates[point[0]].z, gates[point[0]].y - 1, gates[point[0]].x],
+                      [gates[point[0]].z, gates[point[0]].y, gates[point[0]].x + 1],
+                      [gates[point[0]].z, gates[point[0]].y, gates[point[0]].x - 1],
+                      [gates[point[0]].z + 1, gates[point[0]].y, gates[point[0]].x]]
+        toSurround = [[gates[point[1]].z, gates[point[1]].y + 1, gates[point[1]].x],
+                      [gates[point[1]].z, gates[point[1]].y - 1, gates[point[1]].x],
+                      [gates[point[1]].z, gates[point[1]].y, gates[point[1]].x + 1],
+                      [gates[point[1]].z, gates[point[1]].y, gates[point[1]].x - 1],
+                      [gates[point[1]].z + 1, gates[point[1]].y, gates[point[1]].x]]
         route = []
-        emptyRoute = wire(point, locFrom, locTo, route)
+        emptyRoute = wire(point, locFrom, locTo, fromSurround, toSurround, route)
         # print(emptyRoute)
         emptyRouteBook.append(emptyRoute)
 
@@ -54,7 +66,6 @@ def printPlot(gates):
     ax = fig.add_subplot(1, 1, 1)
 
     # Define ticks
-    ticks = np.arange(0, 18, 1)
     ticks = np.arange(0, 18, 1)
     ax.set_xticks(ticks)
     ax.set_yticks(ticks)
@@ -72,7 +83,7 @@ def printPlot(gates):
 
 def gridMat(gates):
     # make matrix of grid
-    matgrid = np.zeros([7, 13, 18]) + 99
+    matgrid = np.zeros([12, 13, 18]) + 99
 
     for gate in gates:
         matgrid[gate.z, gate.y, gate.x] = gate.gate
@@ -80,30 +91,75 @@ def gridMat(gates):
 
 
 def routeFinder(routeBook, grid):
+    print('in routefinder')
     routeBookEmpty = routeBook
     routeBookDone = []
+    count = 0
     while routeBookEmpty != []:
         for netPoint in routeBookEmpty:
             route = []
-            deleted = []
             cursor = [netPoint.locFrom[0], netPoint.locFrom[1], netPoint.locFrom[2]]
+            locTo = [netPoint.locTo[0], netPoint.locTo[1], netPoint.locTo[2]]
+
             # add begin point to route
             route.append([cursor[0], cursor[1], cursor[2]])
 
+            # select which gridpoint next to end location is free
+            for nextLocTo in netPoint.toSurround:
+                if grid[nextLocTo[0], nextLocTo[1], nextLocTo[2]] == 99:
+                    locTo = [nextLocTo[0], nextLocTo[1], nextLocTo[2]]
+                    break
+
+            # if end location cant be reached, delete one of lines on surrounding gridpoints
+            if [locTo[0], locTo[1], locTo[2]] == [netPoint.locTo[0], netPoint.locTo[1], netPoint.locTo[2]]:
+                # check every surrounding gridpoint, delete most appropriate line
+                for nextLocTo in netPoint.toSurround:
+                    for netPointToDelete in routeBookDone:
+                        for routepoint in netPointToDelete.route:
+                            if nextLocTo == [routepoint[0], routepoint[1], routepoint[2]]:
+                                if netPointToDelete.locTo != [netPoint.locTo[0], netPoint.locTo[1], netPoint.locTo[2]] and \
+                                        netPointToDelete.locFrom != [netPoint.locFrom[0], netPoint.locFrom[1], netPoint.locFrom[2]] and \
+                                        nextLocTo != netPointToDelete.locTo:
+
+                                    # remove line on grid
+                                    grid = delRoute(netPointToDelete.route[1:-1], grid)
+                                    netPointToDelete.route = []
+
+                                    # append deleted line back to the routebookempty list
+
+                                    routeBookEmpty.append(netPointToDelete)
+                                    # delete line from routebookdone list
+                                    del routeBookDone[routeBookDone.index(netPointToDelete)]
+                                    locTo = [nextLocTo[0], nextLocTo[1], nextLocTo[2]]
+
+                                    break
+                        else:
+                            continue
+                        break
+                    else:
+                        continue
+                    break
+
+            # make first step in available direction
+            for nextLocFrom in netPoint.fromSurround:
+                if grid[nextLocFrom[0], nextLocFrom[1], nextLocFrom[2]] == 99:
+                    cursor = [nextLocFrom[0], nextLocFrom[1], nextLocFrom[2]]
+                    route.append([cursor[0], cursor[1], cursor[2]])
+                    break
+
             # look for best step until 1 step away from endpoint
-            while abs(netPoint.locTo[0] - cursor[0]) + abs(netPoint.locTo[1] - cursor[1]) + \
-                    abs(netPoint.locTo[2] - cursor[2]) > 1:
+            while abs(locTo[0] - cursor[0]) + abs(locTo[1] - cursor[1]) + abs(locTo[2] - cursor[2]) > 1:
 
                 # check if steps in y direction is bigger than x direction
-                if abs(netPoint.locTo[1] - cursor[1]) > abs(netPoint.locTo[2] - cursor[2]):
+                if abs(locTo[1] - cursor[1]) > abs(locTo[2] - cursor[2]):
                     # step along y axis
-                    if netPoint.locTo[1] > cursor[1]:
+                    if locTo[1] > cursor[1]:
                         cursor[1] += 1
                     else:
                         cursor[1] -= 1
                 else:
                     # step along x axis
-                    if netPoint.locTo[2] > cursor[2]:
+                    if locTo[2] > cursor[2]:
                         cursor[2] += 1
                     else:
                         cursor[2] -= 1
@@ -112,44 +168,54 @@ def routeFinder(routeBook, grid):
 
                 # check if previous step is possible else delete and go up z-axis
                 if grid[cursor[0], cursor[1], cursor[2]] != 99:
-                    deleted.append(route[-1])
                     del route[-1]
                     cursor = [route[-1][0], route[-1][1], route[-1][2]]
                     cursor[0] += 1
                     route.append([cursor[0], cursor[1], cursor[2]])
-                # if step down is possible, go down
-                # HIER WHILE LOOP VAN MAKEN??
-                elif grid[cursor[0] - 1, cursor[1], cursor[2]] == 99.0 and cursor[0] > 0:
-                    cursor[0] -= 1
-                    route.append([cursor[0], cursor[1], cursor[2]])
 
-                # HIERIN WORDEN EEN PAAR DINGEN NIET GOED VERWIJDERD, WEET NIET WAAROM
-                if len(deleted) > 2 and deleted[-1] == deleted[-2]:
+                    # check if route has already been there when cursor up in previous step
+                    if len(route) > 3 and route[-1] == route[-3]:
+                        del route[-2:]
+
+                # if step down is possible, go down
+                elif grid[cursor[0] - 1, cursor[1], cursor[2]] == 99.0 and cursor[0] > 0:
+                    while grid[cursor[0] - 1, cursor[1], cursor[2]] == 99.0 and cursor[0] > 0:
+                        cursor[0] -= 1
+                        route.append([cursor[0], cursor[1], cursor[2]])
+
+                # if above endpoint, go down and delete all blocking lines
+                if [cursor[1], cursor[2]] == [locTo[1], locTo[2]]:
                     for netPointToDelete in routeBookDone:
                         for routepoint in netPointToDelete.route:
-                            # probeer verwijderen met kleine lijst
-                            if deleted[-1] == [routepoint[0], routepoint[1], routepoint[2]]:
+                            if [cursor[0] - 1, cursor[1], cursor[2]] == [routepoint[0], routepoint[1], routepoint[2]]:
+                                # remove line on grid
                                 grid = delRoute(netPointToDelete.route[1:-1], grid)
                                 netPointToDelete.route = []
+
+                                # append deleted like back to the routebookempty list
                                 routeBookEmpty.append(netPointToDelete)
-                                print("Dit is weg", routeBookDone.index(netPointToDelete))
                                 del routeBookDone[routeBookDone.index(netPointToDelete)]
-                    # Dit hieronder moet in de IF statement hierboven, nu wordt er gek genoeg 2x del route[-5:] gedaan.
-                    # Probleem is dat er dan weer een inf loop ontstaat omdat de cursor boven de eindgate uitkomt maar niet omlaag kan.
-                    # mogelijke oplossing: na elif hierboven nieuwe if statement met als dit gebeurt de lijn eronder weghalen
-                    cursor[0] -= 1
-                    del route[-5:]
-                    route.append([deleted[-1][0], deleted[-1][1], deleted[-1][2]])
+                                cursor[0] -= 1
+                                route.append([cursor[0], cursor[1], cursor[2]])
+                                break
 
             # add end point to route
+            route.append(locTo)
             route.append(netPoint.locTo)
+            count +=1
+            if count == 100:
+                sys.exit
+            # print(netPoint, "locto=", locTo)
+            # print(route)
+
+            # save route in netPoint object
             netPoint.route = route
 
-            print(routeBookEmpty.index(netPoint))
+            # delete netPoint from to do list, append to done list
             doneWire = routeBookEmpty.pop(routeBookEmpty.index(netPoint))
-            print(doneWire)
             routeBookDone.append(doneWire)
 
+            # update matrix for route
             changeMat(netPoint.route[1:-1], grid)
     return routeBookEmpty, routeBookDone, grid
 
@@ -164,128 +230,6 @@ def delRoute(route, grid):
 
     return grid
 
-# deze functie ordent de netlist
-# hierbij wordt er geordend op lengte van een netlistelementconnectie (blauwe lijn)
-# als argument wordt een netlist genomen + de gates
-def daltonMethod(netlist, gate):
-    # tweede versie van netlist opgeslagen
-    netlistversion2 = netlist
-    # lege derde versie van te definiëren netlist opgeslagen
-    netlistversion3 = []
-    # lengte netlist berekend
-    k = len(netlist)
-
-    # itereren over lengte netlist
-    for j in range(0, k):
-
-        # het minimum worddt op een hoog getal gezet
-        minimum = 1000
-        # numbernetlist wordt 0
-        numbernetlist = 0
-
-        # itereren over lengte netlist min j
-        for i in range(0, k - j):
-            # de eerste factor van wire opslaan in listelement1
-            listelement1 = netlistversion2[i][0]
-            # de tweede factor van wire opslaan in listelement2
-            listelement2 = netlistversion2[i][1]
-
-            # verschil in x-waarden netconnecties opslaan in x_verschil
-            x_verschil = abs(gate[listelement1].x - gate[listelement2].x)
-            # verschil in y-waarden netconnecties opslaan in y_verschil
-            y_verschil = abs(gate[listelement1].y - gate[listelement2].y)
-            som = x_verschil + y_verschil
-
-            # als de som van x_verschil en y_verschil kleiner dan minimum
-            if (som < minimum):
-                minimum = som
-                numbernetlist = i
-
-        # zet zojuist bepaalde netlistelement in netlistversion3
-        netlistversion3.append(netlistversion2[numbernetlist])
-        # haalde aangewezen element uit netlistversion2
-        netlistversion2.pop(numbernetlist)
-
-    # return nieuwe netlist
-    return (netlistversion3)
-
-
-# deze functie ordent de netlist
-# hierbij wordt er geordend of een netlistelementconnectie (blauwe lijn) aan de buitenkant ligt
-# als argument wordt een netlist genomen + de gates
-def UIMethod_forprint1(netlist, gate):
-    # tweede versie van netlist opgeslagen
-    netlistversion2 = netlist
-    # lege derde versie van te definiëren netlist opgeslagen
-    netlistversion3 = []
-    # lengte netlist berekend
-    k = len(netlist)
-
-    # de breedte van het eerste veld is 17 (tellend vanaf 0)
-    breedte = 17
-    # de hoogte van het eerste veld is 12 (tellend vanaf 0)
-    hoogte = 12
-
-    # helftbreedte en hoogte worden berekend om het bord te scheiden
-    helftbreedte = breedte / 2
-    helfthoogte = hoogte / 2
-
-    # itereren over lengte netlist
-    for j in range(0, k):
-        # het minimum worddt op een hoog getal gezet
-        minimum = 1000
-        # numbernetlist wordt 0
-        numbernetlist = 0
-
-        # itereren over lengte netlist min j
-        for i in range(0, k - j):
-            # de eerste factor van wire opslaan in listelement1
-            listelement1 = netlistversion2[i][0]
-            # de tweede factor van wire opslaan in listelement2
-            listelement2 = netlistversion2[i][1]
-
-            # check of de x-waarde in de eerste helft valt
-            if (gate[listelement1].x <= helftbreedte):
-                x1waarde = gate[listelement1].x
-            else:
-                # anders wordt de waarde breedte minus x-element
-                x1waarde = breedte - gate[listelement1].x
-
-            if (gate[listelement1].y <= helfthoogte):
-                y1waarde = gate[listelement1].y
-            else:
-                y1waarde = hoogte - gate[listelement1].y
-
-            # de waarde van de eerste gate is het minimum van de x1- en y1waarde
-            waarde1 = min(x1waarde, y1waarde)
-
-            if (gate[listelement2].x <= helftbreedte):
-                x2waarde = gate[listelement2].x
-            else:
-                x2waarde = breedte - gate[listelement2].x
-
-            if (gate[listelement2].y <= helfthoogte):
-                y2waarde = gate[listelement2].y
-            else:
-                y2waarde = hoogte - gate[listelement2].y
-
-            # de waarde van de tweede gate is het minimum van de x2- en y2waarde
-            waarde2 = min(x2waarde, y2waarde)
-
-            som = waarde1 + waarde2
-
-            # als de som kleiner is dan het minimum
-            if (som < minimum):
-                minimum = som
-                numbernetlist = i
-
-        # zet zojuist bepaalde netlistelement in netlistversion3
-        netlistversion3.append(netlistversion2[numbernetlist])
-        # haalde aangewezen element uit netlistversion2
-        netlistversion2.pop(numbernetlist)
-    # return nieuwe netlist
-    return (netlistversion3)
-
 
 def plotLines(gates, routeBook):
     # maak een nieuwe plot
@@ -295,12 +239,12 @@ def plotLines(gates, routeBook):
     # definieer assen
     ax.set_xlim([0, 18])
     ax.set_ylim([0, 13])
-    ax.set_zlim([0, 7])
+    ax.set_zlim([0, 9])
 
     # zet ticks op de assem
     ax.set_xticks(np.arange(0, 18, 1))
     ax.set_yticks(np.arange(0, 13, 1))
-    ax.set_zticks(np.arange(0, 7, 1))
+    ax.set_zticks(np.arange(0, 9, 1))
 
     # voeg labels toe
     ax.set_xlabel('x-axis')
@@ -318,12 +262,70 @@ def plotLines(gates, routeBook):
 
     plt.show()
 
+def getScore(routeBook):
+    score = 0
+    for route in routeBook:
+        score += (len(route.route) - 1)
+    return score
+
+
+def hillClimb(routeBook, score, gates, steps=1000):
+    
+    # maak variabele om beste route book op te slaan
+    bestRouteBook = routeBook
+    
+    # loop voor het aantal stappen
+    for i in range(0, steps):
+        
+        # maak lege grid
+        grid = gridMat(gates)
+        
+        # verwissel willekeurig twee punten van de netlist
+        newRouteBook = wire.changeRouteBook(bestRouteBook)
+        
+        tmp_newRouteBook = deepcopy(newRouteBook)  
+        
+        # scorevariabele op inganspunt stellen
+        newScore = score
+        
+        # checkt of het route vinden is gelukt
+        finished = False
+      
+        # probeer nieuwe route te vinden
+        try:
+            newRouteFound = routeFinder(tmp_newRouteBook, grid)[1]
+            print('uit routefinder')
+            finished = True
+        except:
+            print('uit routefinder')
+            print('not possible')
+            
+        # bereken nieuwe score   
+        if finished: 
+            newScore = getScore(newRouteFound)
+            print(score)
+            print(newScore)
+        
+            # sla score en route op als beste is
+            if newScore < score:
+                bestRouteBook = newRouteBook
+                bestRouteFound = newRouteFound
+                score = newScore
+                print('lager')
+            else:
+                print('hoger')
+
+    return bestRouteFound, score
+
+
+
 
 # hier begint het Astar algoritme met bijbehorende functies
 # 
 
 # Astar(,grid)
 # Astar returned uiteindelijk de wire/route van A*
+
 
 # def gridMat2(gates):
 #     # make matrix of grid
@@ -341,12 +343,14 @@ def plotLines(gates, routeBook):
 #     print(locfrom)
 #     print("locto")
 #     print(locto)
+
 #     route = putwire(gridwithnodes, locfrom, locto)
 #     return route
 #
 # # putwire plaatst nodes totdat de locatie bereikt is
 # def putwire(gridwithnodes, locfrom, locto):
 #     start = locfrom
+
 #     listclosednodes=[]
 #     while (distance(start, locto) != 1):
 #         gridwithnodes = putnodes(start, gridwithnodes, locto, locfrom)
@@ -370,6 +374,10 @@ def plotLines(gates, routeBook):
 #     print("man man man")
 #
 #     route = findroute(gridwithnodes, locfrom, locto, start)
+#     while (distance(start, locto) != 1):
+#         gridwithnodes = putnodes(start, gridwithnodes, locto, locfrom)
+#         start = minimumnodes(gridwithnodes)
+#     route = findroute(gridwithnodes, locfrom, locto)
 #     return route
 #
 # #  nodes plaatsen
@@ -386,6 +394,7 @@ def plotLines(gates, routeBook):
 #     nodevoor = [start[0], start[1] + 1, start[2]]
 #     nodeachter = [start[0], start[1] - 1, start[2]]
 #
+
 #     #
 #     # node kan alleen geclosed worden als er vanuit die node gekeken wordt
 #     #
@@ -462,6 +471,63 @@ def plotLines(gates, routeBook):
 #     #
 #     # print("man man man")
 #     # quit()
+
+#     # een niet gesloten node is groter dan 100 kleiner dan 10000
+#     if check_isempty(nodelinks, grid) and checkexistance(nodelinks):
+#      grid[nodelinks[0]][nodelinks[1]][nodelinks[2]] = 100 + distance(locfrom, nodelinks) + distance(nodelinks, destination)
+#
+#      # een niet gesloten node is groter 10000
+#     elif check_not_closed_node(nodelinks, grid) and checkexistance(nodelinks):
+#      grid[nodelinks[0]][nodelinks[1]][nodelinks[2]] = 10000 + distance(locfrom, nodelinks) + distance(nodelinks, destination)
+#
+#
+#     if check_isempty(noderechts, grid) and checkexistance(noderechts):
+#      grid[noderechts[0]][noderechts[1]][noderechts[2]] = 100 + distance(locfrom, noderechts) + distance(noderechts, destination)
+#     elif check_not_closed_node(noderechts, grid) and checkexistance(noderechts):
+#      grid[noderechts[0]][noderechts[1]][noderechts[2]] = 10000 + distance(locfrom, noderechts) + distance(noderechts, destination)
+#
+#
+#     if check_isempty(nodeboven, grid) and checkexistance(nodeboven):
+#      grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 100 + distance(locfrom, nodeboven) + distance(nodeboven, destination)
+#     elif check_not_closed_node(nodeboven, grid) and checkexistance(nodeboven):
+#      grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 10000 + distance(locfrom, nodeboven) + distance(nodeboven,
+#                                                                                                   destination)
+#
+#     if check_isempty(nodeboven, grid) and checkexistance(nodeboven):
+#      grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 100 + distance(locfrom, nodeboven) + distance(nodeboven, destination)
+#     elif check_not_closed_node(nodeboven, grid) and checkexistance(nodeboven):
+#      grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 10000 + distance(locfrom, nodeboven) + distance(nodeboven, destination)
+#
+#
+#     if check_isempty(nodebeneden, grid) and checkexistance(nodebeneden):
+#      grid[nodebeneden[0]][nodebeneden[1]][nodebeneden[2]] = 100 + distance(locfrom, nodebeneden) + distance(nodebeneden,
+#                                                                                                   destination)
+#     elif check_not_closed_node(nodebeneden, grid) and checkexistance(nodebeneden):
+#      grid[nodebeneden[0]][nodebeneden[1]][nodebeneden[2]] = 10000 + distance(locfrom, nodebeneden) + distance(nodebeneden,
+#                                                                                                   destination)
+#
+#
+#     if check_isempty(nodevoor, grid) and checkexistance(nodevoor):
+#      grid[nodevoor[0]][nodevoor[1]][nodevoor[2]] = 100 + distance(locfrom, noderechts) + distance(noderechts,
+#                                                                                                 destination)
+#     elif check_not_closed_node(nodevoor, grid) and checkexistance(nodevoor):
+#      grid[nodevoor[0]][nodevoor[1]][nodevoor[2]] = 10000 + distance(locfrom, noderechts) + distance(noderechts,
+#                                                                                                 destination)
+#
+#     if check_isempty(nodeboven, grid) and checkexistance(nodeboven):
+#      grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 100 + distance(locfrom, nodeboven) + distance(nodeboven,
+#                                                                                                     destination)
+#     elif check_not_closed_node(nodeboven, grid) and checkexistance(nodeboven):
+#      grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 10000 + distance(locfrom, nodeboven) + distance(nodeboven,
+#                                                                                                     destination)
+#
+#     if check_isempty(nodeachter, grid) and checkexistance(nodeachter):
+#      grid[nodeachter[0]][nodeachter[1]][nodeachter[2]] = 100 + distance(locfrom, nodeachter) + distance(nodeachter,
+#                                                                                                     destination)
+#     elif check_not_closed_node(nodeachter, grid) and checkexistance(nodeachter):
+#      grid[nodeachter[0]][nodeachter[1]][nodeachter[2]] = 10000 + distance(locfrom, nodeachter) + distance(nodeachter,
+#                                                                                                  destination)
+
 #     return grid
 #
 # # disntance berekenen tussen twee punten
@@ -476,6 +542,7 @@ def plotLines(gates, routeBook):
 # # kijken of de te plaatsen node zich wel in het veld bevindt
 # def checkexistance(node):
 #     if (node[2]<7 and node[2]>=0 and node[1]<13 and node[1]>=0 and node[0]>=0 and node[0]<18):
+#     if (node[2]<7 and node[2]>=0 and node[1]<18 and node[1]>=0 and node[0]>=0 and node[0]<13):
 #         return True
 #     else:
 #         return False
@@ -484,6 +551,7 @@ def plotLines(gates, routeBook):
 #
 # def check_isempty(node, grid):
 #     if grid[node[0]][node[1]][node[2]] >= 99 and grid[node[0]][node[1]][node[2]]<10000:
+#     if grid[node[0]][node[1]][node[2]] == 99:
 #         return True
 #     else:
 #         return False
@@ -494,6 +562,9 @@ def plotLines(gates, routeBook):
 #         return False
 #     else:
 #         return True
+#         return True
+#     else:
+#         return False
 #
 # # node met laagste f cost is het nieuwe startpunt waaruit nodes geplaatst worden
 # def minimumnodes(grid):
@@ -503,6 +574,8 @@ def plotLines(gates, routeBook):
 #     zvalue = 0
 #     for x in range(18):
 #         for y in range(13):
+#     for x in range(13):
+#         for y in range(18):
 #             for z in range (7):
 #                 if grid[x][y][z] < minimum and grid[x][y][z]>100:
 #                     minimum = grid[x][y][z]
@@ -528,9 +601,18 @@ def plotLines(gates, routeBook):
 #         if index>20:
 #             quit()
 #     route.append(start)
+
+# def findroute(gridwithnodes, locfrom, locto):
+#     route = []
+#     start = locto
+#     while distance(start, locfrom) != 1:
+#         routeelement = checkminimumclosednode(gridwithnodes, start)
+#         route.append(routeelement)
+#         start = routeelement
+#
 #     return route
 #
-# # closednode met laagste f cost, grenzend aan bepaald punt wordt bepaald
+
 # def checkminimumclosednode(gridwithnodes, start):
 #     minimum = 1000000
 #     minimumclosednode = [start[0], start[1], start[2]]
@@ -772,35 +854,6 @@ def findroute(gridwithnodes, locfrom, locto, start, direction):
     route.append(start)
     return route
 
-# closednode met laagste f cost, grenzend aan bepaald punt wordt bepaald
-# def checkminimumclosednode(gridwithnodes, start):
-#     minimum = 1000000
-#     minimumclosednode = [start[0], start[1], start[2]]
-#     if checkexistance([start[0] - 1, start[1], start[2]]) and 10000 < gridwithnodes[start[0] - 1][start[1]][start[2]] < minimum:
-#         minimum = gridwithnodes[start[0]-1][start[1]][start[2]]
-#         minimumclosednode = [start[0]-1, start[1], start[2]]
-#
-#     if checkexistance([start[0] + 1, start[1], start[2]]) and 10000 < gridwithnodes[start[0] + 1][start[1]][start[2]] < minimum:
-#         minimum = gridwithnodes[start[0]+1][start[1]][start[2]]
-#         minimumclosednode = [start[0]+1, start[1], start[2]]
-#
-#     if checkexistance([start[0], start[1]-1, start[2]]) and 10000 < gridwithnodes[start[0]][start[1]-1][start[2]] < minimum:
-#         minimum = gridwithnodes[start[0]][start[1]-1][start[2]]
-#         minimumclosednode = [start[0], start[1]-1, start[2]]
-#
-#     if checkexistance([start[0], start[1]+1, start[2]]) and 10000 < gridwithnodes[start[0]][start[1]+1][start[2]] < minimum:
-#         minimum = gridwithnodes[start[0]][start[1]+1][start[2]]
-#         minimumclosednode = [start[0], start[1]+1, start[2]]
-#
-#     if checkexistance([start[0], start[1], start[2]-1]) and 10000 < gridwithnodes[start[0]][start[1]][start[2]-1] < minimum:
-#         minimum = gridwithnodes[start[0]][start[1]][start[2]-1]
-#         minimumclosednode = [start[0], start[1], start[2]-1]
-#
-#     if checkexistance([start[0], start[1], start[2]+1]) and 10000 < gridwithnodes[start[0]][start[1]][start[2]+1] < minimum:
-#         minimum = gridwithnodes[start[0]][start[1]][start[2]+1]
-#         minimumclosednode = [start[0], start[1], start[2]+1]
-#
-#     return minimumclosednode
 
 def Gcost(start, destination, grid):
     if grid[start[0]][start[1]][start[2]]>10000:
