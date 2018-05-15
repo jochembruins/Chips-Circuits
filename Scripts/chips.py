@@ -34,18 +34,29 @@ emptyGrid = deepcopy(grid)
 # sort netlist by dalton-method
 netlistDalton = wire.daltonMethod(netlist_1, gates)
 
-# make objects of netlist
+
+# # make objects of netlist
 routeBook = makeObjects(netlistDalton, gates)
+
 routeBookempty = deepcopy(routeBook)
+
 
 # connect gates in netlist
 routeBook = routeFinder(routeBook, grid)[1]
 
 score = getScore(routeBook)
-print(score)
+# print(score)
 
 
-# HillClimber = hillClimb(routeBookempty, score, gates)
+HillClimber = hillClimb(routeBookempty, score, gates)
+
+routeBookBest = HillClimber[0]
+for route in routeBookBest:
+	print(route)
+
+print(HillClimber[1])
+
+
 
 # for route in routeBook:
 #     print(route)
@@ -55,7 +66,7 @@ print(score)
 # show needed output
 # print(grid)
 # print(totalScore)
-plotLines(gates, routeBook)
+plotLines(gates, routeBookBest)
 
 
 # probeersel Melle

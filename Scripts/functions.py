@@ -94,6 +94,7 @@ def routeFinder(routeBook, grid):
     print('in routefinder')
     routeBookEmpty = routeBook
     routeBookDone = []
+    count = 0
     while routeBookEmpty != []:
         for netPoint in routeBookEmpty:
             route = []
@@ -201,7 +202,9 @@ def routeFinder(routeBook, grid):
             # add end point to route
             route.append(locTo)
             route.append(netPoint.locTo)
-
+            count +=1
+            if count == 100:
+                sys.exit
             # print(netPoint, "locto=", locTo)
             # print(route)
 
@@ -267,45 +270,52 @@ def getScore(routeBook):
 
 
 def hillClimb(routeBook, score, gates, steps=1000):
-    bestRouteBook = deepcopy(routeBook)
-    for i in range(0, 1000):
-        for route in bestRouteBook:
-            route.route = []
-            print(route.netPoint)
-
+    
+    # maak variabele om beste route book op te slaan
+    bestRouteBook = routeBook
+    
+    # loop voor het aantal stappen
+    for i in range(0, steps):
+        
+        # maak lege grid
         grid = gridMat(gates)
         
+        # verwissel willekeurig twee punten van de netlist
         newRouteBook = wire.changeRouteBook(bestRouteBook)
         
-        tmp_newRouteBook = deepcopy(newRouteBook)
+        tmp_newRouteBook = deepcopy(newRouteBook)  
         
-        print('lengte new routebook:  %i' % len(tmp_newRouteBook))   
-        
-        newRouteFound = []
+        # scorevariabele op inganspunt stellen
         newScore = score
+        
+        # checkt of het route vinden is gelukt
         finished = False
       
+        # probeer nieuwe route te vinden
         try:
             newRouteFound = routeFinder(tmp_newRouteBook, grid)[1]
+            print('uit routefinder')
             finished = True
         except:
+            print('uit routefinder')
             print('not possible')
             
-            
+        # bereken nieuwe score   
         if finished: 
-            print('lengte new routebook 1:  %i' % len(tmp_newRouteBook))
-            
             newScore = getScore(newRouteFound)
+            print(score)
             print(newScore)
         
+            # sla score en route op als beste is
             if newScore < score:
-                bestRouteBook = tmp_newRouteBook
+                bestRouteBook = newRouteBook
+                bestRouteFound = newRouteFound
                 score = newScore
+                print('lager')
             else:
                 print('hoger')
 
-
-    return routeBook, score
+    return bestRouteFound, score
 
 
 
