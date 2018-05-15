@@ -84,10 +84,9 @@ HillClimber = hillClimb(routeBookempty, score, gates, 1000)
 
 routeBookBest = HillClimber[0]
 for route in routeBookBest:
-	print(route)
+    print(route)
 
 print(HillClimber[1])
-
 
 
 for route in routeBook:
@@ -111,7 +110,7 @@ plotLines(gates, routeBookBest)
 # hoi = Astar(gates, (42, 3), grid)
 # print(hoi)
 
-netlistDalton = daltonMethod(netlist_1, gates)
+# netlistDalton = daltonMethod(netlist_1, gates)
 # print(netlistDalton)
 # make objects of netlist
 # routeBook = makeObjects(netlistDalton, gates)

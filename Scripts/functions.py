@@ -214,15 +214,11 @@ def routeFinder(routeBook, grid):
                                 cursor[0] -= 1
                                 route.append([cursor[0], cursor[1], cursor[2]])
                                 break
-
+                # delete useless first steps
                 if len(route) > 2 and abs(netPoint.locFrom[0] - cursor[0]) + abs(netPoint.locFrom[1] - cursor[1]) + abs(netPoint.locFrom[2] - cursor[2]) == 1:
                     del route[-3:-1]
-
+                # if only one step away from original endpoint, stop
                 if abs(netPoint.locTo[0] - cursor[0]) + abs(netPoint.locTo[1] - cursor[1]) + abs(netPoint.locTo[2] - cursor[2]) < 2:
-                    # route.append(netPoint.locTo)
-                    # print(netPoint, "locto=", locTo)
-                    # print(route)
-
                     stop = 1
                     break
 
@@ -233,8 +229,6 @@ def routeFinder(routeBook, grid):
             count +=1
             if count == 100:
                 sys.exit
-            # print(netPoint, "locto=", locTo)
-            # print(route)
 
             # save route in netPoint object
             netPoint.route = route
