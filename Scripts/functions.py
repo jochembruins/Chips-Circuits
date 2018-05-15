@@ -17,6 +17,7 @@
 ###########################################################
 from typing import List
 
+import csv
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.axes3d import Axes3D
@@ -91,7 +92,6 @@ def gridMat(gates):
 
 
 def routeFinder(routeBook, grid):
-    print('in routefinder')
     routeBookEmpty = routeBook
     routeBookDone = []
     count = 0
@@ -183,8 +183,6 @@ def routeFinder(routeBook, grid):
                             for routepoint in netPointToDelete.route:
                                 if [cursor[0], cursor[1], cursor[2]] == [routepoint[0], routepoint[1], routepoint[2]]:
                                     # remove line on grid
-                                    print("deleted", netPointToDelete)
-
                                     grid = delRoute(netPointToDelete.route[1:-1], grid)
                                     netPointToDelete.route = []
 
@@ -227,8 +225,13 @@ def routeFinder(routeBook, grid):
                 route.append(locTo)
             route.append(netPoint.locTo)
             count +=1
+            
             if count == 100:
                 sys.exit
+
+            for step in route:
+                if step[0] > 7:
+                    sys.exit
 
             # save route in netPoint object
             netPoint.route = route
@@ -292,13 +295,14 @@ def getScore(routeBook):
 
 
 def hillClimb(routeBook, score, gates, steps=1000):
-    
     # maak variabele om beste route book op te slaan
     bestRouteBook = routeBook
-    
+    file  = open('hill.csv', "w")
+    writer = csv.writer(file, delimiter=',')
+
     # loop voor het aantal stappen
     for i in range(0, steps):
-        
+        print(i)
         # maak lege grid
         grid = gridMat(gates)
         
@@ -316,28 +320,51 @@ def hillClimb(routeBook, score, gates, steps=1000):
         # probeer nieuwe route te vinden
         try:
             newRouteFound = routeFinder(tmp_newRouteBook, grid)[1]
-            print('uit routefinder')
             finished = True
         except:
-            print('uit routefinder')
-            print('not possible')
+            finished = False
+
             
         # bereken nieuwe score   
         if finished: 
             newScore = getScore(newRouteFound)
             print(score)
             print(newScore)
-        
-            # sla score en route op als beste is
-            if newScore < score:
-                bestRouteBook = newRouteBook
-                bestRouteFound = newRouteFound
-                score = newScore
-                print('lager')
-            else:
-                print('hoger')
+            
+            check = checker(newRouteFound)
 
+            if check == True:
+                # sla score en route op als beste is
+                if newScore < score:
+                    bestRouteBook = newRouteBook
+                    bestRouteFound = newRouteFound
+                    score = newScore
+                    print('lager')
+                else:
+                    print('hoger')
+        
+        
+        writer.writerow([i,score])
+    file.close()
     return bestRouteFound, score
+
+
+def checker (routeBook):
+    seen = []
+    repeated = []
+
+    for route in routeBook:
+      for step in route.route[1:-1]:
+        if step in seen:
+          repeated.append(step)
+        else:
+          seen.append(step)
+
+    if len(repeated) == 0:
+        return True
+    else:
+        print(repeated)
+        return False
 
 
 
