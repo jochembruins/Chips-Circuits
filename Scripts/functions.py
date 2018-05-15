@@ -83,7 +83,7 @@ def printPlot(gates):
 
 def gridMat(gates):
     # make matrix of grid
-    matgrid = np.zeros([12, 13, 18]) + 99
+    matgrid = np.zeros([20, 13, 18]) + 99
 
     for gate in gates:
         matgrid[gate.z, gate.y, gate.x] = gate.gate
@@ -96,6 +96,7 @@ def routeFinder(routeBook, grid):
     routeBookDone = []
     while routeBookEmpty != []:
         for netPoint in routeBookEmpty:
+            stop = 0
             route = []
             cursor = [netPoint.locFrom[0], netPoint.locFrom[1], netPoint.locFrom[2]]
             locTo = [netPoint.locTo[0], netPoint.locTo[1], netPoint.locTo[2]]
@@ -176,6 +177,21 @@ def routeFinder(routeBook, grid):
                     if len(route) > 3 and route[-1] == route[-3]:
                         del route[-2:]
 
+                    if grid[cursor[0], cursor[1], cursor[2]] != 99:
+                        for netPointToDelete in routeBookDone:
+                            for routepoint in netPointToDelete.route:
+                                if [cursor[0], cursor[1], cursor[2]] == [routepoint[0], routepoint[1], routepoint[2]]:
+                                    # remove line on grid
+                                    print("deleted", netPointToDelete)
+
+                                    grid = delRoute(netPointToDelete.route[1:-1], grid)
+                                    netPointToDelete.route = []
+
+                                    # append deleted like back to the routebookempty list
+                                    routeBookEmpty.append(netPointToDelete)
+                                    del routeBookDone[routeBookDone.index(netPointToDelete)]
+                                    break
+
                 # if step down is possible, go down
                 elif grid[cursor[0] - 1, cursor[1], cursor[2]] == 99.0 and cursor[0] > 0:
                     while grid[cursor[0] - 1, cursor[1], cursor[2]] == 99.0 and cursor[0] > 0:
@@ -198,8 +214,20 @@ def routeFinder(routeBook, grid):
                                 route.append([cursor[0], cursor[1], cursor[2]])
                                 break
 
+                if len(route) > 2 and abs(netPoint.locFrom[0] - cursor[0]) + abs(netPoint.locFrom[1] - cursor[1]) + abs(netPoint.locFrom[2] - cursor[2]) == 1:
+                    del route[-3:-1]
+
+                if abs(netPoint.locTo[0] - cursor[0]) + abs(netPoint.locTo[1] - cursor[1]) + abs(netPoint.locTo[2] - cursor[2]) < 2:
+                    # route.append(netPoint.locTo)
+                    # print(netPoint, "locto=", locTo)
+                    # print(route)
+
+                    stop = 1
+                    break
+
             # add end point to route
-            route.append(locTo)
+            if stop == 0:
+                route.append(locTo)
             route.append(netPoint.locTo)
 
             # print(netPoint, "locto=", locTo)

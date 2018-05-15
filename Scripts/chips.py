@@ -47,8 +47,8 @@ print(score)
 
 # HillClimber = hillClimb(routeBookempty, score, gates)
 
-# for route in routeBook:
-#     print(route)
+for route in routeBook:
+    print(route)
     # print(grid, "vol")
 
 
