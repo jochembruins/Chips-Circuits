@@ -48,7 +48,8 @@ score = getScore(routeBook)
 # print(score)
 
 
-HillClimber = hillClimb(routeBookempty, score, gates)
+# laat hilclimber werken
+HillClimber = hillClimb(routeBookempty, score, gates, 1000)
 
 routeBookBest = HillClimber[0]
 for route in routeBookBest:
