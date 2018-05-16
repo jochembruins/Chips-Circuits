@@ -23,6 +23,7 @@ from mpl_toolkits.mplot3d.axes3d import Axes3D
 from classes import *
 from random import randint
 from copy import deepcopy
+import copy
 
 np.set_printoptions(threshold=np.nan)
 np.set_printoptions(linewidth=180)
@@ -318,353 +319,18 @@ def hillClimb(routeBook, score, gates, steps=1000):
     return bestRouteFound, score
 
 
-
-
 # hier begint het Astar algoritme met bijbehorende functies
-# 
-
-# Astar(,grid)
-# Astar returned uiteindelijk de wire/route van A*
-
-
-# def gridMat2(gates):
-#     # make matrix of grid
-#     matgrid = np.zeros([18, 13, 7]) + 99
-#
-#     for gate in gates:
-#         matgrid[gate.x, gate.y, gate.z] = gate.gate
-#     return matgrid
-#
-# def Astar(gates, wire, grid):
-#     locfrom = [gates[wire[0]].x, gates[wire[0]].y, gates[wire[0]].z]
-#     gridwithnodes = grid
-#     locto = [gates[wire[1]].x, gates[wire[1]].y, gates[wire[1]].z]
-#     print("locfrom")
-#     print(locfrom)
-#     print("locto")
-#     print(locto)
-
-#     route = putwire(gridwithnodes, locfrom, locto)
-#     return route
-#
-# # putwire plaatst nodes totdat de locatie bereikt is
-# def putwire(gridwithnodes, locfrom, locto):
-#     start = locfrom
-
-#     listclosednodes=[]
-#     while (distance(start, locto) != 1):
-#         gridwithnodes = putnodes(start, gridwithnodes, locto, locfrom)
-#         listclosednodes.append()
-#         start = minimumnodes(gridwithnodes)
-#
-#     print("man man man")
-#     for x in range(18):
-#         for y in range(13):
-#             for z in range(7):
-#                 if gridwithnodes[x][y][z] >= 10000 :
-#                     print("x: ", end='')
-#                     print(x, end='')
-#                     print(" y: ", end='')
-#                     print(y, end='')
-#                     print(" z: ", end='')
-#                     print(z, end='')
-#                     print(" grid: ", end='')
-#                     print(gridwithnodes[x][y][z])
-#
-#     print("man man man")
-#
-#     route = findroute(gridwithnodes, locfrom, locto, start)
-#     while (distance(start, locto) != 1):
-#         gridwithnodes = putnodes(start, gridwithnodes, locto, locfrom)
-#         start = minimumnodes(gridwithnodes)
-#     route = findroute(gridwithnodes, locfrom, locto)
-#     return route
-#
-# #  nodes plaatsen
-# def putnodes(start, grid, destination, locfrom):
-#     if grid[start[0]][start[1]][start[2]] >= 100:
-#
-#         # een  gesloten node is groter dan 10000
-#         grid[start[0]][start[1]][start[2]] = 10000 - 100 + grid[start[0]][start[1]][start[2]]
-#
-#     nodelinks = [start[0]-1, start[1], start[2]]
-#     noderechts = [start[0]+1, start[1], start[2]]
-#     nodeboven = [start[0], start[1], start[2]+1]
-#     nodebeneden = [start[0], start[1], start[2]-1]
-#     nodevoor = [start[0], start[1] + 1, start[2]]
-#     nodeachter = [start[0], start[1] - 1, start[2]]
-#
-
-#     #
-#     # node kan alleen geclosed worden als er vanuit die node gekeken wordt
-#     #
-#     #
-#
-#     # een niet gesloten node is groter dan 100 kleiner dan 10000
-#
-#
-#     nodelinkspotentieel = 1000000
-#     noderechtspotentieel = 1000000
-#     nodevoorpotentieel = 1000000
-#     nodeachterpotentieel = 1000000
-#     nodebovenpotentieel = 1000000
-#     nodebenedenpotentieel = 1000000
-#
-#
-#     # links
-#     if check_isempty(nodelinks, grid) and checkexistance(nodelinks) and check_not_closed_node(nodelinks, grid):
-#         nodelinkspotentieel = 100 + Gcost(start, destination, grid) + distance(nodelinks, destination)
-#
-#     if checkexistance(nodelinks) and (grid[nodelinks[0]][nodelinks[1]][nodelinks[2]] == 99 or nodelinkspotentieel < grid[nodelinks[0]][nodelinks[1]][nodelinks[2]]):
-#         grid[nodelinks[0]][nodelinks[1]][nodelinks[2]] = nodelinkspotentieel
-#
-#     # rechts
-#     if check_isempty(noderechts, grid) and checkexistance(noderechts) and check_not_closed_node(noderechts, grid):
-#         noderechtspotentieel = 100 + Gcost(start, destination, grid) + distance(noderechts, destination)
-#
-#
-#     if checkexistance(noderechts) and (grid[noderechts[0]][noderechts[1]][noderechts[2]] == 99 or noderechtspotentieel < grid[noderechts[0]][noderechts[1]][noderechts[2]]):
-#         grid[noderechts[0]][noderechts[1]][noderechts[2]] = noderechtspotentieel
-#
-#     # boven
-#     if check_isempty(nodeboven, grid) and checkexistance(nodeboven) and check_not_closed_node(nodeboven, grid):
-#         nodebovenpotentieel = 100 + Gcost(start, destination, grid) + distance(nodeboven, destination)
-#
-#     if checkexistance(nodeboven) and (grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] == 99 or nodebovenpotentieel < grid[nodeboven[0]][nodeboven[1]][nodeboven[2]]):
-#         grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = nodebovenpotentieel
-#
-#     # beneden
-#     if check_isempty(nodebeneden, grid) and checkexistance(nodebeneden) and check_not_closed_node(nodebeneden, grid):
-#         nodebenedenpotentieel = 100 + Gcost(start, destination, grid) + distance(nodebeneden, destination)
-#
-#     if checkexistance(nodebeneden) and (grid[nodebeneden[0]][nodebeneden[1]][nodebeneden[2]] == 99 or nodebenedenpotentieel < grid[nodebeneden[0]][nodebeneden[1]][nodebeneden[2]]):
-#         grid[nodebeneden[0]][nodebeneden[1]][nodebeneden[2]] = nodebenedenpotentieel
-#
-#     # voor
-#     if check_isempty(nodevoor, grid) and checkexistance(nodevoor) and check_not_closed_node(nodevoor, grid):
-#         nodevoorpotentieel = 100 + Gcost(start, destination, grid) + distance(nodevoor, destination)
-#
-#     if checkexistance(nodevoor) and (grid[nodevoor[0]][nodevoor[1]][nodevoor[2]] == 99 or nodevoorpotentieel < grid[nodevoor[0]][nodevoor[1]][nodevoor[2]]):
-#         grid[nodevoor[0]][nodevoor[1]][nodevoor[2]] = nodevoorpotentieel
-#
-#
-#     # achter
-#     if check_isempty(nodeachter, grid) and checkexistance(nodeachter) and check_not_closed_node(nodeachter, grid):
-#         nodeachterpotentieel = 100 + Gcost(start, destination, grid) + distance(nodeachter, destination)
-#
-#     if checkexistance(nodeachter) and (grid[nodeachter[0]][nodeachter[1]][nodeachter[2]] == 99 or nodeachterpotentieel < grid[nodeachter[0]][nodeachter[1]][nodeachter[2]]):
-#         grid[nodeachter[0]][nodeachter[1]][nodeachter[2]] = nodeachterpotentieel
-#
-#     # print("man man man")
-#     # for x in range(18):
-#     #     for y in range(13):
-#     #         for z in range(7):
-#     #             if grid[x][y][0] != 99:
-#     #                 print("x: ", end='')
-#     #                 print(x, end='')
-#     #                 print(" y: ", end='')
-#     #                 print(y, end='')
-#     #                 print(" z: ", end='')
-#     #                 print(z, end='')
-#     #                 print(" grid: ", end='')
-#     #                 print(grid[x][y][z])
-#     #
-#     # print("man man man")
-#     # quit()
-
-#     # een niet gesloten node is groter dan 100 kleiner dan 10000
-#     if check_isempty(nodelinks, grid) and checkexistance(nodelinks):
-#      grid[nodelinks[0]][nodelinks[1]][nodelinks[2]] = 100 + distance(locfrom, nodelinks) + distance(nodelinks, destination)
-#
-#      # een niet gesloten node is groter 10000
-#     elif check_not_closed_node(nodelinks, grid) and checkexistance(nodelinks):
-#      grid[nodelinks[0]][nodelinks[1]][nodelinks[2]] = 10000 + distance(locfrom, nodelinks) + distance(nodelinks, destination)
-#
-#
-#     if check_isempty(noderechts, grid) and checkexistance(noderechts):
-#      grid[noderechts[0]][noderechts[1]][noderechts[2]] = 100 + distance(locfrom, noderechts) + distance(noderechts, destination)
-#     elif check_not_closed_node(noderechts, grid) and checkexistance(noderechts):
-#      grid[noderechts[0]][noderechts[1]][noderechts[2]] = 10000 + distance(locfrom, noderechts) + distance(noderechts, destination)
-#
-#
-#     if check_isempty(nodeboven, grid) and checkexistance(nodeboven):
-#      grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 100 + distance(locfrom, nodeboven) + distance(nodeboven, destination)
-#     elif check_not_closed_node(nodeboven, grid) and checkexistance(nodeboven):
-#      grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 10000 + distance(locfrom, nodeboven) + distance(nodeboven,
-#                                                                                                   destination)
-#
-#     if check_isempty(nodeboven, grid) and checkexistance(nodeboven):
-#      grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 100 + distance(locfrom, nodeboven) + distance(nodeboven, destination)
-#     elif check_not_closed_node(nodeboven, grid) and checkexistance(nodeboven):
-#      grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 10000 + distance(locfrom, nodeboven) + distance(nodeboven, destination)
-#
-#
-#     if check_isempty(nodebeneden, grid) and checkexistance(nodebeneden):
-#      grid[nodebeneden[0]][nodebeneden[1]][nodebeneden[2]] = 100 + distance(locfrom, nodebeneden) + distance(nodebeneden,
-#                                                                                                   destination)
-#     elif check_not_closed_node(nodebeneden, grid) and checkexistance(nodebeneden):
-#      grid[nodebeneden[0]][nodebeneden[1]][nodebeneden[2]] = 10000 + distance(locfrom, nodebeneden) + distance(nodebeneden,
-#                                                                                                   destination)
-#
-#
-#     if check_isempty(nodevoor, grid) and checkexistance(nodevoor):
-#      grid[nodevoor[0]][nodevoor[1]][nodevoor[2]] = 100 + distance(locfrom, noderechts) + distance(noderechts,
-#                                                                                                 destination)
-#     elif check_not_closed_node(nodevoor, grid) and checkexistance(nodevoor):
-#      grid[nodevoor[0]][nodevoor[1]][nodevoor[2]] = 10000 + distance(locfrom, noderechts) + distance(noderechts,
-#                                                                                                 destination)
-#
-#     if check_isempty(nodeboven, grid) and checkexistance(nodeboven):
-#      grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 100 + distance(locfrom, nodeboven) + distance(nodeboven,
-#                                                                                                     destination)
-#     elif check_not_closed_node(nodeboven, grid) and checkexistance(nodeboven):
-#      grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 10000 + distance(locfrom, nodeboven) + distance(nodeboven,
-#                                                                                                     destination)
-#
-#     if check_isempty(nodeachter, grid) and checkexistance(nodeachter):
-#      grid[nodeachter[0]][nodeachter[1]][nodeachter[2]] = 100 + distance(locfrom, nodeachter) + distance(nodeachter,
-#                                                                                                     destination)
-#     elif check_not_closed_node(nodeachter, grid) and checkexistance(nodeachter):
-#      grid[nodeachter[0]][nodeachter[1]][nodeachter[2]] = 10000 + distance(locfrom, nodeachter) + distance(nodeachter,
-#                                                                                                  destination)
-
-#     return grid
-#
-# # disntance berekenen tussen twee punten
-#
-# def distance(location, destination):
-#     x_dist = abs(destination[0] - location[0])
-#     y_dist = abs(destination[1] - location[1])
-#     z_dist = abs(destination[2] - location[2])
-#     distancee = z_dist + y_dist + x_dist
-#     return distancee
-#
-# # kijken of de te plaatsen node zich wel in het veld bevindt
-# def checkexistance(node):
-#     if (node[2]<7 and node[2]>=0 and node[1]<13 and node[1]>=0 and node[0]>=0 and node[0]<18):
-#     if (node[2]<7 and node[2]>=0 and node[1]<18 and node[1]>=0 and node[0]>=0 and node[0]<13):
-#         return True
-#     else:
-#         return False
-#
-# # als een element in matrix gelijk is aan 99 dan wordt is daar geen wire node of gate
-#
-# def check_isempty(node, grid):
-#     if grid[node[0]][node[1]][node[2]] >= 99 and grid[node[0]][node[1]][node[2]]<10000:
-#     if grid[node[0]][node[1]][node[2]] == 99:
-#         return True
-#     else:
-#         return False
-#
-# # als een element groter is dan 100 is er node geplaatst
-# def check_not_closed_node(node, grid):
-#     if grid[node[0]][node[1]][node[2]] >= 100:
-#         return False
-#     else:
-#         return True
-#         return True
-#     else:
-#         return False
-#
-# # node met laagste f cost is het nieuwe startpunt waaruit nodes geplaatst worden
-# def minimumnodes(grid):
-#     minimum = 10000
-#     xvalue = 0
-#     yvalue = 0
-#     zvalue = 0
-#     for x in range(18):
-#         for y in range(13):
-#     for x in range(13):
-#         for y in range(18):
-#             for z in range (7):
-#                 if grid[x][y][z] < minimum and grid[x][y][z]>100:
-#                     minimum = grid[x][y][z]
-#                     xvalue = x
-#                     yvalue = y
-#                     zvalue = z
-#
-#     coordinates = [xvalue, yvalue , zvalue]
-#     return coordinates
-#
-# # route wordt geplaatst, alle nodes zijn gegeven
-# def findroute(gridwithnodes, locfrom, locto, start):
-#     index = 0
-#     route = []
-#     route.append(start)
-#     while distance(locfrom, start) != 1:
-#         routeelement = checkminimumclosednode(gridwithnodes, locfrom)
-#         route.append(routeelement)
-#         locfrom = routeelement
-#         print("locfrom")
-#         print(locfrom)
-#         index = index + 1
-#         if index>20:
-#             quit()
-#     route.append(start)
-
-# def findroute(gridwithnodes, locfrom, locto):
-#     route = []
-#     start = locto
-#     while distance(start, locfrom) != 1:
-#         routeelement = checkminimumclosednode(gridwithnodes, start)
-#         route.append(routeelement)
-#         start = routeelement
-#
-#     return route
-#
-
-# def checkminimumclosednode(gridwithnodes, start):
-#     minimum = 1000000
-#     minimumclosednode = [start[0], start[1], start[2]]
-#     if checkexistance([start[0] - 1, start[1], start[2]]) and 10000 < gridwithnodes[start[0] - 1][start[1]][start[2]] < minimum:
-#         minimum = gridwithnodes[start[0]-1][start[1]][start[2]]
-#         minimumclosednode = [start[0]-1, start[1], start[2]]
-#
-#     if checkexistance([start[0] + 1, start[1], start[2]]) and 10000 < gridwithnodes[start[0] + 1][start[1]][start[2]] < minimum:
-#         minimum = gridwithnodes[start[0]+1][start[1]][start[2]]
-#         minimumclosednode = [start[0]+1, start[1], start[2]]
-#
-#     if checkexistance([start[0], start[1]-1, start[2]]) and 10000 < gridwithnodes[start[0]][start[1]-1][start[2]] < minimum:
-#         minimum = gridwithnodes[start[0]][start[1]-1][start[2]]
-#         minimumclosednode = [start[0], start[1]-1, start[2]]
-#
-#     if checkexistance([start[0], start[1]+1, start[2]]) and 10000 < gridwithnodes[start[0]][start[1]+1][start[2]] < minimum:
-#         minimum = gridwithnodes[start[0]][start[1]+1][start[2]]
-#         minimumclosednode = [start[0], start[1]+1, start[2]]
-#
-#     if checkexistance([start[0], start[1], start[2]-1]) and 10000 < gridwithnodes[start[0]][start[1]][start[2]-1] < minimum:
-#         minimum = gridwithnodes[start[0]][start[1]][start[2]-1]
-#         minimumclosednode = [start[0], start[1], start[2]-1]
-#
-#     if checkexistance([start[0], start[1], start[2]+1]) and 10000 < gridwithnodes[start[0]][start[1]][start[2]+1] < minimum:
-#         minimum = gridwithnodes[start[0]][start[1]][start[2]+1]
-#         minimumclosednode = [start[0], start[1], start[2]+1]
-#
-#     return minimumclosednode
-#
-# def Gcost(start, destination, grid):
-#     if grid[start[0]][start[1]][start[2]]>10000:
-#         gcost = grid[start[0]][start[1]][start[2]] - 10000 - distance(start, destination) + 1
-#     else:
-#         gcost = 1
-#     return gcost
-
-
-
-# hier begint het Astar algoritme met bijbehorende functies
-
-
-# Astar(,grid)
 # Astar returned uiteindelijk de wire/route van A*
 
 def gridMat2(gates):
     # make matrix of grid
-    matgrid = np.zeros([18, 13, 7]) + 99
+    matgrid = np.zeros([18, 13, 8]) + 99
 
     for gate in gates:
         matgrid[gate.x, gate.y, gate.z] = gate.gate
     return matgrid
 
+# er wordt een matrix gedefinieerd waarbij de richtingen van nodes worden weergeven
 def matrix_store_direction():
     # richtingen matrix geven
     # 1 links
@@ -674,15 +340,13 @@ def matrix_store_direction():
     # 5 voor
     # 6 achter
 
-    matgrid = np.zeros([18, 13, 7])
+    matgrid = np.zeros([18, 13, 8])
     return matgrid
-def hulp(matrix_store_direction):
-    matrix_store_direction[0][0][0] = "right"
-    return matrix_store_direction
 
-
-def Astar(gates, wire, grid):
+# Astar heeft een grid, gates en een wire nodig
+def Astar(gates, wire, gridd):
     locfrom = [gates[wire[0]].x, gates[wire[0]].y, gates[wire[0]].z]
+    grid = copy.deepcopy(gridd)
     gridwithnodes = grid
     locto = [gates[wire[1]].x, gates[wire[1]].y, gates[wire[1]].z]
     print("locfrom")
@@ -696,6 +360,7 @@ def Astar(gates, wire, grid):
 def putwire(gridwithnodes, locfrom, locto):
     start = locfrom
     direction = matrix_store_direction()
+
     while (distance(start, locto) != 1):
         gridwithnodes = putnodes(start, gridwithnodes, locto, locfrom, direction)[0]
         direction = putnodes(start, gridwithnodes, locto, locfrom, direction)[1]
@@ -718,14 +383,6 @@ def putnodes(start, grid, destination, locfrom, direction):
     nodevoor = [start[0], start[1] + 1, start[2]]
     nodeachter = [start[0], start[1] - 1, start[2]]
 
-    #
-    # node kan alleen geclosed worden als er vanuit die node gekeken wordt
-    #
-    #
-
-    # een niet gesloten node is groter dan 100 kleiner dan 10000
-
-
     nodelinkspotentieel = 1000000
     noderechtspotentieel = 1000000
     nodevoorpotentieel = 1000000
@@ -733,9 +390,27 @@ def putnodes(start, grid, destination, locfrom, direction):
     nodebovenpotentieel = 1000000
     nodebenedenpotentieel = 1000000
 
+    # boven
+    if checkexistance(nodeboven) and check_isempty(nodeboven, grid) and check_not_closed_node(nodeboven, grid):
+        nodebovenpotentieel = 100 + Gcost(start, destination, grid) + distance(nodeboven, destination)
+
+    if checkexistance(nodeboven) and (grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] == 99 or nodebovenpotentieel <
+                                      grid[nodeboven[0]][nodeboven[1]][nodeboven[2]]):
+        grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = nodebovenpotentieel
+        direction[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 3
+
+    # beneden
+    if checkexistance(nodebeneden) and check_isempty(nodebeneden, grid) and check_not_closed_node(nodebeneden, grid):
+        nodebenedenpotentieel = 100 + Gcost(start, destination, grid) + distance(nodebeneden, destination)
+
+    if checkexistance(nodebeneden) and (
+            grid[nodebeneden[0]][nodebeneden[1]][nodebeneden[2]] == 99 or nodebenedenpotentieel <
+            grid[nodebeneden[0]][nodebeneden[1]][nodebeneden[2]]):
+        grid[nodebeneden[0]][nodebeneden[1]][nodebeneden[2]] = nodebenedenpotentieel
+        direction[nodebeneden[0]][nodebeneden[1]][nodebeneden[2]] = 4
 
     # links
-    if check_isempty(nodelinks, grid) and checkexistance(nodelinks) and check_not_closed_node(nodelinks, grid):
+    if  checkexistance(nodelinks) and check_isempty(nodelinks, grid) and check_not_closed_node(nodelinks, grid):
         nodelinkspotentieel = 100 + Gcost(start, destination, grid) + distance(nodelinks, destination)
 
 
@@ -744,7 +419,7 @@ def putnodes(start, grid, destination, locfrom, direction):
         direction[nodelinks[0]][nodelinks[1]][nodelinks[2]] = 1
 
     # rechts
-    if check_isempty(noderechts, grid) and checkexistance(noderechts) and check_not_closed_node(noderechts, grid):
+    if checkexistance(noderechts) and check_isempty(noderechts, grid) and check_not_closed_node(noderechts, grid):
         noderechtspotentieel = 100 + Gcost(start, destination, grid) + distance(noderechts, destination)
 
 
@@ -752,46 +427,27 @@ def putnodes(start, grid, destination, locfrom, direction):
         grid[noderechts[0]][noderechts[1]][noderechts[2]] = noderechtspotentieel
         direction[noderechts[0]][noderechts[1]][noderechts[2]] = 2
 
-    # boven
-    if check_isempty(nodeboven, grid) and checkexistance(nodeboven) and check_not_closed_node(nodeboven, grid):
-        nodebovenpotentieel = 100 + Gcost(start, destination, grid) + distance(nodeboven, destination)
-
-
-    if checkexistance(nodeboven) and (grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] == 99 or nodebovenpotentieel < grid[nodeboven[0]][nodeboven[1]][nodeboven[2]]):
-        grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = nodebovenpotentieel
-        direction[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 3
-
-    # beneden
-    if check_isempty(nodebeneden, grid) and checkexistance(nodebeneden) and check_not_closed_node(nodebeneden, grid):
-        nodebenedenpotentieel = 100 + Gcost(start, destination, grid) + distance(nodebeneden, destination)
-
-    if checkexistance(nodebeneden) and (grid[nodebeneden[0]][nodebeneden[1]][nodebeneden[2]] == 99 or nodebenedenpotentieel < grid[nodebeneden[0]][nodebeneden[1]][nodebeneden[2]]):
-        grid[nodebeneden[0]][nodebeneden[1]][nodebeneden[2]] = nodebenedenpotentieel
-        direction[nodebeneden[0]][nodebeneden[1]][nodebeneden[2]] = 4
 
     # voor
-    if check_isempty(nodevoor, grid) and checkexistance(nodevoor) and check_not_closed_node(nodevoor, grid):
+    if checkexistance(nodevoor) and check_isempty(nodevoor, grid) and check_not_closed_node(nodevoor, grid):
         nodevoorpotentieel = 100 + Gcost(start, destination, grid) + distance(nodevoor, destination)
 
     if checkexistance(nodevoor) and (grid[nodevoor[0]][nodevoor[1]][nodevoor[2]] == 99 or nodevoorpotentieel < grid[nodevoor[0]][nodevoor[1]][nodevoor[2]]):
         grid[nodevoor[0]][nodevoor[1]][nodevoor[2]] = nodevoorpotentieel
         direction[nodevoor[0]][nodevoor[1]][nodevoor[2]] = 5
 
-
     # achter
-    if check_isempty(nodeachter, grid) and checkexistance(nodeachter) and check_not_closed_node(nodeachter, grid):
+    if checkexistance(nodeachter) and check_isempty(nodeachter, grid) and check_not_closed_node(nodeachter, grid):
         nodeachterpotentieel = 100 + Gcost(start, destination, grid) + distance(nodeachter, destination)
 
     if checkexistance(nodeachter) and (grid[nodeachter[0]][nodeachter[1]][nodeachter[2]] == 99 or nodeachterpotentieel < grid[nodeachter[0]][nodeachter[1]][nodeachter[2]]):
         grid[nodeachter[0]][nodeachter[1]][nodeachter[2]] = nodeachterpotentieel
         direction[nodeachter[0]][nodeachter[1]][nodeachter[2]] = 6
 
-
     return grid, direction
 
 
 # disntance berekenen tussen twee punten
-
 def distance(location, destination):
     x_dist = abs(destination[0] - location[0])
     y_dist = abs(destination[1] - location[1])
@@ -801,13 +457,12 @@ def distance(location, destination):
 
 # kijken of de te plaatsen node zich wel in het veld bevindt
 def checkexistance(node):
-    if (node[2]<7 and node[2]>=0 and node[1]<13 and node[1]>=0 and node[0]>=0 and node[0]<18):
+    if (node[2]<8 and node[2]>=0 and node[1]<13 and node[1]>=0 and node[0]>=0 and node[0]<18):
         return True
     else:
         return False
 
 # als een element in matrix gelijk is aan 99 dan wordt is daar geen wire node of gate
-
 def check_isempty(node, grid):
     if grid[node[0]][node[1]][node[2]] >= 99 and grid[node[0]][node[1]][node[2]]<10000:
         return True
@@ -829,7 +484,7 @@ def minimumnodes(grid):
     zvalue = 0
     for x in range(18):
         for y in range(13):
-            for z in range (7):
+            for z in range (8):
                 if grid[x][y][z] < minimum and grid[x][y][z]>100:
                     minimum = grid[x][y][z]
                     xvalue = x
@@ -841,17 +496,13 @@ def minimumnodes(grid):
 
 # route wordt geplaatst, alle nodes zijn gegeven
 def findroute(gridwithnodes, locfrom, locto, start, direction):
+    index = 0
     route = []
     route.append(start)
-    print("hoi allalalalallalalal")
-    print(locfrom)
-    print(start)
     while distance(locfrom, start) != 1:
-        print("erin")
         routeelement = checkclosednode(direction, start)
         route.append(routeelement)
         start = routeelement
-    route.append(start)
     return route
 
 
@@ -862,25 +513,29 @@ def Gcost(start, destination, grid):
         gcost = 1
     return gcost
 
-def checkclosednode(direction, locfrom):
-    value = direction[locfrom[0]][locfrom[1]][locfrom[2]]
+def checkclosednode(direction, start):
+    value = direction[start[0]][start[1]][start[2]]
 
+    # merk op dat de tegenovergestelde richting benodigd is
     if value == 1:
-        locfrom = [locfrom[0] - 1, locfrom[1], locfrom[2]]
+        start = [start[0] + 1, start[1], start[2]]
 
     elif value == 2:
-        locfrom = [locfrom[0] + 1, locfrom[1], locfrom[2]]
+        start = [start[0] - 1, start[1], start[2]]
 
     elif value == 3:
-        locfrom = [locfrom[0], locfrom[1], locfrom[2] + 1]
+        start = [start[0], start[1], start[2] - 1]
 
     elif value == 4:
-        locfrom = [locfrom[0], locfrom[1], locfrom[2] - 1]
+        start = [start[0], start[1], start[2] + 1]
 
     elif value == 5:
-        locfrom = [locfrom[0], locfrom[1] + 1, locfrom[2]]
+        start = [start[0], start[1] - 1, start[2]]
 
     elif value == 6:
-        locfrom = [locfrom[0], locfrom[1] - 1, locfrom[2]]
+        start = [start[0], start[1] + 1, start[2]]
 
-    return locfrom
+    else:
+        print("ERROR!!!")
+        quit()
+    return start
