@@ -60,8 +60,31 @@ for route in routeBookempty:
 #                         print(grid2[x][y][z])
 #         print("man man man")
 
+
 # show plot of gates in grid
 # printPlot(gates)
+# connect gates in netlist
+#routeBook = routeFinder(routeBook, grid)[1]
+#score = getScore(routeBook)
+# print(score)
+score = 1000
+
+# laat hilclimber werken
+HillClimber = hillClimb(routeBookempty, score, gates, 5000)
+
+routeBookBest = HillClimber[0]
+for route in routeBookBest:
+    print(route.route)
+
+
+print(HillClimber[1])
+
+lol = checker(routeBookBest)
+print(lol)
+
+# show needed output
+# print(grid)
+# print(totalScore)
 
 # print grid in matrixform
 # grid = gridMat(gates)
@@ -132,5 +155,22 @@ for route in routeBookempty:
 # #             done = 0
 # # grid = gridMat(gates)
 #     # print(grid, "leeg")
-#
+
+# netlistDalton = daltonMethod(netlist_1, gates)
+# print(netlistDalton)
+
+# make objects of netlist
+# routeBook = makeObjects(netlistDalton, gates)
+
+
+# connect gates in netlist
+# done = 2
+# while done != 0:
+#     for wire in routeBook:
+#         if wire.route == []:
+#             done = 1
+#         else:
+#             done = 0
+# grid = gridMat(gates)
+    # print(grid, "leeg")
 
