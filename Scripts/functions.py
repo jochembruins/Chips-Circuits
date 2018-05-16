@@ -226,15 +226,15 @@ def routeFinder(routeBook, grid):
             route.append(netPoint.locTo)
             count +=1
             
-            if count == 60:
-                print('meer dan 60')
+            if count == 100:
+                print('meer dan 100')
                 sys.exit
 
 
-            for step in route:
-                if step[0] > 7:
-                    print('te hoog')
-                    sys.exit
+            # for step in route:
+            #     if step[0] > 7:
+            #         print('te hoog')
+            #         sys.exit
 
             # save route in netPoint object
             netPoint.route = route
