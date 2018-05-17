@@ -87,12 +87,13 @@ for i in hoi:
 # for route in routeBookBest:
 #     print(route.route)
 
+# checkt juistheid van uitkomst hillclimber
 # check = checker(routeBookBest)
 
 # print beste score gevonden door hillclimber
 # print(HillClimber[1])
 
-# show needed output
+# print score en laat plot zien
 # print(check)
 # plotLines(gates, routeBookBest)
 
