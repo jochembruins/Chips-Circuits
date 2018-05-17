@@ -20,6 +20,7 @@ from netlists import *
 from classes import *
 from surroundings_gates import *
 from copy import deepcopy
+from random import shuffle
 
 ## DATA
 # make appropriate format of gate locations
@@ -29,21 +30,48 @@ gates = makeLocations(gatesLoc)
 # initialize 13 x 18 x 8 (= L x W x H) grid with gates
 grid = gridMat(gates)
 
-dalton = wire.daltonMethod(netlist_1, gates)
+
+# make appropriate netlist order
+netlistDalton = wire.daltonMethod(netlist_2, gates)
+
 # make object for each netlist item
 # routeBook = makeObjects(netlistDalton, gates)
 
 # routeBookEmpty = deepcopy(routeBook)
 
+randomRoute = randomRouteBook(routeBookEmpty, gates, 10000)
+
+
+HillClimber = hillClimb(randomRoute[0], randomRoute[1], gates, 6000)
+
+routeBookBest = HillClimber[0]
+for route in routeBookBest:
+    print(route.route)
+
+check = checker(routeBookBest)
+
+#print beste score gevonden door hillclimber
+print(HillClimber[1])
+
+# show needed output
+print(check)
+plotLines(gates, routeBookBest)
+
+
+
+
+
 
 ## RANDOM ROUTEFINDER
 # leg wires van netlist
+
 # routeBookRandom = routeFinder(routeBook, grid)[1]
 # score = getScore(routeBookRandom)
 # print(score)
 
 ## A-star ALGORITM
 # AstarAll(routeBookempty, gridAstar)
+
 gridAstar = gridMat2(gates)
 # print(gridAstar)
 
@@ -73,25 +101,3 @@ for i in dalton:
                         print(" grid: ", end='')
                         print(gridAstar[x][y][z])
         print("man man man")
-
-
-
-## HILLCLIMBER
-# score = 1000
-# # laat hilclimber werken
-# HillClimber = hillClimb(routeBookempty, score, gates, 5000)
-
-# routeBookBest = HillClimber[0]
-# for route in routeBookBest:
-#     print(route.route)
-
-# checkt juistheid van uitkomst hillclimber
-# check = checker(routeBookBest)
-
-# print beste score gevonden door hillclimber
-# print(HillClimber[1])
-
-# print score en laat plot zien
-# print(check)
-# plotLines(gates, routeBookBest)
-
