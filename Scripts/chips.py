@@ -29,6 +29,7 @@ gates = makeLocations(gatesLoc)
 
 # initialize 13 x 18 x 8 (= L x W x H) grid with gates
 grid = gridMat(gates)
+gridAstar = gridMat2(gates)
 
 
 # make appropriate netlist order
@@ -72,7 +73,7 @@ plotLines(gates, routeBookBest)
 ## A-star ALGORITM
 # AstarAll(routeBookempty, gridAstar)
 
-gridAstar = gridMat2(gates)
+
 # print(gridAstar)
 
 
@@ -80,24 +81,27 @@ gridAstar = gridMat2(gates)
 #     print(route)
 
 
-j=0
-for i in dalton:
-    print(j)
-    routeee = Astar(gates, i, gridAstar)
-    gridAstar = changeMat(routeee, gridAstar)
-    j=j+1
-    if j ==26:
-        print("man man man")
-        for x in range(18):
-            for y in range(13):
-                for z in range(8):
-                    if gridAstar[x][y][z] != 99:
-                        print("x: ", end='')
-                        print(x, end='')
-                        print(" y: ", end='')
-                        print(y, end='')
-                        print(" z: ", end='')
-                        print(z, end='')
-                        print(" grid: ", end='')
-                        print(gridAstar[x][y][z])
-        print("man man man")
+# Astar met routebook:
+
+
+# j=0
+# for i in dalton:
+#     print(j)
+#     routeee = Astar(gates, i, gridAstar)
+#     gridAstar = changeMat(routeee, gridAstar)
+#     j=j+1
+#     if j ==26:
+#         print("man man man")
+#         for x in range(18):
+#             for y in range(13):
+#                 for z in range(8):
+#                     if gridAstar[x][y][z] != 99:
+#                         print("x: ", end='')
+#                         print(x, end='')
+#                         print(" y: ", end='')
+#                         print(y, end='')
+#                         print(" z: ", end='')
+#                         print(z, end='')
+#                         print(" grid: ", end='')
+#                         print(gridAstar[x][y][z])
+#         print("man man man")
