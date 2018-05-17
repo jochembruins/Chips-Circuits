@@ -23,6 +23,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.axes3d import Axes3D
 from classes import *
 from random import randint
+from random import shuffle
 from copy import deepcopy
 import copy
 
@@ -70,6 +71,58 @@ def gridMat(gates):
     for gate in gates:
         matgrid[gate.z, gate.y, gate.x] = gate.gate
     return matgrid
+
+
+def randomRouteBook(routeBook, gates, steps=1000):
+
+    bestRouteBook = []
+    score = 1000
+
+    for i in range(0, steps):
+        newRouteBook = routeBook
+
+        shuffle(newRouteBook)
+
+        grid = gridMat(gates)
+        
+        tmp_newRouteBook = deepcopy(newRouteBook)
+        
+        # checkt of het route vinden is gelukt
+        finished = False
+      
+        newScore = score
+        
+        # probeer nieuwe route te vinden
+        try:
+            newRouteFound = routeFinder(tmp_newRouteBook, grid)[1]
+            finished = True
+        except:
+            finished = False
+
+            
+        # bereken nieuwe score   
+        if finished: 
+            newScore = getScore(newRouteFound)
+            print("oude score random: ", score)
+            print("nieuwe score random: ", newScore)
+            
+            check = checker(newRouteFound)
+
+            if check == True:
+                # sla score en route op als beste is
+                if newScore < score:
+                    bestRouteBook = deepcopy(newRouteBook)
+                    bestRouteFound = deepcopy(newRouteFound)
+                    score = newScore
+                    print('lager')
+                else:
+                    print('hoger')
+        
+    return bestRouteBook, score, bestRouteFound
+
+
+
+
 
 
 def routeFinder(routeBook, grid):
@@ -207,14 +260,14 @@ def routeFinder(routeBook, grid):
             route.append(netPoint.locTo)
             count +=1
             
-            if count == 100:
-                print('meer dan 100')
+            if count == 70:
+                # print('meer dan 100')
                 sys.exit
 
 
             # for step in route:
             #     if step[0] > 7:
-            #         print('te hoog')
+            #         # print('te hoog')
             #         sys.exit
 
             # save route in netPoint object
@@ -280,26 +333,28 @@ def getScore(routeBook):
 
 def hillClimb(routeBook, score, gates, steps=1000):
     # maak variabele om beste route book op te slaan
+    print('in Hillclimber')
     bestRouteBook = routeBook
     file  = open('hill.csv', "w")
     writer = csv.writer(file, delimiter=',')
 
     # loop voor het aantal stappen
     for i in range(0, steps):
-        print(i)
         # maak lege grid
         grid = gridMat(gates)
         
-        # verwissel willekeurig twee punten van de netlist
-        newRouteBook = wire.changeRouteBook(bestRouteBook)
+        if i != 0:
+            # verwissel willekeurig twee punten van de netlist
+            newRouteBook = wire.changeRouteBook(bestRouteBook)
+        else:
+            print('same')
+            newRouteBook = bestRouteBook
         
         tmp_newRouteBook = deepcopy(newRouteBook)  
         
-        # scorevariabele op inganspunt stellen
-        newScore = score
-        
         # checkt of het route vinden is gelukt
         finished = False
+        # newScore = score
       
         # probeer nieuwe route te vinden
         try:
@@ -312,16 +367,16 @@ def hillClimb(routeBook, score, gates, steps=1000):
         # bereken nieuwe score   
         if finished: 
             newScore = getScore(newRouteFound)
-            print(score)
-            print(newScore)
+            print("oude score: ", score)
+            print("nieuwe score: ", newScore)
             
             check = checker(newRouteFound)
 
             if check == True:
                 # sla score en route op als beste is
-                if newScore < score:
-                    bestRouteBook = newRouteBook
-                    bestRouteFound = newRouteFound
+                if newScore <= score:
+                    bestRouteBook = deepcopy(newRouteBook)
+                    bestRouteFound = deepcopy(newRouteFound)
                     score = newScore
                     print('lager')
                 else:
@@ -344,8 +399,10 @@ def checker (routeBook):
           seen.append(step)
 
     if len(repeated) == 0:
+        print('check: goed')
         return True
     else:
+        print('check: fout')
         print(repeated)
         return False
 
@@ -569,6 +626,7 @@ def checkclosednode(direction, start):
         print("ERROR!!!")
         quit()
     return start
+
 
 # def AstarAll(routeBook, grid):
 #     for routes in Routebook:
