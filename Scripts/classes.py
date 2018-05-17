@@ -46,7 +46,8 @@ class wire(object):
     # hierbij wordt er geordend op lengte van een netlistelementconnectie (blauwe lijn)
     # als argument wordt een netlist genomen + de gates
     def daltonMethod(netlist, gate):
-        # tweede versie van netlist opgeslagen 
+        lowerBound = 0
+        # tweede versie van netlist opgeslagen
         netlistversion2 = netlist
 
         # lege derde versie van te definieren netlist opgeslagen
@@ -79,7 +80,7 @@ class wire(object):
                 if (som < minimum):
                     minimum = som
                     numbernetlist = i
-
+            lowerBound += som
             # zet zojuist bepaalde netlistelement in netlistversion3
             netlistversion3.append(netlistversion2[numbernetlist])
             
@@ -87,7 +88,7 @@ class wire(object):
             netlistversion2.pop(numbernetlist)
 
         # return nieuwe netlist
-        return (netlistversion3)
+        return netlistversion3, lowerBound
 
 
     # deze functie ordent de netlist
