@@ -589,3 +589,9 @@ def checkclosednode(direction, start):
         print("ERROR!!!")
         quit()
     return start
+
+# def AstarAll(routeBook, grid):
+#     for routes in Routebook:
+
+
+
