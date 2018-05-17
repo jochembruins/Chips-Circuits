@@ -92,3 +92,4 @@ plotLines(gates, routeBookBest)
 #                         print(" grid: ", end='')
 #                         print(gridAstar[x][y][z])
 #         print("man man man")
+
