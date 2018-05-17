@@ -29,36 +29,37 @@ grid = gridMat(gates)
 grid2 = gridMat2(gates)
 
 
-netlistDalton = wire.daltonMethod(netlist_1, gates)
+# netlistDalton = wire.daltonMethod(netlist_1, gates)
+#
+#
+# routeBook = makeObjects(netlistDalton, gates)
+#
+# routeBookempty = deepcopy(routeBook)
+#
+# for route in routeBookempty:
+#     print(route)
 
-
-routeBook = makeObjects(netlistDalton, gates)
-
-routeBookempty = deepcopy(routeBook)
-
-for route in routeBookempty:
-    print(route)
-# j=0
-# for i in hoi:
-#     print(j)
-#     routeee = Astar(gates, i, grid2)
-#     grid2 = changeMat(routeee, grid2)
-#     j=j+1
-#     if j ==19:
-#         print("man man man")
-#         for x in range(18):
-#             for y in range(13):
-#                 for z in range(8):
-#                     if grid2[x][y][z] != 99:
-#                         print("x: ", end='')
-#                         print(x, end='')
-#                         print(" y: ", end='')
-#                         print(y, end='')
-#                         print(" z: ", end='')
-#                         print(z, end='')
-#                         print(" grid: ", end='')
-#                         print(grid2[x][y][z])
-#         print("man man man")
+j=0
+for i in hoi:
+    print(j)
+    routeee = Astar(gates, i, grid2)
+    grid2 = changeMat(routeee, grid2)
+    j=j+1
+    if j ==19:
+        print("man man man")
+        for x in range(18):
+            for y in range(13):
+                for z in range(8):
+                    if grid2[x][y][z] != 99:
+                        print("x: ", end='')
+                        print(x, end='')
+                        print(" y: ", end='')
+                        print(y, end='')
+                        print(" z: ", end='')
+                        print(z, end='')
+                        print(" grid: ", end='')
+                        print(grid2[x][y][z])
+        print("man man man")
 
 
 # show plot of gates in grid
@@ -67,20 +68,20 @@ for route in routeBookempty:
 #routeBook = routeFinder(routeBook, grid)[1]
 #score = getScore(routeBook)
 # print(score)
-score = 1000
-
-# laat hilclimber werken
-HillClimber = hillClimb(routeBookempty, score, gates, 5000)
-
-routeBookBest = HillClimber[0]
-for route in routeBookBest:
-    print(route.route)
-
-
-print(HillClimber[1])
-
-lol = checker(routeBookBest)
-print(lol)
+# score = 1000
+#
+# # laat hilclimber werken
+# HillClimber = hillClimb(routeBookempty, score, gates, 5000)
+#
+# routeBookBest = HillClimber[0]
+# for route in routeBookBest:
+#     print(route.route)
+#
+#
+# print(HillClimber[1])
+#
+# lol = checker(routeBookBest)
+# print(lol)
 
 # show needed output
 # print(grid)
