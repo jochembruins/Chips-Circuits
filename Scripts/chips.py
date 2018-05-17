@@ -38,7 +38,7 @@ routeBookEmpty = deepcopy(routeBook)
 
 
 ## RANDOM ROUTEFINDER
-# connect gates in netlist
+# leg wires van netlist
 # routeBookRandom = routeFinder(routeBook, grid)[1]
 # score = getScore(routeBookRandom)
 # print(score)
