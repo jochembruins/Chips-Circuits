@@ -63,7 +63,8 @@ print(HillClimber[1])
 print(check)
 plotLines(gates, routeBookBest)
 
-
+## A-star Algoritme
+#
 # j=0
 # for i in dalton:
 #     print(j)
