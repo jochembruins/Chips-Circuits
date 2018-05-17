@@ -33,21 +33,26 @@ gridAstar = gridMat2(gates)
 
 
 # make appropriate netlist order
-netlistDalton = wire.daltonMethod(netlist_2, gates)
+dalton = wire.daltonMethod(netlist_1, gates)
+netlistDalton = dalton[0]
+lowerBound = dalton[1]
+
+netlistDalton2 = wire.daltonMethod(netlist_2, gates)
 
 # make object for each netlist item
-# routeBook = makeObjects(netlistDalton, gates)
+routeBook = makeObjects(netlistDalton, gates)
 
-# routeBookEmpty = deepcopy(routeBook)
+routeBookEmpty = deepcopy(routeBook)
 
-randomRoute = randomRouteBook(routeBookEmpty, gates, 10000)
+## RANDOM ROUTEFINDER
+# leg wires van netlist adhv random netlist volgordes
+randomRoute = randomRouteBook(routeBookEmpty, gates, 3000)
 
-
-HillClimber = hillClimb(randomRoute[0], randomRoute[1], gates, 6000)
+# # HILLCLIMBER
+# # laat hilclimber werken
+HillClimber = hillClimb(randomRoute[0], randomRoute[1], gates, 2000)
 
 routeBookBest = HillClimber[0]
-for route in routeBookBest:
-    print(route.route)
 
 check = checker(routeBookBest)
 
@@ -57,31 +62,6 @@ print(HillClimber[1])
 # show needed output
 print(check)
 plotLines(gates, routeBookBest)
-
-
-
-
-
-
-## RANDOM ROUTEFINDER
-# leg wires van netlist
-
-# routeBookRandom = routeFinder(routeBook, grid)[1]
-# score = getScore(routeBookRandom)
-# print(score)
-
-## A-star ALGORITM
-# AstarAll(routeBookempty, gridAstar)
-
-
-# print(gridAstar)
-
-
-# for route in routeBookEmpty:
-#     print(route)
-
-
-# Astar met routebook:
 
 
 # j=0
