@@ -39,6 +39,7 @@ routeBookEmpty = deepcopy(routeBook)
 
 randomRoute = randomRouteBook(routeBookEmpty, gates, 10000)
 
+<<<<<<< HEAD
 HillClimber = hillClimb(randomRoute[0], randomRoute[1], gates, 6000)
 
 routeBookBest = HillClimber[0]
@@ -58,8 +59,10 @@ plotLines(gates, routeBookBest)
 
 
 
-# RANDOM ROUTEFINDER
-# connect gates in netlist
+
+## RANDOM ROUTEFINDER
+# leg wires van netlist
+
 # routeBookRandom = routeFinder(routeBook, grid)[1]
 # score = getScore(routeBookRandom)
 # print(score)
