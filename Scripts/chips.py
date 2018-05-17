@@ -39,8 +39,8 @@ routeBookEmpty = deepcopy(routeBook)
 
 ## RANDOM ROUTEFINDER
 # connect gates in netlist
-#routeBookRandom = routeFinder(routeBook, grid)[1]
-#score = getScore(routeBookRandom)
+# routeBookRandom = routeFinder(routeBook, grid)[1]
+# score = getScore(routeBookRandom)
 # print(score)
 
 ## A-star ALGORITM
@@ -89,7 +89,7 @@ for i in hoi:
 
 # check = checker(routeBookBest)
 
-
+# print beste score gevonden door hillclimber
 # print(HillClimber[1])
 
 # show needed output
