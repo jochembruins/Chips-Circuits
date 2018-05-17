@@ -34,6 +34,12 @@ cd scripts
 python3 chips.py
 ```
 
+#
+
+Lowerbound = x = som directe afstanden wires
+Upperbound = x + som die loopt van i = 0 tot lambda over 2i (hierbij is lambda gelijk aan aantal netlists - 1) + 2y
+(hierbij is y gates dubbel in netlist)
+
 ## Dank
 
 * Nicole Silverio - begeleider
