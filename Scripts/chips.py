@@ -35,9 +35,9 @@ grid = gridMat(gates)
 netlistDalton = wire.daltonMethod(netlist_2, gates)
 
 # make object for each netlist item
-# routeBook = makeObjects(netlistDalton, gates)
+routeBook = makeObjects(netlistDalton, gates)
 
-# routeBookEmpty = deepcopy(routeBook)
+routeBookEmpty = deepcopy(routeBook)
 
 randomRoute = randomRouteBook(routeBookEmpty, gates, 10000)
 
