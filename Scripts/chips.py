@@ -59,9 +59,6 @@ print(HillClimber[1])
 print(check)
 plotLines(gates, routeBookBest)
 
-
-
-
 gridAstar = gridMat2(gates)
 
 
