@@ -30,10 +30,10 @@ gates = makeLocations(gatesLoc)
 # initialize 13 x 18 x 8 (= L x W x H) grid with gates
 grid = gridMat(gates)
 
-netlistDalton = dalton[0]
-lowerBound = dalton[1]
+# netlistDalton = dalton[0]
+# lowerBound = dalton[1]
 
-netlistDalton2 = wire.daltonMethod(netlist_2, gates)
+netlistDalton = wire.daltonMethod(netlist_1, gates)[0]
 
 # make object for each netlist item
 routeBook = makeObjects(netlistDalton, gates)
@@ -42,7 +42,7 @@ routeBookEmpty = deepcopy(routeBook)
 
 ## RANDOM ROUTEFINDER
 # leg wires van netlist adhv random netlist volgordes
-randomRoute = randomRouteBook(routeBookEmpty, gates, 3000)
+randomRoute = randomRouteBook(routeBookEmpty, gates, 50)
 
 # # HILLCLIMBER
 # # laat hilclimber werken

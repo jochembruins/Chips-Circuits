@@ -77,7 +77,9 @@ def randomRouteBook(routeBook, gates, steps=1000):
 
     bestRouteBook = []
     score = 1000
-
+    file  = open('random.csv', "w")
+    writer = csv.writer(file, delimiter=',')
+    
     for i in range(0, steps):
         newRouteBook = routeBook
 
@@ -105,6 +107,8 @@ def randomRouteBook(routeBook, gates, steps=1000):
             newScore = getScore(newRouteFound)
             print("oude score random: ", score)
             print("nieuwe score random: ", newScore)
+            writer.writerow([i, newScore])
+    
             
             check = checker(newRouteFound)
 
@@ -117,7 +121,7 @@ def randomRouteBook(routeBook, gates, steps=1000):
                     print('lager')
                 else:
                     print('hoger')
-        
+    file.close()
     return bestRouteBook, score, bestRouteFound
 
 
@@ -260,7 +264,7 @@ def routeFinder(routeBook, grid):
             route.append(netPoint.locTo)
             count +=1
             
-            if count == 70:
+            if count == 200:
                 # print('meer dan 100')
                 sys.exit
 
