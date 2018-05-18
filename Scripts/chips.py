@@ -42,7 +42,7 @@ routeBookEmpty = deepcopy(routeBook)
 
 ## RANDOM ROUTEFINDER
 # leg wires van netlist adhv random netlist volgordes
-randomRoute = randomRouteBook(routeBookEmpty, gates, 1000)
+randomRoute = randomRouteBook(routeBookEmpty, gates, 2000)
 
 # # HILLCLIMBER
 # laat hilclimber werken
