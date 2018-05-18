@@ -15,6 +15,7 @@
 #
 # Contains all functions used in chips.py
 ###########################################################
+from time import time
 from typing import List
 
 import csv
@@ -26,6 +27,7 @@ from surroundings_gates import *
 from random import randint
 from random import shuffle
 from copy import deepcopy
+from surroundings_gates import *
 import copy
 
 np.set_printoptions(threshold=np.nan)
@@ -44,19 +46,19 @@ def makeObjects(netlist, gates):
     emptyRouteBook = []
 
     for point in netlist:
-        locFrom = [gates[point[0]].z, gates[point[0]].y, gates[point[0]].x]
-        locTo = [gates[point[1]].z, gates[point[1]].y, gates[point[1]].x]
+        locFrom = [gates[point[0]].x, gates[point[0]].y, gates[point[0]].z]
+        locTo = [gates[point[1]].x, gates[point[1]].y, gates[point[1]].z]
         # surrounding gridpoints of start/end point
-        fromSurround = [[gates[point[0]].z, gates[point[0]].y + 1, gates[point[0]].x],
-                      [gates[point[0]].z, gates[point[0]].y - 1, gates[point[0]].x],
-                      [gates[point[0]].z, gates[point[0]].y, gates[point[0]].x + 1],
-                      [gates[point[0]].z, gates[point[0]].y, gates[point[0]].x - 1],
-                      [gates[point[0]].z + 1, gates[point[0]].y, gates[point[0]].x]]
-        toSurround = [[gates[point[1]].z, gates[point[1]].y + 1, gates[point[1]].x],
-                      [gates[point[1]].z, gates[point[1]].y - 1, gates[point[1]].x],
-                      [gates[point[1]].z, gates[point[1]].y, gates[point[1]].x + 1],
-                      [gates[point[1]].z, gates[point[1]].y, gates[point[1]].x - 1],
-                      [gates[point[1]].z + 1, gates[point[1]].y, gates[point[1]].x]]
+        fromSurround = [[gates[point[0]].x, gates[point[0]].y + 1, gates[point[0]].z],
+                      [gates[point[0]].x, gates[point[0]].y - 1, gates[point[0]].z],
+                      [gates[point[0]].x + 1, gates[point[0]].y, gates[point[0]].z],
+                      [gates[point[0]].x - 1, gates[point[0]].y, gates[point[0]].z ],
+                      [gates[point[0]].x, gates[point[0]].y, gates[point[0]].z + 1]]
+        toSurround = [[gates[point[1]].x, gates[point[1]].y + 1, gates[point[1]].z],
+                      [gates[point[1]].x, gates[point[1]].y - 1, gates[point[1]].z],
+                      [gates[point[1]].x + 1, gates[point[1]].y, gates[point[1]].z],
+                      [gates[point[1]].x - 1, gates[point[1]].y, gates[point[1]].z],
+                      [gates[point[1]].x, gates[point[1]].y, gates[point[1]].z +1]]
         route = []
         emptyRoute = wire(point, locFrom, locTo, fromSurround, toSurround, route)
         # print(emptyRoute)
@@ -77,10 +79,11 @@ def gridMat(gates):
 def randomRouteBook(routeBook, gates, steps=1000):
     random.seed(2)
     bestRouteBook = []
-    score = 100000
 
-    netlist12 = []
-
+    score = 1000
+    file  = open('random.csv', "w")
+    writer = csv.writer(file, delimiter=',')
+    
     for i in range(0, steps):
         print(i)
         newRouteBook = deepcopy(routeBook)
@@ -117,6 +120,8 @@ def randomRouteBook(routeBook, gates, steps=1000):
             newScore = getScore(newRouteFound)
             print("oude score random: ", score)
             print("nieuwe score random: ", newScore)
+            writer.writerow([i, newScore])
+    
             
             check = checker(newRouteFound)
 
@@ -130,7 +135,7 @@ def randomRouteBook(routeBook, gates, steps=1000):
                 else:
                     print('hoger')
 
-        
+    file.close()
     return bestRouteBook, score, bestRouteFound
 
 
@@ -271,12 +276,12 @@ def routeFinder(routeBook, grid):
                 route.append(locTo)
             route.append(netPoint.locTo)
             count +=1
-            # print(count)
 
-            if count == 250:
-                # print(netPoint)
-                print('meer dan 100')
+            
+            if count == 200:
+                # print('meer dan 100')
                 sys.exit
+
 
             for step in route:
                 if step[0] > 10:
@@ -341,7 +346,7 @@ def plotLines(gates, routeBook):
 
         # leg wires in plot zoals in het routebook
     for netPoint in routeBook:
-        ax.plot([step[2] for step in netPoint.route], [step[1] for step in netPoint.route], [step[0] for step in netPoint.route])
+        ax.plot([step[0] for step in netPoint.route], [step[1] for step in netPoint.route], [step[2] for step in netPoint.route])
 
     plt.show()
 
@@ -461,16 +466,24 @@ def Astar(gates, wire, gridd):
     print(locfrom)
     print("locto")
     print(locto)
+
+    route=[]
     if distance(locfrom, locto) == 1:
-        route = []
+        route.append(locto)
+        route.append(locfrom)
     else:
         route = putwire(gridwithnodes, locfrom, locto)
+        route.append(locfrom)
+    route = list(reversed(route))
+
     return route
 
 # putwire plaatst nodes totdat de locatie bereikt is
 def putwire(gridwithnodes, locfrom, locto):
     start = locfrom
     direction = matrix_store_direction()
+
+
 
     while (distance(start, locto) != 1):
         gridwithnodes = putnodes(start, gridwithnodes, locto, locfrom, direction)[0]
@@ -609,6 +622,7 @@ def minimumnodes(grid):
 def findroute(gridwithnodes, locfrom, locto, start, direction):
     index = 0
     route = []
+    route.append(locto)
     route.append(start)
     while distance(locfrom, start) != 1:
         routeelement = checkclosednode(direction, start)
@@ -619,16 +633,18 @@ def findroute(gridwithnodes, locfrom, locto, start, direction):
 
 def Gcost(start, destination, grid, node):
     if node in surround_list:
+
+        count_surrounded = surround_list.count(node)
         if grid[start[0]][start[1]][start[2]] > 10000:
-            gcost = grid[start[0]][start[1]][start[2]] - 10000 - distance(start, destination) + 1 + 50 + 70 - node[2]
+            gcost = grid[start[0]][start[1]][start[2]] - 10000 - distance(start, destination) + 1 + 10**count_surrounded
         else:
-            gcost = 1 + 50 + 70 - node[2]*10
+            gcost = 1 + 10**count_surrounded
         return gcost
     else:
-        if grid[start[0]][start[1]][start[2]]>10000:
-            gcost = grid[start[0]][start[1]][start[2]] - 10000 - distance(start, destination) + 1 + 70 - node[2]
+        if grid[start[0]][start[1]][start[2]] > 10000:
+            gcost = grid[start[0]][start[1]][start[2]] - 10000 - distance(start, destination) + 1
         else:
-            gcost = 1 + 10 - node[2]
+            gcost = 1
         return gcost
 
 
@@ -672,17 +688,19 @@ def getlistsurroundings(gates):
         nodevoor = [start[0], start[1] + 1, start[2]]
         nodeachter = [start[0], start[1] - 1, start[2]]
 
-        if checkexistance(nodelinks) and nodelinks not in list:
+
+        if checkexistance(nodelinks):
             list.append(nodelinks)
-        if checkexistance(noderechts) and noderechts not in list:
+        if checkexistance(noderechts):
             list.append(noderechts)
-        if checkexistance(nodeboven) and nodeboven not in list:
+        if checkexistance(nodeboven):
             list.append(nodeboven)
-        if checkexistance(nodebeneden) and nodebeneden not in list:
+        if checkexistance(nodebeneden):
             list.append(nodebeneden)
-        if checkexistance(nodevoor) and nodevoor not in list:
+        if checkexistance(nodevoor):
             list.append(nodevoor)
-        if checkexistance(nodeachter) and nodeachter not in list:
+        if checkexistance(nodeachter):
             list.append(nodeachter)
     list=sorted(list)
     return list
+
