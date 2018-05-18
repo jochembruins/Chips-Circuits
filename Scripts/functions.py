@@ -15,6 +15,7 @@
 #
 # Contains all functions used in chips.py
 ###########################################################
+from time import time
 from typing import List
 
 import csv
@@ -25,6 +26,7 @@ from classes import *
 from random import randint
 from random import shuffle
 from copy import deepcopy
+from surroundings_gates import *
 import copy
 
 np.set_printoptions(threshold=np.nan)
@@ -43,19 +45,19 @@ def makeObjects(netlist, gates):
     emptyRouteBook = []
 
     for point in netlist:
-        locFrom = [gates[point[0]].z, gates[point[0]].y, gates[point[0]].x]
-        locTo = [gates[point[1]].z, gates[point[1]].y, gates[point[1]].x]
+        locFrom = [gates[point[0]].x, gates[point[0]].y, gates[point[0]].z]
+        locTo = [gates[point[1]].x, gates[point[1]].y, gates[point[1]].z]
         # surrounding gridpoints of start/end point
-        fromSurround = [[gates[point[0]].z, gates[point[0]].y + 1, gates[point[0]].x],
-                      [gates[point[0]].z, gates[point[0]].y - 1, gates[point[0]].x],
-                      [gates[point[0]].z, gates[point[0]].y, gates[point[0]].x + 1],
-                      [gates[point[0]].z, gates[point[0]].y, gates[point[0]].x - 1],
-                      [gates[point[0]].z + 1, gates[point[0]].y, gates[point[0]].x]]
-        toSurround = [[gates[point[1]].z, gates[point[1]].y + 1, gates[point[1]].x],
-                      [gates[point[1]].z, gates[point[1]].y - 1, gates[point[1]].x],
-                      [gates[point[1]].z, gates[point[1]].y, gates[point[1]].x + 1],
-                      [gates[point[1]].z, gates[point[1]].y, gates[point[1]].x - 1],
-                      [gates[point[1]].z + 1, gates[point[1]].y, gates[point[1]].x]]
+        fromSurround = [[gates[point[0]].x, gates[point[0]].y + 1, gates[point[0]].z],
+                      [gates[point[0]].x, gates[point[0]].y - 1, gates[point[0]].z],
+                      [gates[point[0]].x + 1, gates[point[0]].y, gates[point[0]].z],
+                      [gates[point[0]].x - 1, gates[point[0]].y, gates[point[0]].z ],
+                      [gates[point[0]].x, gates[point[0]].y, gates[point[0]].z + 1]]
+        toSurround = [[gates[point[1]].x, gates[point[1]].y + 1, gates[point[1]].z],
+                      [gates[point[1]].x, gates[point[1]].y - 1, gates[point[1]].z],
+                      [gates[point[1]].x + 1, gates[point[1]].y, gates[point[1]].z],
+                      [gates[point[1]].x - 1, gates[point[1]].y, gates[point[1]].z],
+                      [gates[point[1]].x, gates[point[1]].y, gates[point[1]].z +1]]
         route = []
         emptyRoute = wire(point, locFrom, locTo, fromSurround, toSurround, route)
         # print(emptyRoute)
@@ -324,7 +326,7 @@ def plotLines(gates, routeBook):
 
         # leg wires in plot zoals in het routebook
     for netPoint in routeBook:
-        ax.plot([step[2] for step in netPoint.route], [step[1] for step in netPoint.route], [step[0] for step in netPoint.route])
+        ax.plot([step[0] for step in netPoint.route], [step[1] for step in netPoint.route], [step[2] for step in netPoint.route])
 
     plt.show()
 
@@ -444,13 +446,23 @@ def Astar(gates, wire, gridd):
     print(locfrom)
     print("locto")
     print(locto)
-    route = putwire(gridwithnodes, locfrom, locto)
+    route=[]
+    if distance(locfrom, locto) == 1:
+        route.append(locto)
+        route.append(locfrom)
+    else:
+        route = putwire(gridwithnodes, locfrom, locto)
+        route.append(locfrom)
+    route = list(reversed(route))
+
     return route
 
 # putwire plaatst nodes totdat de locatie bereikt is
 def putwire(gridwithnodes, locfrom, locto):
     start = locfrom
     direction = matrix_store_direction()
+
+
 
     while (distance(start, locto) != 1):
         gridwithnodes = putnodes(start, gridwithnodes, locto, locfrom, direction)[0]
@@ -483,7 +495,7 @@ def putnodes(start, grid, destination, locfrom, direction):
 
     # boven
     if checkexistance(nodeboven) and check_isempty(nodeboven, grid) and check_not_closed_node(nodeboven, grid):
-        nodebovenpotentieel = 100 + Gcost(start, destination, grid) + distance(nodeboven, destination)
+        nodebovenpotentieel = 100 + Gcost(start, destination, grid, nodeboven) + distance(nodeboven, destination)
 
     if checkexistance(nodeboven) and (grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] == 99 or nodebovenpotentieel <
                                       grid[nodeboven[0]][nodeboven[1]][nodeboven[2]]):
@@ -492,7 +504,7 @@ def putnodes(start, grid, destination, locfrom, direction):
 
     # beneden
     if checkexistance(nodebeneden) and check_isempty(nodebeneden, grid) and check_not_closed_node(nodebeneden, grid):
-        nodebenedenpotentieel = 100 + Gcost(start, destination, grid) + distance(nodebeneden, destination)
+        nodebenedenpotentieel = 100 + Gcost(start, destination, grid, nodebeneden) + distance(nodebeneden, destination)
 
     if checkexistance(nodebeneden) and (
             grid[nodebeneden[0]][nodebeneden[1]][nodebeneden[2]] == 99 or nodebenedenpotentieel <
@@ -502,7 +514,7 @@ def putnodes(start, grid, destination, locfrom, direction):
 
     # links
     if  checkexistance(nodelinks) and check_isempty(nodelinks, grid) and check_not_closed_node(nodelinks, grid):
-        nodelinkspotentieel = 100 + Gcost(start, destination, grid) + distance(nodelinks, destination)
+        nodelinkspotentieel = 100 + Gcost(start, destination, grid, nodelinks) + distance(nodelinks, destination)
 
 
     if checkexistance(nodelinks) and (grid[nodelinks[0]][nodelinks[1]][nodelinks[2]] == 99 or nodelinkspotentieel < grid[nodelinks[0]][nodelinks[1]][nodelinks[2]]):
@@ -511,7 +523,7 @@ def putnodes(start, grid, destination, locfrom, direction):
 
     # rechts
     if checkexistance(noderechts) and check_isempty(noderechts, grid) and check_not_closed_node(noderechts, grid):
-        noderechtspotentieel = 100 + Gcost(start, destination, grid) + distance(noderechts, destination)
+        noderechtspotentieel = 100 + Gcost(start, destination, grid, noderechts) + distance(noderechts, destination)
 
 
     if checkexistance(noderechts) and (grid[noderechts[0]][noderechts[1]][noderechts[2]] == 99 or noderechtspotentieel < grid[noderechts[0]][noderechts[1]][noderechts[2]]):
@@ -521,7 +533,7 @@ def putnodes(start, grid, destination, locfrom, direction):
 
     # voor
     if checkexistance(nodevoor) and check_isempty(nodevoor, grid) and check_not_closed_node(nodevoor, grid):
-        nodevoorpotentieel = 100 + Gcost(start, destination, grid) + distance(nodevoor, destination)
+        nodevoorpotentieel = 100 + Gcost(start, destination, grid, nodevoor) + distance(nodevoor, destination)
 
     if checkexistance(nodevoor) and (grid[nodevoor[0]][nodevoor[1]][nodevoor[2]] == 99 or nodevoorpotentieel < grid[nodevoor[0]][nodevoor[1]][nodevoor[2]]):
         grid[nodevoor[0]][nodevoor[1]][nodevoor[2]] = nodevoorpotentieel
@@ -529,7 +541,7 @@ def putnodes(start, grid, destination, locfrom, direction):
 
     # achter
     if checkexistance(nodeachter) and check_isempty(nodeachter, grid) and check_not_closed_node(nodeachter, grid):
-        nodeachterpotentieel = 100 + Gcost(start, destination, grid) + distance(nodeachter, destination)
+        nodeachterpotentieel = 100 + Gcost(start, destination, grid, nodeachter) + distance(nodeachter, destination)
 
     if checkexistance(nodeachter) and (grid[nodeachter[0]][nodeachter[1]][nodeachter[2]] == 99 or nodeachterpotentieel < grid[nodeachter[0]][nodeachter[1]][nodeachter[2]]):
         grid[nodeachter[0]][nodeachter[1]][nodeachter[2]] = nodeachterpotentieel
@@ -589,6 +601,7 @@ def minimumnodes(grid):
 def findroute(gridwithnodes, locfrom, locto, start, direction):
     index = 0
     route = []
+    route.append(locto)
     route.append(start)
     while distance(locfrom, start) != 1:
         routeelement = checkclosednode(direction, start)
@@ -597,12 +610,21 @@ def findroute(gridwithnodes, locfrom, locto, start, direction):
     return route
 
 
-def Gcost(start, destination, grid):
-    if grid[start[0]][start[1]][start[2]]>10000:
-        gcost = grid[start[0]][start[1]][start[2]] - 10000 - distance(start, destination) + 1
+def Gcost(start, destination, grid, node):
+    if node in surround_list:
+        count_surrounded = surround_list.count(node)
+        if grid[start[0]][start[1]][start[2]] > 10000:
+            gcost = grid[start[0]][start[1]][start[2]] - 10000 - distance(start, destination) + 1 + 10**count_surrounded
+        else:
+            gcost = 1 + 10**count_surrounded
+        return gcost
     else:
-        gcost = 1
-    return gcost
+        if grid[start[0]][start[1]][start[2]] > 10000:
+            gcost = grid[start[0]][start[1]][start[2]] - 10000 - distance(start, destination) + 1
+        else:
+            gcost = 1
+        return gcost
+
 
 def checkclosednode(direction, start):
     value = direction[start[0]][start[1]][start[2]]
@@ -631,9 +653,30 @@ def checkclosednode(direction, start):
         quit()
     return start
 
+def getlistsurroundings(gates):
+    list=[]
+    for i in range(len(gates)):
+        start = [gates[i].x, gates[i].y, gates[i].z]
 
-# def AstarAll(routeBook, grid):
-#     for routes in Routebook:
+        nodelinks = [start[0] - 1, start[1], start[2]]
+        noderechts = [start[0] + 1, start[1], start[2]]
+        nodeboven = [start[0], start[1], start[2] + 1]
+        nodebeneden = [start[0], start[1], start[2] - 1]
+        nodevoor = [start[0], start[1] + 1, start[2]]
+        nodeachter = [start[0], start[1] - 1, start[2]]
 
-
+        if checkexistance(nodelinks):
+            list.append(nodelinks)
+        if checkexistance(noderechts):
+            list.append(noderechts)
+        if checkexistance(nodeboven):
+            list.append(nodeboven)
+        if checkexistance(nodebeneden):
+            list.append(nodebeneden)
+        if checkexistance(nodevoor):
+            list.append(nodevoor)
+        if checkexistance(nodeachter):
+            list.append(nodeachter)
+    list=sorted(list)
+    return list
 
