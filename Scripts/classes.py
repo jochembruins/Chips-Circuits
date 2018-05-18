@@ -54,11 +54,10 @@ class wire(object):
         netlistversion3 = []
         # lengte netlist berekend
         k = len(netlist)
-
         # itereren over lengte netlist
         for j in range(0, k):
 
-            # het minimum worddt op een hoog getal gezet
+            # het minimum wordt op een hoog getal gezet
             minimum = 1000
             # numbernetlist wordt 0
             numbernetlist = 0
@@ -95,6 +94,7 @@ class wire(object):
     # hierbij wordt er geordend of een netlistelementconnectie (blauwe lijn) aan de buitenkant ligt
     # als argument wordt een netlist genomen + de gates
     def UIMethod_forprint1(netlist, gate):
+
         # tweede versie van netlist opgeslagen
         netlistversion2 = netlist
         # lege derde versie van te definiëren netlist opgeslagen
@@ -110,7 +110,6 @@ class wire(object):
         # helftbreedte en hoogte worden berekend om het bord te scheiden
         helftbreedte = breedte / 2
         helfthoogte = hoogte / 2
-
         # itereren over lengte netlist
         for j in range(0, k):
             # het minimum worddt op een hoog getal gezet

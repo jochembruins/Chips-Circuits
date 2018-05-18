@@ -37,8 +37,10 @@ dalton = wire.daltonMethod(netlist_1, gates)
 netlistDalton = dalton[0]
 lowerBound = dalton[1]
 
-netlistDalton2 = wire.daltonMethod(netlist_2, gates)
-
+dalton2 = wire.daltonMethod(netlist_3, gates)
+netlistDalton2 = dalton2[0]
+lowerBound = dalton2[1]
+#
 # make object for each netlist item
 routeBook = makeObjects(netlistDalton, gates)
 
@@ -47,21 +49,27 @@ routeBookEmpty = deepcopy(routeBook)
 ## RANDOM ROUTEFINDER
 # leg wires van netlist adhv random netlist volgordes
 randomRoute = randomRouteBook(routeBookEmpty, gates, 3000)
+print(randomRoute[1])
+# for ding in randomRoute[2]:
+#     print(ding)
+
+# randomRoute = routeFinder(routeBook, grid)
+
 
 # # HILLCLIMBER
 # # laat hilclimber werken
-HillClimber = hillClimb(randomRoute[0], randomRoute[1], gates, 2000)
-
-routeBookBest = HillClimber[0]
-
-check = checker(routeBookBest)
-
-#print beste score gevonden door hillclimber
-print(HillClimber[1])
-
+# HillClimber = hillClimb(randomRoute[0], randomRoute[1], gates, 2000)
+#
+# routeBookBest = HillClimber[0]
+#
+# check = checker(routeBookBest)
+#
+# #print beste score gevonden door hillclimber
+# print(HillClimber[1])
+#
 # show needed output
-print(check)
-plotLines(gates, routeBookBest)
+# print(check)
+plotLines(gates, randomRoute[2])
 
 ## A-star Algoritme
 #

@@ -22,6 +22,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.axes3d import Axes3D
 from classes import *
+from surroundings_gates import *
 from random import randint
 from random import shuffle
 from copy import deepcopy
@@ -66,7 +67,7 @@ def makeObjects(netlist, gates):
 
 def gridMat(gates):
     # make matrix of grid
-    matgrid = np.zeros([20, 13, 18]) + 99
+    matgrid = np.zeros([100, 13, 18]) + 99
 
     for gate in gates:
         matgrid[gate.z, gate.y, gate.x] = gate.gate
@@ -74,12 +75,15 @@ def gridMat(gates):
 
 
 def randomRouteBook(routeBook, gates, steps=1000):
-
+    random.seed(2)
     bestRouteBook = []
-    score = 1000
+    score = 100000
+
+    netlist12 = []
 
     for i in range(0, steps):
-        newRouteBook = routeBook
+        print(i)
+        newRouteBook = deepcopy(routeBook)
 
         shuffle(newRouteBook)
 
@@ -91,17 +95,25 @@ def randomRouteBook(routeBook, gates, steps=1000):
         finished = False
       
         newScore = score
+
+        # if i == 14:
+        #     for ding in newRouteBook:
+        #         netlist12.append(ding.netPoint)
+        #     print(netlist12)
+        #     exit()
         
         # probeer nieuwe route te vinden
         try:
             newRouteFound = routeFinder(tmp_newRouteBook, grid)[1]
+
             finished = True
         except:
             finished = False
 
-            
+
+
         # bereken nieuwe score   
-        if finished: 
+        if finished:
             newScore = getScore(newRouteFound)
             print("oude score random: ", score)
             print("nieuwe score random: ", newScore)
@@ -117,11 +129,9 @@ def randomRouteBook(routeBook, gates, steps=1000):
                     print('lager')
                 else:
                     print('hoger')
+
         
     return bestRouteBook, score, bestRouteFound
-
-
-
 
 
 
@@ -203,6 +213,7 @@ def routeFinder(routeBook, grid):
 
                 # check if previous step is possible else delete and go up z-axis
                 if grid[cursor[0], cursor[1], cursor[2]] != 99:
+
                     del route[-1]
                     cursor = [route[-1][0], route[-1][1], route[-1][2]]
                     cursor[0] += 1
@@ -212,6 +223,7 @@ def routeFinder(routeBook, grid):
                     if len(route) > 3 and route[-1] == route[-3]:
                         del route[-2:]
 
+                    # if up not possible, cut wire above
                     if grid[cursor[0], cursor[1], cursor[2]] != 99:
                         for netPointToDelete in routeBookDone:
                             for routepoint in netPointToDelete.route:
@@ -246,29 +258,33 @@ def routeFinder(routeBook, grid):
                                 cursor[0] -= 1
                                 route.append([cursor[0], cursor[1], cursor[2]])
                                 break
-                # delete useless first steps
+
+                # delete first steps that are not usefull
                 if len(route) > 2 and abs(netPoint.locFrom[0] - cursor[0]) + abs(netPoint.locFrom[1] - cursor[1]) + abs(netPoint.locFrom[2] - cursor[2]) == 1:
                     del route[-3:-1]
                 # if only one step away from original endpoint, stop
                 if abs(netPoint.locTo[0] - cursor[0]) + abs(netPoint.locTo[1] - cursor[1]) + abs(netPoint.locTo[2] - cursor[2]) < 2:
                     stop = 1
                     break
-
             # add end point to route
             if stop == 0:
                 route.append(locTo)
             route.append(netPoint.locTo)
             count +=1
-            
-            if count == 70:
-                # print('meer dan 100')
+            # print(count)
+
+            if count == 250:
+                # print(netPoint)
+                print('meer dan 100')
                 sys.exit
 
-
-            # for step in route:
-            #     if step[0] > 7:
-            #         # print('te hoog')
-            #         sys.exit
+            for step in route:
+                if step[0] > 10:
+                    # print(netPoint)
+                    # print(len(routeBookDone))
+                    print('te hoog')
+                    sys.exit
+                    # return routeBookEmpty, routeBookDone, grid
 
             # save route in netPoint object
             netPoint.route = route
@@ -277,8 +293,13 @@ def routeFinder(routeBook, grid):
             doneWire = routeBookEmpty.pop(routeBookEmpty.index(netPoint))
             routeBookDone.append(doneWire)
 
+
             # update matrix for route
             changeMat(netPoint.route[1:-1], grid)
+    print(len(routeBookDone))
+    for ding in routeBookDone:
+        print(ding)
+
     return routeBookEmpty, routeBookDone, grid
 
 def changeMat(route, grid):
@@ -440,7 +461,10 @@ def Astar(gates, wire, gridd):
     print(locfrom)
     print("locto")
     print(locto)
-    route = putwire(gridwithnodes, locfrom, locto)
+    if distance(locfrom, locto) == 1:
+        route = []
+    else:
+        route = putwire(gridwithnodes, locfrom, locto)
     return route
 
 # putwire plaatst nodes totdat de locatie bereikt is
@@ -479,7 +503,7 @@ def putnodes(start, grid, destination, locfrom, direction):
 
     # boven
     if checkexistance(nodeboven) and check_isempty(nodeboven, grid) and check_not_closed_node(nodeboven, grid):
-        nodebovenpotentieel = 100 + Gcost(start, destination, grid) + distance(nodeboven, destination)
+        nodebovenpotentieel = 100 + Gcost(start, destination, grid, nodeboven) + distance(nodeboven, destination)
 
     if checkexistance(nodeboven) and (grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] == 99 or nodebovenpotentieel <
                                       grid[nodeboven[0]][nodeboven[1]][nodeboven[2]]):
@@ -488,7 +512,7 @@ def putnodes(start, grid, destination, locfrom, direction):
 
     # beneden
     if checkexistance(nodebeneden) and check_isempty(nodebeneden, grid) and check_not_closed_node(nodebeneden, grid):
-        nodebenedenpotentieel = 100 + Gcost(start, destination, grid) + distance(nodebeneden, destination)
+        nodebenedenpotentieel = 100 + Gcost(start, destination, grid, nodebeneden) + distance(nodebeneden, destination)
 
     if checkexistance(nodebeneden) and (
             grid[nodebeneden[0]][nodebeneden[1]][nodebeneden[2]] == 99 or nodebenedenpotentieel <
@@ -498,7 +522,7 @@ def putnodes(start, grid, destination, locfrom, direction):
 
     # links
     if  checkexistance(nodelinks) and check_isempty(nodelinks, grid) and check_not_closed_node(nodelinks, grid):
-        nodelinkspotentieel = 100 + Gcost(start, destination, grid) + distance(nodelinks, destination)
+        nodelinkspotentieel = 100 + Gcost(start, destination, grid, nodelinks) + distance(nodelinks, destination)
 
 
     if checkexistance(nodelinks) and (grid[nodelinks[0]][nodelinks[1]][nodelinks[2]] == 99 or nodelinkspotentieel < grid[nodelinks[0]][nodelinks[1]][nodelinks[2]]):
@@ -507,7 +531,7 @@ def putnodes(start, grid, destination, locfrom, direction):
 
     # rechts
     if checkexistance(noderechts) and check_isempty(noderechts, grid) and check_not_closed_node(noderechts, grid):
-        noderechtspotentieel = 100 + Gcost(start, destination, grid) + distance(noderechts, destination)
+        noderechtspotentieel = 100 + Gcost(start, destination, grid, noderechts) + distance(noderechts, destination)
 
 
     if checkexistance(noderechts) and (grid[noderechts[0]][noderechts[1]][noderechts[2]] == 99 or noderechtspotentieel < grid[noderechts[0]][noderechts[1]][noderechts[2]]):
@@ -517,7 +541,7 @@ def putnodes(start, grid, destination, locfrom, direction):
 
     # voor
     if checkexistance(nodevoor) and check_isempty(nodevoor, grid) and check_not_closed_node(nodevoor, grid):
-        nodevoorpotentieel = 100 + Gcost(start, destination, grid) + distance(nodevoor, destination)
+        nodevoorpotentieel = 100 + Gcost(start, destination, grid, nodevoor) + distance(nodevoor, destination)
 
     if checkexistance(nodevoor) and (grid[nodevoor[0]][nodevoor[1]][nodevoor[2]] == 99 or nodevoorpotentieel < grid[nodevoor[0]][nodevoor[1]][nodevoor[2]]):
         grid[nodevoor[0]][nodevoor[1]][nodevoor[2]] = nodevoorpotentieel
@@ -525,7 +549,7 @@ def putnodes(start, grid, destination, locfrom, direction):
 
     # achter
     if checkexistance(nodeachter) and check_isempty(nodeachter, grid) and check_not_closed_node(nodeachter, grid):
-        nodeachterpotentieel = 100 + Gcost(start, destination, grid) + distance(nodeachter, destination)
+        nodeachterpotentieel = 100 + Gcost(start, destination, grid, nodeachter) + distance(nodeachter, destination)
 
     if checkexistance(nodeachter) and (grid[nodeachter[0]][nodeachter[1]][nodeachter[2]] == 99 or nodeachterpotentieel < grid[nodeachter[0]][nodeachter[1]][nodeachter[2]]):
         grid[nodeachter[0]][nodeachter[1]][nodeachter[2]] = nodeachterpotentieel
@@ -593,12 +617,20 @@ def findroute(gridwithnodes, locfrom, locto, start, direction):
     return route
 
 
-def Gcost(start, destination, grid):
-    if grid[start[0]][start[1]][start[2]]>10000:
-        gcost = grid[start[0]][start[1]][start[2]] - 10000 - distance(start, destination) + 1
+def Gcost(start, destination, grid, node):
+    if node in surround_list:
+        if grid[start[0]][start[1]][start[2]] > 10000:
+            gcost = grid[start[0]][start[1]][start[2]] - 10000 - distance(start, destination) + 1 + 50 + 70 - node[2]
+        else:
+            gcost = 1 + 50 + 70 - node[2]*10
+        return gcost
     else:
-        gcost = 1
-    return gcost
+        if grid[start[0]][start[1]][start[2]]>10000:
+            gcost = grid[start[0]][start[1]][start[2]] - 10000 - distance(start, destination) + 1 + 70 - node[2]
+        else:
+            gcost = 1 + 10 - node[2]
+        return gcost
+
 
 def checkclosednode(direction, start):
     value = direction[start[0]][start[1]][start[2]]
@@ -628,8 +660,29 @@ def checkclosednode(direction, start):
     return start
 
 
-# def AstarAll(routeBook, grid):
-#     for routes in Routebook:
+def getlistsurroundings(gates):
+    list=[]
+    for i in range(len(gates)):
+        start = [gates[i].x, gates[i].y, gates[i].z]
 
+        nodelinks = [start[0] - 1, start[1], start[2]]
+        noderechts = [start[0] + 1, start[1], start[2]]
+        nodeboven = [start[0], start[1], start[2] + 1]
+        nodebeneden = [start[0], start[1], start[2] - 1]
+        nodevoor = [start[0], start[1] + 1, start[2]]
+        nodeachter = [start[0], start[1] - 1, start[2]]
 
-
+        if checkexistance(nodelinks) and nodelinks not in list:
+            list.append(nodelinks)
+        if checkexistance(noderechts) and noderechts not in list:
+            list.append(noderechts)
+        if checkexistance(nodeboven) and nodeboven not in list:
+            list.append(nodeboven)
+        if checkexistance(nodebeneden) and nodebeneden not in list:
+            list.append(nodebeneden)
+        if checkexistance(nodevoor) and nodevoor not in list:
+            list.append(nodevoor)
+        if checkexistance(nodeachter) and nodeachter not in list:
+            list.append(nodeachter)
+    list=sorted(list)
+    return list
