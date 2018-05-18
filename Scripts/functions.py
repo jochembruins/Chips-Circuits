@@ -69,10 +69,10 @@ def makeObjects(netlist, gates):
 
 def gridMat(gates):
     # make matrix of grid
-    matgrid = np.zeros([100, 13, 18]) + 99
+    matgrid = np.zeros([18, 13, 15]) + 99
 
     for gate in gates:
-        matgrid[gate.z, gate.y, gate.x] = gate.gate
+        matgrid[gate.x, gate.y, gate.z] = gate.gate
     return matgrid
 
 
@@ -201,7 +201,7 @@ def routeFinder(routeBook, grid):
             while abs(locTo[0] - cursor[0]) + abs(locTo[1] - cursor[1]) + abs(locTo[2] - cursor[2]) > 1:
 
                 # check if steps in y direction is bigger than x direction
-                if abs(locTo[1] - cursor[1]) > abs(locTo[2] - cursor[2]):
+                if abs(locTo[1] - cursor[1]) > abs(locTo[0] - cursor[0]):
                     # step along y axis
                     if locTo[1] > cursor[1]:
                         cursor[1] += 1
@@ -209,10 +209,10 @@ def routeFinder(routeBook, grid):
                         cursor[1] -= 1
                 else:
                     # step along x axis
-                    if locTo[2] > cursor[2]:
-                        cursor[2] += 1
+                    if locTo[0] > cursor[0]:
+                        cursor[0] += 1
                     else:
-                        cursor[2] -= 1
+                        cursor[0] -= 1
                 # save step in route
                 route.append([cursor[0], cursor[1], cursor[2]])
 
@@ -221,7 +221,7 @@ def routeFinder(routeBook, grid):
 
                     del route[-1]
                     cursor = [route[-1][0], route[-1][1], route[-1][2]]
-                    cursor[0] += 1
+                    cursor[2] += 1
                     route.append([cursor[0], cursor[1], cursor[2]])
 
                     # check if route has already been there when cursor up in previous step
@@ -243,16 +243,16 @@ def routeFinder(routeBook, grid):
                                     break
 
                 # if step down is possible, go down
-                elif grid[cursor[0] - 1, cursor[1], cursor[2]] == 99.0 and cursor[0] > 0:
-                    while grid[cursor[0] - 1, cursor[1], cursor[2]] == 99.0 and cursor[0] > 0:
-                        cursor[0] -= 1
+                elif grid[cursor[0] , cursor[1], cursor[2] - 1] == 99.0 and cursor[2] > 0:
+                    while grid[cursor[0] , cursor[1], cursor[2] - 1] == 99.0 and cursor[2] > 0:
+                        cursor[2] -= 1
                         route.append([cursor[0], cursor[1], cursor[2]])
 
                 # if above endpoint, go down and delete all blocking lines
-                if [cursor[1], cursor[2]] == [locTo[1], locTo[2]]:
+                if [cursor[0], cursor[1]] == [locTo[0], locTo[1]]:
                     for netPointToDelete in routeBookDone:
                         for routepoint in netPointToDelete.route:
-                            if [cursor[0] - 1, cursor[1], cursor[2]] == [routepoint[0], routepoint[1], routepoint[2]]:
+                            if [cursor[0], cursor[1], cursor[2] - 1] == [routepoint[0], routepoint[1], routepoint[2]]:
                                 # remove line on grid
                                 grid = delRoute(netPointToDelete.route[1:-1], grid)
                                 netPointToDelete.route = []
@@ -260,7 +260,7 @@ def routeFinder(routeBook, grid):
                                 # append deleted like back to the routebookempty list
                                 routeBookEmpty.append(netPointToDelete)
                                 del routeBookDone[routeBookDone.index(netPointToDelete)]
-                                cursor[0] -= 1
+                                cursor[2] -= 1
                                 route.append([cursor[0], cursor[1], cursor[2]])
                                 break
 
@@ -317,7 +317,6 @@ def delRoute(route, grid):
         grid[step[0], step[1], step[2]] = 99
 
     return grid
-
 
 def plotLines(gates, routeBook):
     # maak een nieuwe plot
@@ -434,15 +433,6 @@ def checker (routeBook):
 
 # hier begint het Astar algoritme met bijbehorende functies
 # Astar returned uiteindelijk de wire/route van A*
-
-def gridMat2(gates):
-    # make matrix of grid
-    matgrid = np.zeros([18, 13, 8]) + 99
-
-    for gate in gates:
-        matgrid[gate.x, gate.y, gate.z] = gate.gate
-    return matgrid
-
 # er wordt een matrix gedefinieerd waarbij de richtingen van nodes worden weergeven
 def matrix_store_direction():
     # richtingen matrix geven
