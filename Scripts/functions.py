@@ -69,7 +69,7 @@ def makeObjects(netlist, gates):
 
 def gridMat(gates):
     # make matrix of grid
-    matgrid = np.zeros([100, 13, 18]) + 99
+    matgrid = np.zeros([18, 13, 15]) + 99
 
     for gate in gates:
         matgrid[gate.z, gate.y, gate.x] = gate.gate

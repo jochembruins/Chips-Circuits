@@ -45,6 +45,7 @@ class wire(object):
     # deze functie ordent de netlist
     # hierbij wordt er geordend op lengte van een netlistelementconnectie (blauwe lijn)
     # als argument wordt een netlist genomen + de gates
+
     def daltonMethod(netlist, gate):
         lowerBound = 0
         # tweede versie van netlist opgeslagen
