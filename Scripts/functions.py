@@ -284,7 +284,7 @@ def routeFinder(routeBook, grid):
 
 
             for step in route:
-                if step[0] > 10:
+                if step[2] > 10:
                     # print(netPoint)
                     # print(len(routeBookDone))
                     print('te hoog')
