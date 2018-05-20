@@ -36,30 +36,32 @@ netlistDalton = wire.daltonMethod(netlist_1, gates)[0]
 
 # make object for each netlist item
 routeBook = makeObjects(netlistDalton, gates)
+for route in routeBook:
+    print(route)
 
 # maak kopie van routeboek
 routeBookEmpty = deepcopy(routeBook)
 
-## RANDOM ROUTEFINDER
-# leg wires van netlist adhv random netlist volgordes
-randomRoute = randomRouteBook(routeBookEmpty, gates, 50)
+# ## RANDOM ROUTEFINDER
+# # leg wires van netlist adhv random netlist volgordes
+# randomRoute = randomRouteBook(routeBookEmpty, gates, 1000)
 
-# # HILLCLIMBER
-# laat hilclimber werken
-HillClimber = hillClimb(randomRoute[0], randomRoute[1], gates, 2000)
+# # # HILLCLIMBER
+# # laat hilclimber werken
+# HillClimber = hillClimb(randomRoute[0], randomRoute[1], gates, 1000)
 
-# krijg beste routeboek
-routeBookBest = HillClimber[0]
+# # krijg beste routeboek
+# routeBookBest = HillClimber[0]
 
-# check route hillclimber
-check = checker(routeBookBest)
+# # check route hillclimber
+# check = checker(routeBookBest)
 
-# plot gates en lijnen
-plotLines(gates, routeBookBest)
+# print(HillClimber[1])
+
+# # plot gates en lijnen
+# plotLines(gates, routeBookBest)
 
 ## A-star
-# maak nieuwe grid
-gridAstar = gridMat2(gates)
 
 # routes die werken voor test
 # dalton = [(2, 20), (3, 15), (15, 5), (3, 23), (5, 7), (15, 21), (13, 18), (1, 2), (3, 5), (10, 4), (7, 13), (3, 2), (22, 16), (22, 13), (15, 17), (20, 10), (22, 11), (11, 24), (6, 14), (16, 9), (19, 5), (15, 8), (10, 7), (23, 4
@@ -70,18 +72,29 @@ dalton = [(20, 10), (3, 15), (15, 5), (3, 23), (5, 7), (15, 21), (13, 18), (1, 2
 
 routeBookAstar = makeObjects(dalton, gates)
 
+routeBookAstar = astarRouteFinder(routeBookAstar, grid)
+
+for ding in routeBookAstar[1]:
+    print(ding)
+
+
+plotLines(gates, routeBookAstar[1])
+
+
+
+
 # maak route met A-star
 # MOET IN FUNCTIE
 tic = time()
 j=0
-for route in routeBookAstar:
+for route in routeBookAstarEmpty:
     j=j+1
     print(j)
     if j==21:
         break
-    routee = Astar(gates, route.netPoint, gridAstar)
+    routee = Astar(gates, route.netPoint, grid)
     route.route = routee
-    gridAstar = changeMat(routee, gridAstar)
+    grid = changeMat(routee, grid)
 toc = time()
 
 for route in routeBookAstar:
@@ -97,15 +110,15 @@ tic = time()
 for i in dalton:
     print(i)
     print(j)
-    routeee = Astar(gates, i, gridAstar)
-    gridAstar = changeMat(routeee, gridAstar)
+    routeee = Astar(gates, i, grid)
+    grid = changeMat(routeee, grid)
     j=j+1
     if j ==29:
         print("man man man")
         for x in range(18):
             for y in range(13):
                 for z in range(8):
-                    if gridAstar[x][y][z] != 99:
+                    if grid[x][y][z] != 99:
                         print("x: ", end='')
                         print(x, end='')
                         print(" y: ", end='')
@@ -113,7 +126,7 @@ for i in dalton:
                         print(" z: ", end='')
                         print(z, end='')
                         print(" grid: ", end='')
-                        print(gridAstar[x][y][z])
+                        print(grid[x][y][z])
         print("man man man")
 
 
@@ -123,7 +136,7 @@ print("man man man")
 for x in range(18):
     for y in range(13):
         for z in range(8):
-            if gridAstar[x][y][z] != 99:
+            if grid[x][y][z] != 99:
                 print("x: ", end='')
                 print(x, end='')
                 print(" y: ", end='')
@@ -131,7 +144,7 @@ for x in range(18):
                 print(" z: ", end='')
                 print(z, end='')
                 print(" grid: ", end='')
-                print(gridAstar[x][y][z])
+                print(grid[x][y][z])
 
 print("man man man")
 
@@ -140,7 +153,7 @@ score = 0
 for x in range(18):
     for y in range(13):
         for z in range(8):
-            if gridAstar[x][y][z] == 50:
+            if grid[x][y][z] == 50:
                 score = score + 1
 
 print(score)
