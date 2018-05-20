@@ -765,21 +765,20 @@ def getlistsurroundings(gates):
     return list
 
 def searchLocTo(netPoint, routeBookEmpty, routeBookDone, grid):
-    print('searchLocTo')
+    # if end location cant be reached, delete one of lines on surrounding gridpoints
+    # check every surrounding gridpoint, delete most appropriate line
     for nextLocTo in netPoint.toSurround:
         for netPointToDelete in routeBookDone:
-            for routepoint in netPointToDelete.route:
-                if nextLocTo == [routepoint[0], routepoint[1], routepoint[2]]:
-                    if netPointToDelete.locTo != [netPoint.locTo[0], netPoint.locTo[1], netPoint.locTo[2]] and \
-                            netPointToDelete.locFrom != [netPoint.locFrom[0], netPoint.locFrom[1], netPoint.locFrom[2]] and \
-                            nextLocTo != netPointToDelete.locTo:
-
+            for routePoint in netPointToDelete.route:
+                if nextLocTo == [routePoint[0], routePoint[1], routePoint[2]]:
+                    if grid[routePoint[0], routePoint[1], routePoint[2]] == 50 and \
+                            netPointToDelete.locTo != [netPoint.locTo[0], netPoint.locTo[1], netPoint.locTo[2]] and \
+                            netPointToDelete.locFrom != [netPoint.locTo[0], netPoint.locTo[1], netPoint.locTo[2]]:
                         # remove line on grid
                         grid = delRoute(netPointToDelete.route[1:-1], grid)
                         netPointToDelete.route = []
 
                         # append deleted line back to the routebookempty list
-
                         routeBookEmpty.append(netPointToDelete)
                         # delete line from routebookdone list
                         print(netPointToDelete)
@@ -790,25 +789,25 @@ def searchLocTo(netPoint, routeBookEmpty, routeBookDone, grid):
 
 def searchLocFrom(netPoint, routeBookEmpty, routeBookDone, grid):
     print('searchLocFrom')
+    # check every surrounding gridpoint, delete most appropriate blocking line
     for nextLocFrom in netPoint.fromSurround:
         for netPointToDelete in routeBookDone:
-            for routepoint in netPointToDelete.route:
-                if nextLocFrom == [routepoint[0], routepoint[1], routepoint[2]]:
-                    if netPointToDelete.locTo != [netPoint.locFrom[0], netPoint.locFrom[1], netPoint.locFrom[2]] and \
-                            netPointToDelete.locFrom != [netPoint.locFrom[0], netPoint.locFrom[1], netPoint.locFrom[2]] and \
-                            nextLocFrom != netPointToDelete.locFrom:
-
+            for routePoint in netPointToDelete.route:
+                if nextLocFrom == [routePoint[0], routePoint[1], routePoint[2]]:
+                    if grid[routePoint[0], routePoint[1], routePoint[2]] == 50 and \
+                            netPointToDelete.locTo != [netPoint.locFrom[0], netPoint.locFrom[1], netPoint.locFrom[2]] and \
+                            netPointToDelete.locFrom != [netPoint.locFrom[0], netPoint.locFrom[1], netPoint.locFrom[2]]:
                         # remove line on grid
                         grid = delRoute(netPointToDelete.route[1:-1], grid)
                         netPointToDelete.route = []
 
                         # append deleted line back to the routebookempty list
-
                         routeBookEmpty.append(netPointToDelete)
                         # delete line from routebookdone list
                         print(netPointToDelete)
                         del routeBookDone[routeBookDone.index(netPointToDelete)]
-                        locFrom = [nextLocFrom[0], nextLocFrom[1], nextLocFrom[2]]
+
+                        cursor = [nextLocFrom[0], nextLocFrom[1], nextLocFrom[2]]
+                        route.append([cursor[0], cursor[1], cursor[2]])
 
                         return routeBookEmpty, routeBookDone, grid
-
