@@ -477,12 +477,51 @@ def matrix_store_direction():
     matgrid = np.zeros([18, 13, 8])
     return matgrid
 
+def astarRouteFinder (routeBook, grid):
+    routeBookAstarEmpty = deepcopy(routeBook)
+    routeBookAstarDone = []
+    j = 0
+    
+    while routeBookAstarEmpty != []:
+        for netPoint in routeBookAstarEmpty:
+            j += 1
+
+            searchLocFrom(netPoint, routeBookAstarEmpty, routeBookAstarDone, grid)    
+            searchLocTo(netPoint, routeBookAstarEmpty, routeBookAstarDone, grid)
+
+            print(len(routeBookAstarEmpty))
+            print(len(routeBookAstarDone))
+
+            # HIER ZIT HET PROBLEEM IN DE 47ste ITERATIE!
+            route = Astar(netPoint, grid)
+            
+            if j == 47:
+                print(netPoint)
+                print(len(routeBookAstarEmpty))
+                print(len(routeBookAstarDone))
+                return routeBookAstarEmpty, routeBookAstarDone, grid
+
+            netPoint.route = route
+            grid = changeMat(route, grid)
+
+            doneWire = routeBookAstarEmpty.pop(routeBookAstarEmpty.index(netPoint))
+            routeBookAstarDone.append(doneWire)
+            print(j)
+            if j == 47:
+                print(netPoint)
+                print(len(routeBookAstarEmpty))
+                print(len(routeBookAstarDone))
+                return routeBookAstarEmpty, routeBookAstarDone, grid
+
+    return routeBookAstarEmpty, routeBookAstarDone, grid
+
+
 # Astar heeft een grid, gates en een wire nodig
-def Astar(gates, wire, gridd):
-    locfrom = [gates[wire[0]].x, gates[wire[0]].y, gates[wire[0]].z]
-    grid = copy.deepcopy(gridd)
+def Astar(netPoint, emptyGrid):
+    locfrom = [netPoint.locFrom[0], netPoint.locFrom[1], netPoint.locFrom[2]]
+    grid = deepcopy(emptyGrid)
     gridwithnodes = grid
-    locto = [gates[wire[1]].x, gates[wire[1]].y, gates[wire[1]].z]
+    locto = [netPoint.locTo[0], netPoint.locTo[1], netPoint.locTo[2]]
     print("locfrom")
     print(locfrom)
     print("locto")
@@ -724,4 +763,52 @@ def getlistsurroundings(gates):
             list.append(nodeachter)
     list=sorted(list)
     return list
+
+def searchLocTo(netPoint, routeBookEmpty, routeBookDone, grid):
+    print('searchLocTo')
+    for nextLocTo in netPoint.toSurround:
+        for netPointToDelete in routeBookDone:
+            for routepoint in netPointToDelete.route:
+                if nextLocTo == [routepoint[0], routepoint[1], routepoint[2]]:
+                    if netPointToDelete.locTo != [netPoint.locTo[0], netPoint.locTo[1], netPoint.locTo[2]] and \
+                            netPointToDelete.locFrom != [netPoint.locFrom[0], netPoint.locFrom[1], netPoint.locFrom[2]] and \
+                            nextLocTo != netPointToDelete.locTo:
+
+                        # remove line on grid
+                        grid = delRoute(netPointToDelete.route[1:-1], grid)
+                        netPointToDelete.route = []
+
+                        # append deleted line back to the routebookempty list
+
+                        routeBookEmpty.append(netPointToDelete)
+                        # delete line from routebookdone list
+                        print(netPointToDelete)
+                        del routeBookDone[routeBookDone.index(netPointToDelete)]
+                        locTo = [nextLocTo[0], nextLocTo[1], nextLocTo[2]]
+
+                        return routeBookEmpty, routeBookDone, grid
+
+def searchLocFrom(netPoint, routeBookEmpty, routeBookDone, grid):
+    print('searchLocFrom')
+    for nextLocFrom in netPoint.fromSurround:
+        for netPointToDelete in routeBookDone:
+            for routepoint in netPointToDelete.route:
+                if nextLocFrom == [routepoint[0], routepoint[1], routepoint[2]]:
+                    if netPointToDelete.locTo != [netPoint.locFrom[0], netPoint.locFrom[1], netPoint.locFrom[2]] and \
+                            netPointToDelete.locFrom != [netPoint.locFrom[0], netPoint.locFrom[1], netPoint.locFrom[2]] and \
+                            nextLocFrom != netPointToDelete.locFrom:
+
+                        # remove line on grid
+                        grid = delRoute(netPointToDelete.route[1:-1], grid)
+                        netPointToDelete.route = []
+
+                        # append deleted line back to the routebookempty list
+
+                        routeBookEmpty.append(netPointToDelete)
+                        # delete line from routebookdone list
+                        print(netPointToDelete)
+                        del routeBookDone[routeBookDone.index(netPointToDelete)]
+                        locFrom = [nextLocFrom[0], nextLocFrom[1], nextLocFrom[2]]
+
+                        return routeBookEmpty, routeBookDone, grid
 
