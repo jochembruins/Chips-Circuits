@@ -72,11 +72,22 @@ dalton = [(20, 10), (3, 15), (15, 5), (3, 23), (5, 7), (15, 21), (13, 18), (1, 2
 
 routeBookAstar = makeObjects(dalton, gates)
 
+routeBookAstar = astarRouteFinder(routeBookAstar, grid)
+
+for ding in routeBookAstar[1]:
+    print(ding)
+
+
+plotLines(gates, routeBookAstar[1])
+
+
+
+
 # maak route met A-star
 # MOET IN FUNCTIE
 tic = time()
 j=0
-for route in routeBookAstar:
+for route in routeBookAstarEmpty:
     j=j+1
     print(j)
     if j==21:
