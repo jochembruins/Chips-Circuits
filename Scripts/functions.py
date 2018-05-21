@@ -329,7 +329,7 @@ def routeFinder(routeBook, grid):
             # save route in netPoint object
             netPoint.route = route
 
-            # delete netPoint from to do list, append to done list
+            # delete netPoint from to empty list, append to done list
             doneWire = routeBookEmpty.pop(routeBookEmpty.index(netPoint))
             routeBookDone.append(doneWire)
 
