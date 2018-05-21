@@ -22,12 +22,11 @@ import csv
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.axes3d import Axes3D
-from classes import *
-from surroundings_gates import *
+import classes
+from surroundings_gates import surround_list
 from random import randint
 from random import shuffle
 from copy import deepcopy
-from surroundings_gates import *
 import copy
 
 np.set_printoptions(threshold=np.nan)
@@ -37,7 +36,7 @@ np.set_printoptions(linewidth=180)
 def makeLocations(data):
     gates = []
     for line in data:
-        line = Location(line[0], int(line[1]), int(line[2]), int(line[3]))
+        line = classes.Location(line[0], int(line[1]), int(line[2]), int(line[3]))
         gates.append(line)
     return gates
 
@@ -60,7 +59,7 @@ def makeObjects(netlist, gates):
                       [gates[point[1]].x - 1, gates[point[1]].y, gates[point[1]].z],
                       [gates[point[1]].x, gates[point[1]].y, gates[point[1]].z +1]]
         route = []
-        emptyRoute = wire(point, locFrom, locTo, fromSurround, toSurround, route)
+        emptyRoute = classes.wire(point, locFrom, locTo, fromSurround, toSurround, route)
         # print(emptyRoute)
         emptyRouteBook.append(emptyRoute)
 
@@ -401,7 +400,7 @@ def hillClimb(routeBook, score, gates, steps=1000):
         
         if i != 0:
             # verwissel willekeurig twee punten van de netlist
-            newRouteBook = wire.changeRouteBook(bestRouteBook)
+            newRouteBook = classes.wire.changeRouteBook(bestRouteBook)
         else:
             print('same')
             newRouteBook = bestRouteBook
@@ -491,6 +490,8 @@ def astarRouteFinder (routeBook, grid):
 
             print(len(routeBookAstarEmpty))
             print(len(routeBookAstarDone))
+            for route in routeBookAstarEmpty:
+                print(route)
 
             # HIER ZIT HET PROBLEEM IN DE 47ste ITERATIE!
             route = Astar(netPoint, grid)
