@@ -460,6 +460,8 @@ def astarRouteFinder (routeBook, grid):
 
             print(len(routeBookAstarEmpty))
             print(len(routeBookAstarDone))
+            for route in routeBookAstarEmpty:
+                print(route)
 
             # HIER ZIT HET PROBLEEM IN DE 47ste ITERATIE!
             route = Astar(netPoint, grid)
