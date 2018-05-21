@@ -36,15 +36,16 @@ netlistDalton = wire.daltonMethod(netlist_1, gates)[0]
 
 # make object for each netlist item
 routeBook = makeObjects(netlistDalton, gates)
-for route in routeBook:
-    print(route)
 
 # maak kopie van routeboek
 routeBookEmpty = deepcopy(routeBook)
 
-# ## RANDOM ROUTEFINDER
-# # leg wires van netlist adhv random netlist volgordes
-# randomRoute = randomRouteBook(routeBookEmpty, gates, 1000)
+## RANDOM ROUTEFINDER
+# leg wires van netlist adhv random netlist volgordes
+randomRoute = randomRouteBook(routeBookEmpty, gates, 2000)
+score = getScore(randomRoute[2])
+plotLines(gates, randomRoute[2])
+
 
 # # # HILLCLIMBER
 # # laat hilclimber werken
@@ -157,4 +158,3 @@ for x in range(18):
                 score = score + 1
 
 print(score)
-
