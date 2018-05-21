@@ -23,11 +23,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.axes3d import Axes3D
 import classes
-from surroundings_gates import surround_list
 from random import randint
+import random
 from random import shuffle
 from copy import deepcopy
-import copy
+from surroundings_gates import surround_list
 
 np.set_printoptions(threshold=np.nan)
 np.set_printoptions(linewidth=180)
@@ -80,7 +80,7 @@ def randomRouteBook(routeBook, gates, steps=1000):
     bestRouteBook = []
 
     score = 2000
-    file  = open('random.csv', "w")
+    file  = open('../csv/random.csv', "w")
     writer = csv.writer(file, delimiter=',')
     
     for i in range(0, steps):
@@ -98,13 +98,15 @@ def randomRouteBook(routeBook, gates, steps=1000):
       
         newScore = score
         
-        # probeer nieuwe route te vinden
-        try:
-            newRouteFound = routeFinder(tmp_newRouteBook, grid)[1]
+        if i > 700 and i < 750:
 
-            finished = True
-        except:
-            finished = False
+            # probeer nieuwe route te vinden
+            try:
+                newRouteFound = routeFinder(tmp_newRouteBook, grid)[1]
+
+                finished = True
+            except:
+                finished = False
 
 
 
@@ -314,13 +316,13 @@ def routeFinder(routeBook, grid):
             count += 1
 
             
-            if count == 150:
+            if count == 1500:
                 # print('meer dan 1500')
                 sys.exit
 
 
             for step in route:
-                if step[2] > 29:
+                if step[2] > 31:
                     # print('te hoog')
                     sys.exit
 
@@ -390,7 +392,7 @@ def hillClimb(routeBook, score, gates, steps=1000):
     # maak variabele om beste route book op te slaan
     print('in Hillclimber')
     bestRouteBook = routeBook
-    file  = open('hill.csv', "w")
+    file  = open('../csv/hill.csv', "w")
     writer = csv.writer(file, delimiter=',')
 
     # loop voor het aantal stappen
@@ -809,6 +811,24 @@ def searchLocFrom(netPoint, routeBookEmpty, routeBookDone, grid):
                         del routeBookDone[routeBookDone.index(netPointToDelete)]
 
                         cursor = [nextLocFrom[0], nextLocFrom[1], nextLocFrom[2]]
-                        route.append([cursor[0], cursor[1], cursor[2]])
 
                         return routeBookEmpty, routeBookDone, grid
+
+def replaceLines(routeBook, grid):
+    for netPoint in routeBook:
+        grid = delRoute(netPoint.route, grid)
+        netPoint.route = Astar(netPoint, grid)
+        grid = changeMat(netPoint.route, grid)
+        print(netPoint.route)
+    return routeBook, grid
+
+def replaceLine(routeBook, grid, steps = 2000):
+    for i in range(0, steps):
+        index = random.randrange(0,len(routeBook))
+        grid = delRoute(routeBook[index].route, grid)
+        routeBook[index].route = Astar(routeBook[index], grid)
+        grid = changeMat(routeBook[index].route, grid)
+        print(routeBook[index].route)
+    return routeBook
+
+
