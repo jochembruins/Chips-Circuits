@@ -67,7 +67,7 @@ def makeObjects(netlist, gates):
 
 def gridMat(gates):
     # make matrix of grid
-    matgrid = np.zeros([18, 17, 10]) + 99
+    matGrid = np.zeros([18, 17, 10]) + 99
 
     for gate in gates:
         matGrid[gate.x, gate.y, gate.z] = gate.gate
@@ -481,7 +481,7 @@ def astarRouteFinder (routeBook, grid):
 # Astar heeft een grid, gates en een wire nodig
 def Astar(netPoint, grid, index):
     locfrom = [netPoint.locFrom[0], netPoint.locFrom[1], netPoint.locFrom[2]]
-    gridwithnodes = deepcopy(emptyGrid)
+    gridwithnodes = deepcopy(grid)
     locto = [netPoint.locTo[0], netPoint.locTo[1], netPoint.locTo[2]]
     print("locfrom")
     print(locfrom)

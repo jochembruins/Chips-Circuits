@@ -32,7 +32,7 @@ gates = functions.makeLocations(gatesLoc)
 grid = functions.gridMat(gates)
 
 # maak netlist
-netlistDalton = classes.wire.daltonMethod(netlists.netlist_1, gates)[0]
+netlistDalton = classes.wire.daltonMethod(netlists.netlist_5, gates)[0]
 
 # make object for each netlist item
 routeBook = functions.makeObjects(netlistDalton, gates)
@@ -40,24 +40,13 @@ routeBook = functions.makeObjects(netlistDalton, gates)
 # maak kopie van routeboek
 routeBookEmpty = deepcopy(routeBook)
 
-newRoutes = functions.astarRouteFinder(routeBookEmpty, grid)
 
-print(len(newRoutes))
-
-print(functions.checker(newRoutes))
-
-print(functions.getScore(newRoutes))
-
-for route in newRoutes:
-	print(route)
-
-functions.plotLines(gates, newRoutes)
 
 ## RANDOM ROUTEFINDER
 # leg wires van netlist adhv random netlist volgordes
-randomRoute = functions.randomRouteBook(routeBookEmpty, gates, 100)
-score = functions.getScore(randomRoute[2])
-functions.plotLines(gates, randomRoute[2])
+# randomRoute = functions.randomRouteBook(routeBookEmpty, gates, 100)
+# score = functions.getScore(randomRoute[2])
+# functions.plotLines(gates, randomRoute[2])
 
 
 # for route in randomRoute[2]:
@@ -70,15 +59,15 @@ functions.plotLines(gates, randomRoute[2])
 # print(functions.getScore(newRoute[0]))
 # print(functions.checker(newRoute[0]))
 
-newNewRoute = functions.replaceLine(randomRoute[2], randomRoute[3], 100)
+# newNewRoute = functions.replaceLine(randomRoute[2], randomRoute[3], 100)
 
-# for route in newNewRoute:
-#     print(route.route)
+# # for route in newNewRoute:
+# #     print(route.route)
 
-print(functions.getScore(newNewRoute))
-print(functions.checker(newNewRoute))
-#
-functions.plotLines(gates, newNewRoute)
+# print(functions.getScore(newNewRoute))
+# print(functions.checker(newNewRoute))
+# #
+# functions.plotLines(gates, newNewRoute)
 
 
 # # # HILLCLIMBER
@@ -97,6 +86,19 @@ functions.plotLines(gates, newNewRoute)
 # functions.plotLines(gates, routeBookBest)
 
 ## A-star
+
+newRoutes = functions.astarRouteFinder(routeBookEmpty, grid)
+
+print(len(newRoutes))
+
+print(functions.checker(newRoutes))
+
+print(functions.getScore(newRoutes))
+
+for route in newRoutes:
+	print(route)
+
+functions.plotLines(gates, newRoutes)
 
 # NIET VERWIJDEREN
 # routes die werken voor test
