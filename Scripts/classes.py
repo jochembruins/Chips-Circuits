@@ -168,54 +168,6 @@ class wire(object):
         # return nieuwe netlist
         return (netlistversion3)
 
-    def daltonMethod(netlist, gate):
-        lowerBound = 0
-        # tweede versie van netlist opgeslagen
-        netlistversion2 = netlist
-
-        # lege derde versie van te definieren netlist opgeslagen
-        netlistversion3 = []
-        # lengte netlist berekend
-        k = len(netlist)
-
-        # itereren over lengte netlist
-        for j in range(0, k):
-
-            # het minimum worddt op een hoog getal gezet
-            minimum = 1000
-            # numbernetlist wordt 0
-            numbernetlist = 0
-
-            # itereren over lengte netlist min j
-            for i in range(0, k - j):
-                # de eerste factor van wire opslaan in listelement1
-                listelement1 = netlistversion2[i][0]
-                # de tweede factor van wire opslaan in listelement2
-                listelement2 = netlistversion2[i][1]
-
-                # verschil in x-waarden netconnecties opslaan in x_verschil
-                x_verschil = abs(gate[listelement1].x - gate[listelement2].x)
-                # verschil in y-waarden netconnecties opslaan in y_verschil
-                y_verschil = abs(gate[listelement1].y - gate[listelement2].y)
-                som = x_verschil + y_verschil
-
-                # als de som van x_verschil en y_verschil kleiner dan minimum
-                if (som < minimum):
-                    minimum = som
-                    numbernetlist = i
-            lowerBound += som
-            # zet zojuist bepaalde netlistelement in netlistversion3
-            netlistversion3.append(netlistversion2[numbernetlist])
-
-            # haalde aangewezen element uit netlistversion2
-            netlistversion2.pop(numbernetlist)
-
-        # return nieuwe netlist
-        return netlistversion3, lowerBound
-
-    # deze functie ordent de netlist
-    # hierbij wordt er geordend of een netlistelementconnectie (blauwe lijn) aan de buitenkant ligt
-    # als argument wordt een netlist genomen + de gates
 
     def changeRouteBook(routeBook):
         
