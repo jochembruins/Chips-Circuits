@@ -1,4 +1,4 @@
-############################################################
+###########################################################
 # chips.py
 #
 # Jochem Bruins
@@ -14,14 +14,14 @@
 ############################################################
 
 from time import time
+
 from numpy import genfromtxt
-import functions 
+import functions
 import matplotlib.pyplot as plt
-import netlists 
-import classes 
+import netlists
+import classes
 from copy import deepcopy
 from random import shuffle
-
 
 ## DATA
 # make appropriate format of gate locations
@@ -31,19 +31,20 @@ gates = functions.makeLocations(gatesLoc)
 # initialize 13 x 18 x 8 (= L x W x H) grid with gates
 grid = functions.gridMat(gates)
 
-# # maak netlist
-# netlistDalton = classes.wire.daltonMethod(netlists.netlist_3, gates)[0]
+# maak netlist
+netlistDalton = classes.wire.daltonMethod(netlists.netlist_1, gates)[0]
 
-# # make object for each netlist item
-# routeBook = functions.makeObjects(netlistDalton, gates)
+# make object for each netlist item
+routeBook = functions.makeObjects(netlistDalton, gates)
 
-# # maak kopie van routeboek
-# routeBookEmpty = deepcopy(routeBook)
+# maak kopie van routeboek
+routeBookEmpty = deepcopy(routeBook)
 
-# ## RANDOM ROUTEFINDER
-# # leg wires van netlist adhv random netlist volgordes
-# randomRoute = functions.randomRouteBook(routeBookEmpty, gates, 1000)
-# score = functions.getScore(randomRoute[2])
+## RANDOM ROUTEFINDER
+# leg wires van netlist adhv random netlist volgordes
+randomRoute = functions.randomRouteBook(routeBookEmpty, gates, 100)
+score = functions.getScore(randomRoute[2])
+functions.plotLines(gates, randomRoute[2])
 
 
 # for route in randomRoute[2]:
@@ -56,15 +57,15 @@ grid = functions.gridMat(gates)
 # print(functions.getScore(newRoute[0]))
 # print(functions.checker(newRoute[0]))
 
-# newNewRoute = functions.replaceLine(newRoute[0], newRoute[1], 1000)
+newNewRoute = functions.replaceLine(randomRoute[2], randomRoute[3], 100)
 
 # for route in newNewRoute:
 #     print(route.route)
 
-# print(functions.getScore(newNewRoute))
-# print(functions.checker(newNewRoute))
-
-# functions.plotLines(gates, newNewRoute)
+print(functions.getScore(newNewRoute))
+print(functions.checker(newNewRoute))
+#
+functions.plotLines(gates, newNewRoute)
 
 
 # # # HILLCLIMBER
@@ -74,9 +75,9 @@ grid = functions.gridMat(gates)
 # # krijg beste routeboek
 # routeBookBest = HillClimber[0]
 
-# # check route hillclimber
+# check route hillclimber
 # check = functions.checker(routeBookBest)
-
+#
 # print(HillClimber[1])
 
 # # plot gates en lijnen
@@ -90,28 +91,28 @@ grid = functions.gridMat(gates)
 # ), (19, 2), (3, 4), (7, 9), (23, 8), (9, 13), (20, 19)]
 
 
-dalton = [(20, 10), (3, 15), (15, 5), (3, 23), (5, 7), (15, 21), (13, 18), (1, 2), (3, 5), (10, 4), (7, 13), (3, 2), (22, 16), (22, 13), (15, 17), (22, 11), (11, 24), (6, 14), (16, 9), (19, 5), (15, 8), (10, 7), (23, 4
-), (19, 2), (3, 4), (7, 9), (23, 8), (9, 13), (20, 19)]
-
-routeBookAstar = functions.makeObjects(dalton, gates)
-routeBookAstar = functions.Astarroutemelle(routeBookAstar, grid, gates)
-quit()
-
-
-routeBookAstar = functions.makeObjects(netlists.netlist_1, gates)
-
-routeBookAstar = astarRouteFinder(routeBookAstar, grid)
-
-routeBookAstar = functions.astarRouteFinder(routeBookAstar, grid)
-
-
-print(len(routeBookAstar[1]))
-print(len(routeBookAstar[0]))
-for ding in routeBookAstar[1]:
-    print(ding)
-
-
-plotLines(gates, routeBookAstar[1])
+# dalton = [(20, 10), (3, 15), (15, 5), (3, 23), (5, 7), (15, 21), (13, 18), (1, 2), (3, 5), (10, 4), (7, 13), (3, 2), (22, 16), (22, 13), (15, 17), (22, 11), (11, 24), (6, 14), (16, 9), (19, 5), (15, 8), (10, 7), (23, 4
+# ), (19, 2), (3, 4), (7, 9), (23, 8), (9, 13), (20, 19)]
+#
+# routeBookAstar = functions.makeObjects(dalton, gates)
+# routeBookAstar = functions.Astarroutemelle(routeBookAstar, grid, gates)
+# quit()
+#
+#
+# routeBookAstar = functions.makeObjects(netlists.netlist_1, gates)
+#
+# routeBookAstar = astarRouteFinder(routeBookAstar, grid)
+#
+# routeBookAstar = functions.astarRouteFinder(routeBookAstar, grid)
+#
+#
+# print(len(routeBookAstar[1]))
+# print(len(routeBookAstar[0]))
+# for ding in routeBookAstar[1]:
+#     print(ding)
+#
+#
+# plotLines(gates, routeBookAstar[1])
 
 # maak route met A-star
 # MOET IN FUNCTIE

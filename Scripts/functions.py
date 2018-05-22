@@ -17,6 +17,7 @@
 ###########################################################
 from time import time
 from typing import List
+
 import csv
 import numpy as np
 import matplotlib.pyplot as plt
@@ -27,8 +28,6 @@ import random
 from random import shuffle
 from copy import deepcopy
 from surroundings_gates import surround_list
-import sys
-
 
 np.set_printoptions(threshold=np.nan)
 np.set_printoptions(linewidth=180)
@@ -48,7 +47,7 @@ def makeObjects(netlist, gates):
     for point in netlist:
         locFrom = [gates[point[0]].x, gates[point[0]].y, gates[point[0]].z]
         locTo = [gates[point[1]].x, gates[point[1]].y, gates[point[1]].z]
-        # surrounding gridpoints of start/end point
+        # omliggende punten van begin/eindpunt
         fromSurround = [[gates[point[0]].x, gates[point[0]].y + 1, gates[point[0]].z],
                       [gates[point[0]].x, gates[point[0]].y - 1, gates[point[0]].z],
                       [gates[point[0]].x + 1, gates[point[0]].y, gates[point[0]].z],
@@ -61,29 +60,29 @@ def makeObjects(netlist, gates):
                       [gates[point[1]].x, gates[point[1]].y, gates[point[1]].z +1]]
         route = []
         emptyRoute = classes.wire(point, locFrom, locTo, fromSurround, toSurround, route)
-        # print(emptyRoute)
         emptyRouteBook.append(emptyRoute)
 
     return emptyRouteBook
 
 
 def gridMat(gates):
-    # make matrix of grid
-    matgrid = np.zeros([18, 13, 31]) + 99
+    # maak een matrix van de grid
+    matGrid = np.zeros([18, 13, 31]) + 99
 
     for gate in gates:
-        matgrid[gate.x, gate.y, gate.z] = gate.gate
-    return matgrid
+        matGrid[gate.x, gate.y, gate.z] = gate.gate
+    return matGrid
 
 
 def randomRouteBook(routeBook, gates, steps=1000):
+
     random.seed(2)
     bestRouteBook = []
 
     score = 2000
     file  = open('../csv/random.csv', "w")
     writer = csv.writer(file, delimiter=',')
-    
+
     for i in range(0, steps):
         print(i)
         newRouteBook = deepcopy(routeBook)
@@ -91,33 +90,31 @@ def randomRouteBook(routeBook, gates, steps=1000):
         shuffle(newRouteBook)
 
         grid = gridMat(gates)
-        
+
         tmp_newRouteBook = deepcopy(newRouteBook)
-        
+
         # checkt of het route vinden is gelukt
         finished = False
-      
+
         newScore = score
-        
-        if i > 700 and i < 750:
 
-            # probeer nieuwe route te vinden
-            try:
-                newRouteFound = routeFinder(tmp_newRouteBook, grid)[1]
+        # probeer nieuwe route te vinden
+        try:
+            newRouteFound = routeFinder(tmp_newRouteBook, grid)[1]
 
-                finished = True
-            except:
-                finished = False
+            finished = True
+        except:
+            finished = False
 
 
 
-        # bereken nieuwe score   
+        # bereken nieuwe score
         if finished:
             newScore = getScore(newRouteFound)
             print("oude score random: ", score)
             print("nieuwe score random: ", newScore)
             writer.writerow([i, newScore])
-    
+
             check = checker(newRouteFound)
 
             if check == True:
@@ -134,7 +131,7 @@ def randomRouteBook(routeBook, gates, steps=1000):
                     print(ding)
 
     file.close()
-    return bestRouteBook, score, bestRouteFound
+    return bestRouteBook, score, bestRouteFound, grid
 
 
 def routeFinder(routeBook, grid):
@@ -151,7 +148,7 @@ def routeFinder(routeBook, grid):
             # add begin point to route
             route.append([cursor[0], cursor[1], cursor[2]])
 
-            if abs(locTo[0] - cursor[0]) + abs(locTo[1] - cursor[1]) + abs(locTo[2] - cursor[2]) != 1:
+            if stepsDifference(locTo, cursor) != 1:
                 # select which gridpoint next to end location is free
                 for nextLocTo in netPoint.toSurround:
                     if grid[nextLocTo[0], nextLocTo[1], nextLocTo[2]] == 99:
@@ -159,33 +156,8 @@ def routeFinder(routeBook, grid):
                         break
 
                 # if end location cant be reached, delete one of lines on surrounding gridpoints
-                if [locTo[0], locTo[1], locTo[2]] == [netPoint.locTo[0], netPoint.locTo[1], netPoint.locTo[2]]:
-                    # check every surrounding gridpoint, delete most appropriate line
-                    for nextLocTo in netPoint.toSurround:
-                        for netPointToDelete in routeBookDone:
-                            for routePoint in netPointToDelete.route:
-                                if nextLocTo == [routePoint[0], routePoint[1], routePoint[2]]:
-                                    if grid[routePoint[0], routePoint[1], routePoint[2]] == 50 and \
-                                            netPointToDelete.locTo != [netPoint.locTo[0], netPoint.locTo[1], netPoint.locTo[2]] and \
-                                            netPointToDelete.locFrom != [netPoint.locTo[0], netPoint.locTo[1], netPoint.locTo[2]]:
-                                        # remove line on grid
-                                        grid = delRoute(netPointToDelete.route[1:-1], grid)
-                                        netPointToDelete.route = []
-
-                                        # append deleted line back to the routebookempty list
-
-                                        routeBookEmpty.append(netPointToDelete)
-                                        # delete line from routebookdone list
-                                        del routeBookDone[routeBookDone.index(netPointToDelete)]
-                                        locTo = [nextLocTo[0], nextLocTo[1], nextLocTo[2]]
-
-                                        break
-                            else:
-                                continue
-                            break
-                        else:
-                            continue
-                        break
+                if locTo == [netPoint.locTo[0], netPoint.locTo[1], netPoint.locTo[2]]:
+                    routeBookEmpty, routeBookDone, grid, locTo = searchLocTo(netPoint, routeBookEmpty, routeBookDone, grid)
 
                 # make first step in available direction
                 for nextLocFrom in netPoint.fromSurround:
@@ -196,37 +168,12 @@ def routeFinder(routeBook, grid):
 
                 # if there is no valid first step possible, delete one of lines on surrounding gridpoints
                 if cursor == [netPoint.locFrom[0], netPoint.locFrom[1], netPoint.locFrom[2]]:
-                    # check every surrounding gridpoint, delete most appropriate blocking line
-                    for nextLocFrom in netPoint.fromSurround:
-                        for netPointToDelete in routeBookDone:
-                            for routePoint in netPointToDelete.route:
-                                if nextLocFrom == [routePoint[0], routePoint[1], routePoint[2]]:
-                                    if grid[routePoint[0], routePoint[1], routePoint[2]] == 50 and \
-                                            netPointToDelete.locTo != [netPoint.locFrom[0], netPoint.locFrom[1], netPoint.locFrom[2]] and \
-                                            netPointToDelete.locFrom != [netPoint.locFrom[0], netPoint.locFrom[1], netPoint.locFrom[2]]:
-                                        # remove line on grid
-                                        grid = delRoute(netPointToDelete.route[1:-1], grid)
-                                        netPointToDelete.route = []
+                    routeBookEmpty, routeBookDone, grid, [cursor[0], cursor[1], cursor[2]] = searchLocFrom(netPoint, routeBookEmpty, routeBookDone, grid)
+                    route.append([cursor[0], cursor[1], cursor[2]])
 
-                                        # append deleted line back to the routebookempty list
-                                        routeBookEmpty.append(netPointToDelete)
-                                        # delete line from routebookdone list
-                                        del routeBookDone[routeBookDone.index(netPointToDelete)]
-
-                                        cursor = [nextLocFrom[0], nextLocFrom[1], nextLocFrom[2]]
-                                        route.append([cursor[0], cursor[1], cursor[2]])
-
-                                        break
-                            else:
-                                continue
-                            break
-                        else:
-                            continue
-                        break
 
             # look for best step until 1 step away from endpoint
-            while abs(locTo[0] - cursor[0]) + abs(locTo[1] - cursor[1]) + abs(locTo[2] - cursor[2]) > 1:
-
+            while stepsDifference(locTo, cursor) > 1:
                 # check if steps in y direction is bigger than x direction
                 if abs(locTo[1] - cursor[1]) > abs(locTo[0] - cursor[0]):
                     # step along y axis
@@ -266,7 +213,7 @@ def routeFinder(routeBook, grid):
                             for routePoint in netPointToDelete.route:
                                 if [cursor[0], cursor[1], cursor[2]] == [routePoint[0], routePoint[1], routePoint[2]]:
                                     # remove line on grid
-                                    grid = delRoute(netPointToDelete.route[1:-1], grid)
+                                    grid = delRoute(netPointToDelete.route, grid)
                                     netPointToDelete.route = []
 
                                     # append deleted like back to the routebookempty list
@@ -278,8 +225,6 @@ def routeFinder(routeBook, grid):
                 elif grid[cursor[0], cursor[1], cursor[2] - 1] == 99.0 and cursor[2] > locTo[2]:
                     while grid[cursor[0], cursor[1], cursor[2] - 1] == 99.0 and cursor[2] > locTo[2]:
                         cursor[2] -= 1
-                        # if netPoint.netPoint == (15, 8):
-                        #     print("normaal down", cursor)
                         route.append([cursor[0], cursor[1], cursor[2]])
 
                         # check if route has already been there when cursor up in previous step
@@ -288,11 +233,12 @@ def routeFinder(routeBook, grid):
 
                 # if above endpoint, go down and delete all blocking lines
                 if [cursor[0], cursor[1]] == [locTo[0], locTo[1]] and cursor[2] != locTo[2]:
+                    # find lines that are beneath cursor
                     for netPointToDelete in routeBookDone:
                         for routePoint in netPointToDelete.route:
                             if [cursor[0], cursor[1], cursor[2] - 1] == [routePoint[0], routePoint[1], routePoint[2]]:
                                 # remove line on grid
-                                grid = delRoute(netPointToDelete.route[1:-1], grid)
+                                grid = delRoute(netPointToDelete.route, grid)
                                 netPointToDelete.route = []
 
                                 # append deleted like back to the routebookempty list
@@ -304,26 +250,25 @@ def routeFinder(routeBook, grid):
                                 break
 
                 # delete first steps that are not useful
-                if len(route) > 2 and abs(netPoint.locFrom[0] - cursor[0]) + abs(netPoint.locFrom[1] - cursor[1]) + abs(netPoint.locFrom[2] - cursor[2]) == 1:
+                if len(route) > 2 and stepsDifference(netPoint.locFrom, cursor) == 1:
                     del route[1:len(route) - 1]
                 # if only one step away from original endpoint, stop
-                if abs(netPoint.locTo[0] - cursor[0]) + abs(netPoint.locTo[1] - cursor[1]) + abs(netPoint.locTo[2] - cursor[2]) < 2:
+                if stepsDifference(netPoint.locTo, cursor) == 1:
                     break
 
             # add end point to route
-            if abs(netPoint.locTo[0] - cursor[0]) + abs(netPoint.locTo[1] - cursor[1]) + abs(netPoint.locTo[2] - cursor[2]) != 1:
+            if stepsDifference(netPoint.locTo, cursor) != 1:
                 route.append(locTo)
             route.append(netPoint.locTo)
             count += 1
 
-            
-            if count == 1500:
-                # print('meer dan 1500')
+            if count == 150:
+                # print('meer dan 150')
                 sys.exit
 
 
             for step in route:
-                if step[2] > 31:
+                if step[2] > 29:
                     # print('te hoog')
                     sys.exit
 
@@ -336,20 +281,24 @@ def routeFinder(routeBook, grid):
 
 
             # update matrix for route
-            changeMat(netPoint.route[1:-1], grid)
+            changeMat(netPoint.route, grid)
 
     return routeBookEmpty, routeBookDone, grid
 
 def changeMat(route, grid):
-    for step in route:
+    for step in route[1:-1]:
         grid[step[0], step[1], step[2]] = 50
     return grid
 
 def delRoute(route, grid):
-    for step in route:
+    for step in route[1:-1]:
         grid[step[0], step[1], step[2]] = 99
-
     return grid
+
+def stepsDifference(vector1, vector2):
+    difference = abs(vector1[0] - vector2[0]) + abs(vector1[1] - vector2[1]) + abs(vector1[2] - vector2[2])
+    return difference
+
 
 def plotLines(gates, routeBook):
     # maak een nieuwe plot
@@ -501,7 +450,7 @@ def astarRouteFinder (routeBook, grid):
                         print(count)
                 if count == 4:
                     print('verwijder')
-                    searchLocFrom(netPoint, routeBookAstarEmpty, routeBookAstarDone, grid)   
+                    searchLocFrom(netPoint, routeBookAstarEmpty, routeBookAstarDone, grid)
 
                 count = 0
                 for loc in netPoint.toSurround:
@@ -510,7 +459,7 @@ def astarRouteFinder (routeBook, grid):
                         print(count)
                 if count == 4:
                     print('verwijder')
-                    searchLocTo(netPoint, routeBookAstarEmpty, routeBookAstarDone, grid)         
+                    searchLocTo(netPoint, routeBookAstarEmpty, routeBookAstarDone, grid)
 
 
                 # print(len(routeBookAstarEmpty))
@@ -523,7 +472,7 @@ def astarRouteFinder (routeBook, grid):
                 print(len(routeBookAstarEmpty))
                 print(len(routeBookAstarDone))
                 #     return routeBookAstarEmpty, routeBookAstarDone, grid
-               
+
                 # HIER ZIT HET PROBLEEM IN DE 47ste ITERATIE!
                 route = Astar(netPoint, grid)
 
@@ -549,7 +498,7 @@ def astarRouteFinder (routeBook, grid):
 # Astar heeft een grid, gates en een wire nodig
 def Astar(netPoint, emptyGrid, index):
     locfrom = [netPoint.locFrom[0], netPoint.locFrom[1], netPoint.locFrom[2]]
-    gridwithnodes = deepcopy(grid)
+    gridwithnodes = deepcopy(emptyGrid)
     locto = [netPoint.locTo[0], netPoint.locTo[1], netPoint.locTo[2]]
     print("locfrom")
     print(locfrom)
@@ -830,7 +779,6 @@ def getlistsurroundings(gates):
 def searchLocTo(netPoint, routeBookEmpty, routeBookDone, grid):
     # if end location cant be reached, delete one of lines on surrounding gridpoints
     # check every surrounding gridpoint, delete most appropriate line
-    print('searchLocTo')
     for nextLocTo in netPoint.toSurround:
         for netPointToDelete in routeBookDone:
             for routePoint in netPointToDelete.route:
@@ -839,20 +787,18 @@ def searchLocTo(netPoint, routeBookEmpty, routeBookDone, grid):
                             netPointToDelete.locTo != [netPoint.locTo[0], netPoint.locTo[1], netPoint.locTo[2]] and \
                             netPointToDelete.locFrom != [netPoint.locTo[0], netPoint.locTo[1], netPoint.locTo[2]]:
                         # remove line on grid
-                        grid = delRoute(netPointToDelete.route[1:-1], grid)
+                        grid = delRoute(netPointToDelete.route, grid)
                         netPointToDelete.route = []
 
                         # append deleted line back to the routebookempty list
                         routeBookEmpty.append(netPointToDelete)
                         # delete line from routebookdone list
-                        print(netPointToDelete)
                         del routeBookDone[routeBookDone.index(netPointToDelete)]
-                        locTo = [nextLocTo[0], nextLocTo[1], nextLocTo[2]]
+                        # locTo = [nextLocTo[0], nextLocTo[1], nextLocTo[2]]
 
-                        return routeBookEmpty, routeBookDone, grid
+                        return routeBookEmpty, routeBookDone, grid, nextLocTo
 
 def searchLocFrom(netPoint, routeBookEmpty, routeBookDone, grid):
-    print('searchLocFrom')
     # check every surrounding gridpoint, delete most appropriate blocking line
     for nextLocFrom in netPoint.fromSurround:
         for netPointToDelete in routeBookDone:
@@ -862,20 +808,15 @@ def searchLocFrom(netPoint, routeBookEmpty, routeBookDone, grid):
                             netPointToDelete.locTo != [netPoint.locFrom[0], netPoint.locFrom[1], netPoint.locFrom[2]] and \
                             netPointToDelete.locFrom != [netPoint.locFrom[0], netPoint.locFrom[1], netPoint.locFrom[2]]:
                         # remove line on grid
-                        grid = delRoute(netPointToDelete.route[1:-1], grid)
+                        grid = delRoute(netPointToDelete.route, grid)
                         netPointToDelete.route = []
 
                         # append deleted line back to the routebookempty list
                         routeBookEmpty.append(netPointToDelete)
                         # delete line from routebookdone list
-                        print(netPointToDelete)
                         del routeBookDone[routeBookDone.index(netPointToDelete)]
 
-                        cursor = [nextLocFrom[0], nextLocFrom[1], nextLocFrom[2]]
-
-                        return routeBookEmpty, routeBookDone, grid
-
-
+                        return routeBookEmpty, routeBookDone, grid, nextLocFrom
 
 def GcostForGates(gates):
     grid = np.zeros([18, 13, 8])
@@ -900,9 +841,10 @@ def replaceLines(routeBook, grid):
 
 def replaceLine(routeBook, grid, steps = 2000):
     for i in range(0, steps):
-        index = random.randrange(0,len(routeBook))
+        print(i)
+        index = random.randrange(0, len(routeBook))
         grid = delRoute(routeBook[index].route, grid)
-        routeBook[index].route = Astar(routeBook[index], grid)
+        routeBook[index].route = Astar(routeBook[index], grid, 0)
         grid = changeMat(routeBook[index].route, grid)
         print(routeBook[index].route)
     return routeBook
