@@ -28,6 +28,7 @@ import random
 from random import shuffle
 from copy import deepcopy
 from surroundings_gates import surround_list
+import sys
 
 np.set_printoptions(threshold=np.nan)
 np.set_printoptions(linewidth=180)
@@ -479,44 +480,47 @@ def matrix_store_direction():
     return matgrid
 
 def astarRouteFinder (routeBook, grid):
+    gridEmpty = deepcopy(grid)
     routeBookAstarEmpty = deepcopy(routeBook)
     routeBookAstarDone = []
     j = 0
     
-    while routeBookAstarEmpty != []:
-        for netPoint in routeBookAstarEmpty:
-            j += 1
-
-            searchLocFrom(netPoint, routeBookAstarEmpty, routeBookAstarDone, grid)    
-            searchLocTo(netPoint, routeBookAstarEmpty, routeBookAstarDone, grid)
-
-            print(len(routeBookAstarEmpty))
-            print(len(routeBookAstarDone))
-            for route in routeBookAstarEmpty:
-                print(route)
-
-            # HIER ZIT HET PROBLEEM IN DE 47ste ITERATIE!
-            route = Astar(netPoint, grid)
-            
-            if j == 47:
+    try:
+        while routeBookAstarEmpty != []:
+            for netPoint in routeBookAstarEmpty:
                 print(netPoint)
+                j += 1
+
+                searchLocFrom(netPoint, routeBookAstarEmpty, routeBookAstarDone, grid)    
+                searchLocTo(netPoint, routeBookAstarEmpty, routeBookAstarDone, grid)
+
+                # print(len(routeBookAstarEmpty))
+                # print(len(routeBookAstarDone))
+                # for route in routeBookAstarEmpty:
+                #     print(route)
+
+                # if j == 32:
+                #     print(netPoint)
                 print(len(routeBookAstarEmpty))
                 print(len(routeBookAstarDone))
-                return routeBookAstarEmpty, routeBookAstarDone, grid
+                #     return routeBookAstarEmpty, routeBookAstarDone, grid
+               
+                # HIER ZIT HET PROBLEEM IN DE 47ste ITERATIE!
+                route = Astar(netPoint, grid)
 
-            netPoint.route = route
-            grid = changeMat(route, grid)
+                if route != []:
+                    netPoint.route = route
+                    grid = changeMat(route, grid)
 
-            doneWire = routeBookAstarEmpty.pop(routeBookAstarEmpty.index(netPoint))
-            routeBookAstarDone.append(doneWire)
-            print(j)
-            if j == 47:
-                print(netPoint)
-                print(len(routeBookAstarEmpty))
-                print(len(routeBookAstarDone))
-                return routeBookAstarEmpty, routeBookAstarDone, grid
+                    doneWire = routeBookAstarEmpty.pop(routeBookAstarEmpty.index(netPoint))
+                    routeBookAstarDone.append(doneWire)
+                    print(j)
 
-    return routeBookAstarEmpty, routeBookAstarDone, grid
+        return routeBookAstarEmpty, routeBookAstarDone, grid
+    except:
+        routeBook = routeBookAstarEmpty + routeBookAstarDone
+        print(gridEmpty)
+        astarRouteFinder(routeBook, gridEmpty)
 
 
 # Astar heeft een grid, gates en een wire nodig
@@ -536,6 +540,7 @@ def Astar(netPoint, emptyGrid):
         route.append(locfrom)
     else:
         route = putwire(gridwithnodes, locfrom, locto)
+        
         route.append(locfrom)
     route = list(reversed(route))
 
@@ -546,14 +551,17 @@ def putwire(gridwithnodes, locfrom, locto):
     start = locfrom
     direction = matrix_store_direction()
 
-
-
-    while (distance(start, locto) != 1):
+    stop = 0
+    while (distance(start, locto) != 1) and stop == 0:
         gridwithnodes = putnodes(start, gridwithnodes, locto, locfrom, direction)[0]
         direction = putnodes(start, gridwithnodes, locto, locfrom, direction)[1]
-        start = minimumnodes(gridwithnodes)
+        start = minimumnodes(gridwithnodes)[0]
+        stop = minimumnodes(gridwithnodes)[1]
 
-    route = findroute(gridwithnodes, locfrom, locto, start, direction)
+    if stop == 0:
+        route = findroute(gridwithnodes, locfrom, locto, start, direction)
+    else:
+        route = []
     return route
 
 #  nodes plaatsen
@@ -669,6 +677,7 @@ def minimumnodes(grid):
     xvalue = 0
     yvalue = 0
     zvalue = 0
+    stop = 0
     for x in range(18):
         for y in range(13):
             for z in range (8):
@@ -678,17 +687,25 @@ def minimumnodes(grid):
                     yvalue = y
                     zvalue = z
 
+    if minimum == 1000:
+        stop = 1
     coordinates = [xvalue, yvalue , zvalue]
-    return coordinates
+    return coordinates, stop
 
 # route wordt geplaatst, alle nodes zijn gegeven
 def findroute(gridwithnodes, locfrom, locto, start, direction):
+    print('in findroute')
     index = 0
     route = []
     route.append(locto)
     route.append(start)
+    count = 0
     while distance(locfrom, start) != 1:
+        count += 1
+        if count == 1000:
+            sys.exit()
         routeelement = checkclosednode(direction, start)
+        print(routeelement)
         route.append(routeelement)
         start = routeelement
     return route
@@ -713,7 +730,7 @@ def Gcost(start, destination, grid, node):
 
 def checkclosednode(direction, start):
     value = direction[start[0]][start[1]][start[2]]
-
+    print(value)
     # merk op dat de tegenovergestelde richting benodigd is
     if value == 1:
         start = [start[0] + 1, start[1], start[2]]
@@ -770,6 +787,7 @@ def getlistsurroundings(gates):
 def searchLocTo(netPoint, routeBookEmpty, routeBookDone, grid):
     # if end location cant be reached, delete one of lines on surrounding gridpoints
     # check every surrounding gridpoint, delete most appropriate line
+    print('searchLocTo')
     for nextLocTo in netPoint.toSurround:
         for netPointToDelete in routeBookDone:
             for routePoint in netPointToDelete.route:

@@ -30,40 +30,40 @@ gates = functions.makeLocations(gatesLoc)
 # initialize 13 x 18 x 8 (= L x W x H) grid with gates
 grid = functions.gridMat(gates)
 
-# maak netlist
-netlistDalton = classes.wire.daltonMethod(netlists.netlist_3, gates)[0]
+# # maak netlist
+# netlistDalton = classes.wire.daltonMethod(netlists.netlist_3, gates)[0]
 
-# make object for each netlist item
-routeBook = functions.makeObjects(netlistDalton, gates)
+# # make object for each netlist item
+# routeBook = functions.makeObjects(netlistDalton, gates)
 
-# maak kopie van routeboek
-routeBookEmpty = deepcopy(routeBook)
+# # maak kopie van routeboek
+# routeBookEmpty = deepcopy(routeBook)
 
-## RANDOM ROUTEFINDER
-# leg wires van netlist adhv random netlist volgordes
-randomRoute = functions.randomRouteBook(routeBookEmpty, gates, 1000)
-score = functions.getScore(randomRoute[2])
+# ## RANDOM ROUTEFINDER
+# # leg wires van netlist adhv random netlist volgordes
+# randomRoute = functions.randomRouteBook(routeBookEmpty, gates, 1000)
+# score = functions.getScore(randomRoute[2])
 
 
-for route in randomRoute[2]:
-    functions.changeMat(route.route, grid)
-print(grid)
+# for route in randomRoute[2]:
+#     functions.changeMat(route.route, grid)
+# print(grid)
 
-newRoute = functions.replaceLines(randomRoute[2], grid)
-print(len(newRoute[0]))
+# newRoute = functions.replaceLines(randomRoute[2], grid)
+# print(len(newRoute[0]))
 
-print(functions.getScore(newRoute[0]))
-print(functions.checker(newRoute[0]))
+# print(functions.getScore(newRoute[0]))
+# print(functions.checker(newRoute[0]))
 
-newNewRoute = functions.replaceLine(newRoute[0], newRoute[1], 300)
+# newNewRoute = functions.replaceLine(newRoute[0], newRoute[1], 1000)
 
-for route in newNewRoute:
-    print(route.route)
+# for route in newNewRoute:
+#     print(route.route)
 
-print(functions.getScore(newNewRoute))
-print(functions.checker(newNewRoute))
+# print(functions.getScore(newNewRoute))
+# print(functions.checker(newNewRoute))
 
-functions.plotLines(gates, newNewRoute)
+# functions.plotLines(gates, newNewRoute)
 
 
 # # # HILLCLIMBER
@@ -90,15 +90,16 @@ functions.plotLines(gates, newNewRoute)
 # dalton = [(20, 10), (3, 15), (15, 5), (3, 23), (5, 7), (15, 21), (13, 18), (1, 2), (3, 5), (10, 4), (7, 13), (3, 2), (22, 16), (22, 13), (15, 17), (22, 11), (11, 24), (6, 14), (16, 9), (19, 5), (15, 8), (10, 7), (23, 4
 # ), (19, 2), (3, 4), (7, 9), (23, 8), (9, 13), (20, 19)]
 
-# routeBookAstar = functions.makeObjects(dalton, gates)
+routeBookAstar = functions.makeObjects(netlists.netlist_2, gates)
 
-# routeBookAstar = functions.astarRouteFinder(routeBookAstar, grid)
+routeBookAstar = functions.astarRouteFinder(routeBookAstar, grid)
 
-# for ding in routeBookAstar[1]:
-#     print(ding)
+print(len(routeBookAstar[1]))
+print(len(routeBookAstar[0]))
+for ding in routeBookAstar[1]:
+    print(ding)
 
-
-# functions.plotLines(gates, routeBookAstar[1])
+functions.plotLines(gates, routeBookAstar[1])
 
 
 
