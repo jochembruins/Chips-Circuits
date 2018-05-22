@@ -1,4 +1,4 @@
-###########################################################
+############################################################
 # chips.py
 #
 # Jochem Bruins
@@ -11,9 +11,9 @@
 # 10501916
 #
 # Chips & Circuits
-###########################################################
-from time import time
+############################################################
 
+from time import time
 from numpy import genfromtxt
 import functions 
 import matplotlib.pyplot as plt
@@ -21,6 +21,7 @@ import netlists
 import classes 
 from copy import deepcopy
 from random import shuffle
+
 
 ## DATA
 # make appropriate format of gate locations
@@ -83,26 +84,34 @@ grid = functions.gridMat(gates)
 
 ## A-star
 
+# NIET VERWIJDEREN
 # routes die werken voor test
 # dalton = [(2, 20), (3, 15), (15, 5), (3, 23), (5, 7), (15, 21), (13, 18), (1, 2), (3, 5), (10, 4), (7, 13), (3, 2), (22, 16), (22, 13), (15, 17), (20, 10), (22, 11), (11, 24), (6, 14), (16, 9), (19, 5), (15, 8), (10, 7), (23, 4
 # ), (19, 2), (3, 4), (7, 9), (23, 8), (9, 13), (20, 19)]
 
-# dalton = [(20, 10), (3, 15), (15, 5), (3, 23), (5, 7), (15, 21), (13, 18), (1, 2), (3, 5), (10, 4), (7, 13), (3, 2), (22, 16), (22, 13), (15, 17), (22, 11), (11, 24), (6, 14), (16, 9), (19, 5), (15, 8), (10, 7), (23, 4
-# ), (19, 2), (3, 4), (7, 9), (23, 8), (9, 13), (20, 19)]
+
+dalton = [(20, 10), (3, 15), (15, 5), (3, 23), (5, 7), (15, 21), (13, 18), (1, 2), (3, 5), (10, 4), (7, 13), (3, 2), (22, 16), (22, 13), (15, 17), (22, 11), (11, 24), (6, 14), (16, 9), (19, 5), (15, 8), (10, 7), (23, 4
+), (19, 2), (3, 4), (7, 9), (23, 8), (9, 13), (20, 19)]
+
+routeBookAstar = functions.makeObjects(dalton, gates)
+routeBookAstar = functions.Astarroutemelle(routeBookAstar, grid, gates)
+quit()
+
 
 routeBookAstar = functions.makeObjects(netlists.netlist_1, gates)
 
+routeBookAstar = astarRouteFinder(routeBookAstar, grid)
+
 routeBookAstar = functions.astarRouteFinder(routeBookAstar, grid)
+
 
 print(len(routeBookAstar[1]))
 print(len(routeBookAstar[0]))
 for ding in routeBookAstar[1]:
     print(ding)
 
-functions.plotLines(gates, routeBookAstar[1])
 
-
-
+plotLines(gates, routeBookAstar[1])
 
 # maak route met A-star
 # MOET IN FUNCTIE
