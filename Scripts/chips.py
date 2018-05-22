@@ -25,7 +25,7 @@ from random import shuffle
 
 ## DATA
 # make appropriate format of gate locations
-gatesLoc = genfromtxt('../Data/gates.csv', delimiter=';')
+gatesLoc = genfromtxt('../Data/gates2.csv', delimiter=';')
 gates = functions.makeLocations(gatesLoc)
 
 # initialize 13 x 18 x 8 (= L x W x H) grid with gates
@@ -39,6 +39,19 @@ routeBook = functions.makeObjects(netlistDalton, gates)
 
 # maak kopie van routeboek
 routeBookEmpty = deepcopy(routeBook)
+
+newRoutes = functions.astarRouteFinder(routeBookEmpty, grid)
+
+print(len(newRoutes))
+
+print(functions.checker(newRoutes))
+
+print(functions.getScore(newRoutes))
+
+for route in newRoutes:
+	print(route)
+
+functions.plotLines(gates, newRoutes)
 
 ## RANDOM ROUTEFINDER
 # leg wires van netlist adhv random netlist volgordes
@@ -93,25 +106,24 @@ functions.plotLines(gates, newNewRoute)
 
 # dalton = [(20, 10), (3, 15), (15, 5), (3, 23), (5, 7), (15, 21), (13, 18), (1, 2), (3, 5), (10, 4), (7, 13), (3, 2), (22, 16), (22, 13), (15, 17), (22, 11), (11, 24), (6, 14), (16, 9), (19, 5), (15, 8), (10, 7), (23, 4
 # ), (19, 2), (3, 4), (7, 9), (23, 8), (9, 13), (20, 19)]
-#
+
 # routeBookAstar = functions.makeObjects(dalton, gates)
 # routeBookAstar = functions.Astarroutemelle(routeBookAstar, grid, gates)
 # quit()
-#
-#
+
+
 # routeBookAstar = functions.makeObjects(netlists.netlist_1, gates)
-#
+
 # routeBookAstar = astarRouteFinder(routeBookAstar, grid)
-#
+
 # routeBookAstar = functions.astarRouteFinder(routeBookAstar, grid)
-#
-#
+
+
 # print(len(routeBookAstar[1]))
 # print(len(routeBookAstar[0]))
 # for ding in routeBookAstar[1]:
 #     print(ding)
-#
-#
+
 # plotLines(gates, routeBookAstar[1])
 
 # maak route met A-star

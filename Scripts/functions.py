@@ -6,10 +6,10 @@
 # 10578811
 #
 # Melle Gelok
-# 11013893
+# 11017893
 #
 # Noah van Grinsven
-# 10501916
+# 10501917
 #
 # Chips & Circuits
 #
@@ -66,8 +66,8 @@ def makeObjects(netlist, gates):
 
 
 def gridMat(gates):
-    # maak een matrix van de grid
-    matGrid = np.zeros([18, 13, 31]) + 99
+    # make matrix of grid
+    matgrid = np.zeros([18, 17, 10]) + 99
 
     for gate in gates:
         matGrid[gate.x, gate.y, gate.z] = gate.gate
@@ -307,13 +307,13 @@ def plotLines(gates, routeBook):
 
     # definieer assen
     ax.set_xlim([0, 18])
-    ax.set_ylim([0, 13])
-    ax.set_zlim([0, 8])
+    ax.set_ylim([0, 17])
+    ax.set_zlim([0, 10])
 
     # zet ticks op de assem
     ax.set_xticks(np.arange(0, 18, 1))
-    ax.set_yticks(np.arange(0, 13, 1))
-    ax.set_zticks(np.arange(0, 8, 1))
+    ax.set_yticks(np.arange(0, 17, 1))
+    ax.set_zticks(np.arange(0, 10, 1))
 
     # voeg labels toe
     ax.set_xlabel('x-axis')
@@ -425,78 +425,61 @@ def matrix_store_direction():
     # 5 voor
     # 6 achter
 
-    matgrid = np.zeros([18, 13, 8])
+    matgrid = np.zeros([18, 17, 10])
     return matgrid
 
 def astarRouteFinder (routeBook, grid):
 
     gridEmpty = deepcopy(grid)
-
-
     routeBookAstarEmpty = deepcopy(routeBook)
     routeBookAstarDone = []
-    j = 0
-    
-    try:
-        while routeBookAstarEmpty != []:
-            for netPoint in routeBookAstarEmpty:
-                print(netPoint)
-                j += 1
+    loops = 0
 
-                count = 0
-                for loc in netPoint.fromSurround:
-                    if grid[loc[0], loc[1], loc[2]] != 99:
-                        count += 1
-                        print(count)
-                if count == 4:
-                    print('verwijder')
-                    searchLocFrom(netPoint, routeBookAstarEmpty, routeBookAstarDone, grid)
+    while routeBookAstarEmpty != []:
+        for netPoint in routeBookAstarEmpty:
+            
+            loops += 1
 
-                count = 0
-                for loc in netPoint.toSurround:
-                    if grid[loc[0], loc[1], loc[2]] != 99:
-                        count += 1
-                        print(count)
-                if count == 4:
-                    print('verwijder')
-                    searchLocTo(netPoint, routeBookAstarEmpty, routeBookAstarDone, grid)
+            count = 0
+            for loc in netPoint.fromSurround:
+                if grid[loc[0], loc[1], loc[2]] != 99:
+                    count += 1
+            if count == 5:
+                routeBookAstarEmpty, routeBookAstarDone, grid = searchLocFrom(netPoint, routeBookAstarEmpty, routeBookAstarDone, grid)   
+
+            count = 0
+            for loc in netPoint.toSurround:
+                if grid[loc[0], loc[1], loc[2]] != 99:
+                    count += 1
+            if count == 5:
+                routeBookAstarEmpty, routeBookAstarDone, grid = searchLocTo(netPoint, routeBookAstarEmpty, routeBookAstarDone, grid)         
 
 
-                # print(len(routeBookAstarEmpty))
-                # print(len(routeBookAstarDone))
-                # for route in routeBookAstarEmpty:
-                #     print(route)
+            print(len(routeBookAstarEmpty))
+            print(len(routeBookAstarDone))
 
-                # if j == 32:
-                #     print(netPoint)
-                print(len(routeBookAstarEmpty))
-                print(len(routeBookAstarDone))
-                #     return routeBookAstarEmpty, routeBookAstarDone, grid
+            route = Astar(netPoint, grid, 2)
 
-                # HIER ZIT HET PROBLEEM IN DE 47ste ITERATIE!
-                route = Astar(netPoint, grid)
+            if route != []:
+                netPoint.route = route
+                grid = changeMat(route, grid)
 
-                if route != []:
-                    netPoint.route = route
-                    grid = changeMat(route, grid)
+                doneWire = routeBookAstarEmpty.pop(routeBookAstarEmpty.index(netPoint))
+                routeBookAstarDone.append(doneWire)
+            
+            if loops == 100:
+                routeBookAstarEmpty = routeBookAstarEmpty + routeBookAstarDone
+                routeBookAstarDone = []
+                shuffle(routeBookAstarEmpty)
+                grid = deepcopy(gridEmpty)
+                loops = 0
 
-                    doneWire = routeBookAstarEmpty.pop(routeBookAstarEmpty.index(netPoint))
-                    routeBookAstarDone.append(doneWire)
-                    print(j)
-        print('in')
-        return routeBookAstarEmpty, routeBookAstarDone, grid
-    except:
-        if routeBookAstarEmpty == []:
-            print('uit')
-            return routeBookAstarEmpty, routeBookAstarDone, grid
-        routeBook = routeBookAstarEmpty + routeBookAstarDone
-        for netPoint in routeBook:
-            netPoint.route = []
-        astarRouteFinder(routeBook, gridEmpty)
+    print("Returning: ")
+    return routeBookAstarDone
 
 
 # Astar heeft een grid, gates en een wire nodig
-def Astar(netPoint, emptyGrid, index):
+def Astar(netPoint, grid, index):
     locfrom = [netPoint.locFrom[0], netPoint.locFrom[1], netPoint.locFrom[2]]
     gridwithnodes = deepcopy(emptyGrid)
     locto = [netPoint.locTo[0], netPoint.locTo[1], netPoint.locTo[2]]
@@ -511,7 +494,8 @@ def Astar(netPoint, emptyGrid, index):
         route.append(locfrom)
     else:
         route = putwire(gridwithnodes, locfrom, locto, index)
-        route.append(locfrom)
+        if route != []:
+            route.append(locfrom)
     route = list(reversed(route))
 
     return route
@@ -638,7 +622,7 @@ def distance(location, destination):
 
 # kijken of de te plaatsen node zich wel in het veld bevindt
 def checkexistance(node):
-    if (node[2]<8 and node[2]>=0 and node[1]<13 and node[1]>=0 and node[0]>=0 and node[0]<18):
+    if (node[2]<10 and node[2]>=0 and node[1]<17 and node[1]>=0 and node[0]>=0 and node[0]<18):
         return True
     else:
         return False
@@ -665,8 +649,8 @@ def minimumnodes(grid):
     zvalue = 0
     stop = 0
     for x in range(18):
-        for y in range(13):
-            for z in range (8):
+        for y in range(17):
+            for z in range (10):
                 if grid[x][y][z] < minimum and grid[x][y][z]>100:
                     minimum = grid[x][y][z]
                     xvalue = x
@@ -713,6 +697,23 @@ def Gcost(start, destination, grid, node, index):
             else:
                 gcost = 1
             return gcost
+    
+
+    elif index ==2:
+        if node in surround_list:
+            count_surrounded = surround_list.count(node)
+            if grid[start[0]][start[1]][start[2]] > 10000:
+                gcost = grid[start[0]][start[1]][start[2]] - 10000 - distance(start, destination) + 1 + 10*count_surrounded + 14 - 2*node[2]
+            else:
+                gcost = 1 + 10*count_surrounded + 14 - 2*node[2]
+            return gcost
+        else:
+            if grid[start[0]][start[1]][start[2]] > 10000:
+                gcost = grid[start[0]][start[1]][start[2]] - 10000 - distance(start, destination) + 1 + 14 - 2*node[2]
+            else:
+                gcost = 1 + 14 - 2*node[2]
+            return gcost
+
     else:
         if grid[start[0]][start[1]][start[2]] > 10000:
             gcost = grid[start[0]][start[1]][start[2]] - 10000 - distance(start, destination) + 1
@@ -819,10 +820,10 @@ def searchLocFrom(netPoint, routeBookEmpty, routeBookDone, grid):
                         return routeBookEmpty, routeBookDone, grid, nextLocFrom
 
 def GcostForGates(gates):
-    grid = np.zeros([18, 13, 8])
+    grid = np.zeros([18, 17, 10])
     for x in range(18):
-        for y in range(13):
-            for z in range(8):
+        for y in range(17):
+            for z in range(10):
                 distancee = 0
                 for i in gates:
                     distanceee = distance([x, y, z], [i.x, i.y, i.z])
