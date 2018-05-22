@@ -491,8 +491,24 @@ def astarRouteFinder (routeBook, grid):
                 print(netPoint)
                 j += 1
 
-                searchLocFrom(netPoint, routeBookAstarEmpty, routeBookAstarDone, grid)    
-                searchLocTo(netPoint, routeBookAstarEmpty, routeBookAstarDone, grid)
+                count = 0
+                for loc in netPoint.fromSurround:
+                    if grid[loc[0], loc[1], loc[2]] != 99:
+                        count += 1
+                        print(count)
+                if count == 4:
+                    print('verwijder')
+                    searchLocFrom(netPoint, routeBookAstarEmpty, routeBookAstarDone, grid)   
+
+                count = 0
+                for loc in netPoint.toSurround:
+                    if grid[loc[0], loc[1], loc[2]] != 99:
+                        count += 1
+                        print(count)
+                if count == 4:
+                    print('verwijder')
+                    searchLocTo(netPoint, routeBookAstarEmpty, routeBookAstarDone, grid)         
+
 
                 # print(len(routeBookAstarEmpty))
                 # print(len(routeBookAstarDone))
@@ -515,19 +531,22 @@ def astarRouteFinder (routeBook, grid):
                     doneWire = routeBookAstarEmpty.pop(routeBookAstarEmpty.index(netPoint))
                     routeBookAstarDone.append(doneWire)
                     print(j)
-
+        print('in')
         return routeBookAstarEmpty, routeBookAstarDone, grid
     except:
+        if routeBookAstarEmpty == []:
+            print('uit')
+            return routeBookAstarEmpty, routeBookAstarDone, grid
         routeBook = routeBookAstarEmpty + routeBookAstarDone
-        print(gridEmpty)
+        for netPoint in routeBook:
+            netPoint.route = []
         astarRouteFinder(routeBook, gridEmpty)
 
 
 # Astar heeft een grid, gates en een wire nodig
-def Astar(netPoint, emptyGrid):
+def Astar(netPoint, grid):
     locfrom = [netPoint.locFrom[0], netPoint.locFrom[1], netPoint.locFrom[2]]
-    grid = deepcopy(emptyGrid)
-    gridwithnodes = grid
+    gridwithnodes = deepcopy(grid)
     locto = [netPoint.locTo[0], netPoint.locTo[1], netPoint.locTo[2]]
     print("locfrom")
     print(locfrom)
@@ -687,8 +706,9 @@ def minimumnodes(grid):
                     yvalue = y
                     zvalue = z
 
-    if minimum == 1000:
+    if minimum == 10000:
         stop = 1
+        quit()
     coordinates = [xvalue, yvalue , zvalue]
     return coordinates, stop
 
@@ -730,7 +750,6 @@ def Gcost(start, destination, grid, node):
 
 def checkclosednode(direction, start):
     value = direction[start[0]][start[1]][start[2]]
-    print(value)
     # merk op dat de tegenovergestelde richting benodigd is
     if value == 1:
         start = [start[0] + 1, start[1], start[2]]
