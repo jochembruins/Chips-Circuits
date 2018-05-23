@@ -28,6 +28,8 @@ import random
 from random import shuffle
 from copy import deepcopy
 from surroundings_gates import surround_list
+import pandas as pd
+import statistics
 
 np.set_printoptions(threshold=np.nan)
 np.set_printoptions(linewidth=180)
@@ -82,6 +84,7 @@ def randomRouteBook(routeBook, gates, steps=1000):
     score = 2000
     file  = open('../csv/random.csv', "w")
     writer = csv.writer(file, delimiter=',')
+    randomData = pd.DataFrame(columns=['I','Score'])
 
     for i in range(0, steps):
         print(i)
@@ -114,7 +117,8 @@ def randomRouteBook(routeBook, gates, steps=1000):
             print("oude score random: ", score)
             print("nieuwe score random: ", newScore)
             writer.writerow([i, newScore])
-
+            # newRow = pd.DataFrame({'I': i, 'Score': newScore}, ignore_index=True)
+            randomData = randomData.append({'I': i, 'Score': newScore}, ignore_index=True)
             check = checker(newRouteFound)
 
             if check == True:
@@ -130,6 +134,8 @@ def randomRouteBook(routeBook, gates, steps=1000):
                 for ding in newRouteFound:
                     print(ding)
 
+    statistics.plotRandom(randomData)
+    
     file.close()
     return bestRouteBook, score, bestRouteFound, grid
 
@@ -300,37 +306,6 @@ def stepsDifference(vector1, vector2):
     return difference
 
 
-def plotLines(gates, routeBook):
-    # maak een nieuwe plot
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-
-    # definieer assen
-    ax.set_xlim([0, 18])
-    ax.set_ylim([0, 13])
-    ax.set_zlim([0, 10])
-
-    # zet ticks op de assem
-    ax.set_xticks(np.arange(0, 18, 1))
-    ax.set_yticks(np.arange(0, 13, 1))
-    ax.set_zticks(np.arange(0, 10, 1))
-
-    # voeg labels toe
-    ax.set_xlabel('x-axis')
-    ax.set_ylabel('y-axis')
-    ax.set_zlabel('z-axis')
-
-    # voeg alle gates met labels toe
-    for gate in gates:
-        ax.scatter(gate.x, gate.y, 0)
-        ax.text(gate.x, gate.y, 0, '%s' % (int(gate.gate)), size=10, zorder=1, color='k')
-
-        # leg wires in plot zoals in het routebook
-    for netPoint in routeBook:
-        ax.plot([step[0] for step in netPoint.route], [step[1] for step in netPoint.route], [step[2] for step in netPoint.route])
-
-    plt.show()
-
 def getScore(routeBook):
     score = 0
     for route in routeBook:
@@ -344,6 +319,7 @@ def hillClimb(routeBook, score, gates, steps=1000):
     bestRouteBook = routeBook
     file  = open('../csv/hill.csv', "w")
     writer = csv.writer(file, delimiter=',')
+    hillData = pd.DataFrame(columns=['Score_Hill'])
 
     # loop voor het aantal stappen
     for i in range(0, steps):
@@ -391,8 +367,11 @@ def hillClimb(routeBook, score, gates, steps=1000):
         
         
         writer.writerow([i,score])
+        hillData = hillData.append({'Score_Hill': score}, ignore_index=True)
+    print(hillData)
+    statistics.plotLine(hillData, 'Hillclimber')
     file.close()
-    return bestRouteFound, score
+    return bestRouteFound, score, hillData
 
 def checker (routeBook):
     seen = []
@@ -833,22 +812,23 @@ def GcostForGates(gates):
     return grid
 
 
-def replaceLines(routeBook, grid):
-    for netPoint in routeBook:
-        grid = delRoute(netPoint.route, grid)
-        netPoint.route = Astar(netPoint, grid, 1)
-        grid = changeMat(netPoint.route, grid)
-        print(netPoint.route)
-    return routeBook, grid
-
-def replaceLine(routeBook, grid, steps = 2000):
+def replaceLine(routeBook, grid, order, steps = 2000):
+    replaceData = pd.DataFrame(columns=['Score_Replace'])
     for i in range(0, steps):
-        index = random.randrange(0, len(routeBook))
+        if order == 1:
+            index = random.randrange(0, len(routeBook))
+            print(index)
+        else:
+            index = i % len(routeBook)
+            print(index)
         grid = delRoute(routeBook[index].route, grid)
         routeBook[index].route = Astar(routeBook[index], grid, 0)
         grid = changeMat(routeBook[index].route, grid)
         print(routeBook[index].route)
-    return routeBook
+        score = getScore(routeBook)
+        replaceData = replaceData.append({'Score_Replace': score}, ignore_index=True)    
+    print(replaceData)
+    return routeBook, replaceData
 
 def Astarroutemelle(routeBookAstar, grid, gates):
     # maak route met A-star
@@ -869,7 +849,7 @@ def Astarroutemelle(routeBookAstar, grid, gates):
     for route in routeBookAstar:
         print(route)
 
-    plotLines(gates, routeBookAstar)
+    statistics.plotChip(gates, routeBookAstar)
     print("time")
     print(toc - tic)
     score = getScore(routeBookAstar)
