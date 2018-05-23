@@ -24,62 +24,95 @@ from copy import deepcopy
 from random import shuffle
 import statistics
 import pandas as pd
+import sys
 
-## DATA
-# make appropriate format of gate locations
-gatesLoc = genfromtxt('../Data/gates2.csv', delimiter=';')
+if len(sys.argv) == 1:
+    print("Usage: chips.py N \nN = 1, 2, 3, a; where '1' stands for netlist 1 and 'a' for all three netlists")
+    exit()
+
+if sys.argv[1] == '1':
+    netlist = netlists.netlist_1
+elif sys.argv[1] == '2':
+    netlist = netlists.netlist_2
+elif sys.argv[1] == '3':
+    netlist = netlists.netlist_3
+elif sys.argv[1] == "a":
+    print("hoi")
+else:
+    print("usage not correct")
+    print("Usage: chips.py N \nN = 1, 2, 3, a; where '1' stands for netlist 1 and 'a' for all three netlists")
+    exit()
+
+## PREPAREER DATA
+# giet gate locaties in goede format
+gatesLoc = genfromtxt('../Data/gates.csv', delimiter=';')
 gates = functions.makeLocations(gatesLoc)
 
-# initialize 13 x 18 x 8 (= L x W x H) grid with gates
-grid = functions.gridMat(gates, "groot")
+# maak 13 x 18 x 8 (= L x W x H) grid met gates
+grid = functions.gridMat(gates)
 
-# maak netlist
-netlistDalton = classes.wire.daltonMethod(netlists.netlist_5, gates)[0]
+# maak object van iedere netPoint
+routeBook = functions.makeObjects(netlist, gates)
 
-# make object for each netlist item
-routeBook = functions.makeObjects(netlistDalton, gates)
+# bepaal lowerbound aka Manhattan distance van netlist
+# DIT MOET IN DE OUTPUTTABEL ERGENS NEERGEZET WORDEN
+lowerBound = functions.getLowerBound(routeBook)
 
 # maak kopie van routeboek
 routeBookEmpty = deepcopy(routeBook)
 
-
-
-# # RANDOM ROUTEFINDER
-# # leg wires van netlist adhv random netlist volgordes
+# ## RANDOM ROUTEFINDER
+# # leg wires van netlist adhv random netlist volgordes met breakthrough algoritme
+# # 3e argument = aantal verschillende netlists
 # randomRoute = functions.randomRouteBook(routeBookEmpty, gates, 3000)
+#
+# print info over uitkomst
 # score = functions.getScore(randomRoute[2])
-
-# print(len(randomRoute[2]))
-# for route in randomRoute[2]:
-# 	print(route.route)
+# print("Beste score van random:", score)
+# check = functions.checker(randomRoute[2])
 # statistics.plotChip(gates, randomRoute[2])
 
+## DALTON METHODE
+netlistDalton = classes.wire.daltonMethod(netlist, gates)
+# maak object van iedere netPoint
+daltonRouteBook = functions.makeObjects(netlistDalton, gates)
+# HIER ASTAR GEWOGEN EN HILLCLIMBER OP DALTONLIST
 
+## UI METHODE
+# netlistUi = classes.wire.UIMethod_forprint1(netlist, gates)
+# # maak object van iedere netPoint
+# uiRouteBook = functions.makeObjects(netlistUi, gates)
+# HIER ASTAR GEWOGEN EN HILLCLIMBER OP UILIST
+
+## HILLCLIMBER: VERWIJDER ÉÉN LIJN, LEG TERUG MET A*
+# maak nieuw grid adhv het beste gevonden routebook
 # for route in randomRoute[2]:
-# 	grid = functions.changeMat(route.route, grid)
+#     grid = functions.changeMat(route.route, grid)
 
-
-
+# DIT MOET NOG AANGEPAST WORDEN OP NIEUWE INDEX IN FUNCTIE
+# verbeter route door met pure A* lijnen opnieuw te leggen
 # NewRoute = functions.replaceLine(randomRoute[2], grid, 1, 1000)
 
-# for route in NewRoute[0]:
-# 	print(route.route)
-
+# print info over uitkomsten
 # print(functions.getScore(NewRoute[0]))
 # print(functions.checker(NewRoute[0]))
+# print(len(NewRoute))
+# for route in NewRoute:
+#     print(route.route)
+# functions.plotLines(gates, NewRoute)
 
-# print(len(NewRoute[0]))
-
+# returnt lijst met scores na iedere iteratie
 # replaceData = NewRoute[1]
 # print(replaceData)
 
-
-# # # HILLCLIMBER
+## HILLCLIMBER: WISSEL TWEE NETPOINTS, LEG HELE NETLIST OPNIEUW
 # # laat hilclimber werken
 # HillClimber = functions.hillClimb(randomRoute[0], randomRoute[1], gates, 1000)
 # hillData = HillClimber[2]
 # print(hillData)
 
+#
+# # maak een plot van beide hillclimbers
 # result = pd.concat([replaceData, hillData], axis=1, join='inner')
 # print(result)
 # statistics.plotLine(result, 'Hillclimber en Replacelines')
@@ -122,7 +155,6 @@ statistics.plotChip(gates, newRoutes[0])
 # dalton = [(20, 10), (3, 15), (15, 5), (3, 23), (5, 7), (15, 21), (13, 18), (1, 2), (3, 5), (10, 4), (7, 13), (3, 2), (22, 16), (22, 13), (15, 17), (22, 11), (11, 24), (6, 14), (16, 9), (19, 5), (15, 8), (10, 7), (23, 4
 # ), (19, 2), (3, 4), (7, 9), (23, 8), (9, 13), (20, 19)]
 
-
 # netlist = netlists.netlist_4
 # gatesLoc = genfromtxt('../Data/gates2.csv', delimiter=';')
 # gates = functions.makeLocations(gatesLoc)
@@ -130,94 +162,3 @@ statistics.plotChip(gates, newRoutes[0])
 # grid2 = functions.gridMat(gates, "groot")
 # routeBookAstar = functions.Astarroutemelle2(routeBookAstar, grid2, gates)
 # quit()
-
-# routeBookAstar = functions.makeObjects(netlists.netlist_2, gates)
-
-# routeBookAstar = functions.makeObjects(netlists.netlist_1, gates)
-
-# routeBookAstar = astarRouteFinder(routeBookAstar, grid)
-
-# routeBookAstar = functions.astarRouteFinder(routeBookAstar, grid)
-
-
-# print(len(routeBookAstar[1]))
-# print(len(routeBookAstar[0]))
-# for ding in routeBookAstar[1]:
-#     print(ding)
-
-# plotLines(gates, routeBookAstar[1])
-
-# maak route met A-star
-# MOET IN FUNCTIE
-# tic = time()
-# j=0
-# for route in routeBookAstarEmpty:
-#     j=j+1
-#     print(j)
-#     if j==21:
-#         break
-#     routee = functions.Astar(gates, route.netPoint, grid)
-#     route.route = routee
-#     grid = functions.changeMat(routee, grid)
-# toc = time()
-
-# for route in routeBookAstar:
-#     print(route)
-
-# statistics.plotChip(gates, routeBookAstar)
-# print(tic-toc)
-# score = functions.getScore(routeBookAstar)
-# print(score)
-# quit()
-# tic = time()
-
-# for i in dalton:
-#     print(i)
-#     print(j)
-#     routeee = functions.Astar(gates, i, grid)
-#     grid = functions.changeMat(routeee, grid)
-#     j=j+1
-#     if j ==29:
-#         print("man man man")
-#         for x in range(18):
-#             for y in range(13):
-#                 for z in range(8):
-#                     if grid[x][y][z] != 99:
-#                         print("x: ", end='')
-#                         print(x, end='')
-#                         print(" y: ", end='')
-#                         print(y, end='')
-#                         print(" z: ", end='')
-#                         print(z, end='')
-#                         print(" grid: ", end='')
-#                         print(grid[x][y][z])
-#         print("man man man")
-
-
-# toc = time()
-# print(toc-tic)
-# print("man man man")
-# for x in range(18):
-#     for y in range(13):
-#         for z in range(8):
-#             if grid[x][y][z] != 99:
-#                 print("x: ", end='')
-#                 print(x, end='')
-#                 print(" y: ", end='')
-#                 print(y, end='')
-#                 print(" z: ", end='')
-#                 print(z, end='')
-#                 print(" grid: ", end='')
-#                 print(grid[x][y][z])
-
-# print("man man man")
-
-# print("score")
-# score = 0
-# for x in range(18):
-#     for y in range(13):
-#         for z in range(8):
-#             if grid[x][y][z] == 50:
-#                 score = score + 1
-
-# print(score)

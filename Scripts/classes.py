@@ -88,7 +88,7 @@ class wire(object):
             netlistversion2.pop(numbernetlist)
 
         # return nieuwe netlist
-        return netlistversion3, lowerBound
+        return netlistversion3
 
 
     # deze functie ordent de netlist
