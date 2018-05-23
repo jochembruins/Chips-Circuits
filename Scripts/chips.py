@@ -46,9 +46,13 @@ routeBookEmpty = deepcopy(routeBook)
 
 # RANDOM ROUTEFINDER
 # leg wires van netlist adhv random netlist volgordes
-randomRoute = functions.randomRouteBook(routeBookEmpty, gates, 100)
+randomRoute = functions.randomRouteBook(routeBookEmpty, gates, 3000)
 score = functions.getScore(randomRoute[2])
-# statistics.plotChip(gates, randomRoute[2])
+
+print(len(randomRoute[2]))
+for route in randomRoute[2]:
+	print(route.route)
+statistics.plotChip(gates, randomRoute[2])
 
 
 for route in randomRoute[2]:
@@ -56,14 +60,23 @@ for route in randomRoute[2]:
 
 
 
-NewRoute = functions.replaceLine(randomRoute[2], grid, 1, 100)
+NewRoute = functions.replaceLine(randomRoute[2], grid, 1, 1000)
+
+for route in NewRoute[0]:
+	print(route.route)
+
+print(functions.getScore(NewRoute[0]))
+print(functions.checker(NewRoute[0]))
+
+print(len(NewRoute[0]))
+
 replaceData = NewRoute[1]
 print(replaceData)
 
 
 # # HILLCLIMBER
 # laat hilclimber werken
-HillClimber = functions.hillClimb(randomRoute[0], randomRoute[1], gates, 100)
+HillClimber = functions.hillClimb(randomRoute[0], randomRoute[1], gates, 1000)
 hillData = HillClimber[2]
 print(hillData)
 
@@ -71,18 +84,18 @@ result = pd.concat([replaceData, hillData], axis=1, join='inner')
 print(result)
 statistics.plotLine(result, 'Hillclimber en Replacelines')
 
-# krijg beste routeboek
-routeBookBest = HillClimber[0]
+# # krijg beste routeboek
+# routeBookBest = HillClimber[0]
 
-#check route hillclimber
-check = functions.checker(routeBookBest)
+# #check route hillclimber
+# check = functions.checker(routeBookBest)
 
-print(HillClimber[1])
+# print(HillClimber[1])
 
-# plot gates en lijnen
-statistics.plotChip(gates, routeBookBest)
+# # plot gates en lijnen
+# statistics.plotChip(gates, routeBookBest)
 
-## A-star
+# A-star
 
 # newRoutes = functions.astarRouteFinder(routeBookEmpty, grid)
 

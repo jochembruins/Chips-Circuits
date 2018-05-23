@@ -88,8 +88,7 @@ def randomRouteBook(routeBook, gates, steps=1000):
 
     for i in range(0, steps):
         print(i)
-        newRouteBook = deepcopy(routeBook)
-
+        newRouteBook = routeBook
         shuffle(newRouteBook)
 
         grid = gridMat(gates)
@@ -319,7 +318,7 @@ def hillClimb(routeBook, score, gates, steps=1000):
     bestRouteBook = routeBook
     file  = open('../csv/hill.csv', "w")
     writer = csv.writer(file, delimiter=',')
-    hillData = pd.DataFrame(columns=['Score_Hill'])
+    hillData = pd.DataFrame(columns=['Score Hillclimber'])
 
     # loop voor het aantal stappen
     for i in range(0, steps):
@@ -367,7 +366,7 @@ def hillClimb(routeBook, score, gates, steps=1000):
         
         
         writer.writerow([i,score])
-        hillData = hillData.append({'Score_Hill': score}, ignore_index=True)
+        hillData = hillData.append({'Score Hillclimber': score}, ignore_index=True)
     print(hillData)
     statistics.plotLine(hillData, 'Hillclimber')
     file.close()
@@ -437,7 +436,7 @@ def astarRouteFinder (routeBook, grid):
             print(len(routeBookAstarEmpty))
             print(len(routeBookAstarDone))
 
-            route = Astar(netPoint, grid, 1)
+            route = Astar(netPoint, grid, 2)
 
             if route != []:
                 netPoint.route = route
@@ -446,10 +445,10 @@ def astarRouteFinder (routeBook, grid):
                 doneWire = routeBookAstarEmpty.pop(routeBookAstarEmpty.index(netPoint))
                 routeBookAstarDone.append(doneWire)
             
-            if loops == 120:
+            if loops == 150:
                 routeBookAstarEmpty = routeBookAstarEmpty + routeBookAstarDone
                 routeBookAstarDone = []
-                # shuffle(routeBookAstarEmpty)
+                #shuffle(routeBookAstarEmpty)
                 grid = deepcopy(gridEmpty)
                 loops = 0
                 
@@ -765,7 +764,7 @@ def putwire(gridwithnodes, locfrom, locto, index):
 
         start, stop, queue = minimumnodes(gridwithnodes, queue)
 
-        if i == 2000:
+        if i == 20000:
             print("niet normaal meer")
             quit()
         i = i + 1
@@ -905,7 +904,11 @@ def putnodes(start, grid, destination, locfrom, direction, index, priority_queue
     # achter
     if checkexistance(nodeachter) and check_isempty(nodeachter, grid):
         nodeachterpotentieel = 100 + Gcost(start, destination, grid, nodeachter, index) + distance(nodeachter, destination)
+    #     print("gcost")
+    #     print(Gcost(start, destination, grid, nodeachter, index))
 
+    # print("nodeachter")
+    # print(nodeachterpotentieel)
     if checkexistance(nodeachter) and nodeachterpotentieel < grid[nodeachter[0]][nodeachter[1]][nodeachter[2]]:
         former_value = grid[nodeachter[0]][nodeachter[1]][nodeachter[2]]
         grid[nodeachter[0]][nodeachter[1]][nodeachter[2]] = nodeachterpotentieel
@@ -932,7 +935,7 @@ def distance(location, destination):
 
 # kijken of de te plaatsen node zich wel in het veld bevindt
 def checkexistance(node):
-    if (node[2]<10 and node[2]>=0 and node[1]<13 and node[1]>=0 and node[0]>=0 and node[0]<18):
+    if (node[2]<8 and node[2]>=0 and node[1]<13 and node[1]>=0 and node[0]>=0 and node[0]<18):
         return True
     else:
         return False
@@ -973,7 +976,6 @@ def minimumnodes(grid, queue):
 
 # route wordt geplaatst, alle nodes zijn gegeven
 def findroute(gridwithnodes, locfrom, locto, start, direction):
-    print('in findroute')
     index = 0
     route = []
     route.append(locto)
@@ -1140,22 +1142,38 @@ def GcostForGates(gates):
 
 
 def replaceLine(routeBook, grid, order, steps = 2000):
-    replaceData = pd.DataFrame(columns=['Score_Replace'])
+    random.seed(2)
+    replaceData = pd.DataFrame(columns=['Score ReplaceLine'])
+    score = getScore(routeBook)
+    bestRouteBook = routeBook
+    bestGrid = grid
+
     for i in range(0, steps):
+        newRouteBook = bestRouteBook
+        newGrid = bestGrid
+
         if order == 1:
-            index = random.randrange(0, len(routeBook))
+            index = random.randrange(0, len(newRouteBook))
             print(index)
         else:
-            index = i % len(routeBook)
+            index = i % len(newRouteBook)
             print(index)
-        grid = delRoute(routeBook[index].route, grid)
-        routeBook[index].route = Astar(routeBook[index], grid, 0)
-        grid = changeMat(routeBook[index].route, grid)
-        print(routeBook[index].route)
-        score = getScore(routeBook)
-        replaceData = replaceData.append({'Score_Replace': score}, ignore_index=True)    
+        
+        print(newRouteBook[index].route)
+        delRoute(newRouteBook[index].route, newGrid)
+        newRouteBook[index].route = Astar(newRouteBook[index], newGrid, 0)
+        print(newRouteBook[index].route)
+        changeMat(newRouteBook[index].route, newGrid)
+        print(checker(newRouteBook))
+        newScore = getScore(newRouteBook)
+        print(newScore)
+        if newScore < score:
+            bestGrid = newGrid
+            score = newScore
+            bestRouteBook = newRouteBook
+        replaceData = replaceData.append({'Score ReplaceLine': score}, ignore_index=True)    
     print(replaceData)
-    return routeBook, replaceData
+    return bestRouteBook, replaceData
 
 def Astarroutemelle(routeBookAstar, grid, gates):
     # maak route met A-star
