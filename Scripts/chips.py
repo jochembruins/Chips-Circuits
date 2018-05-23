@@ -93,9 +93,12 @@ grid = functions.gridMat(gates)
 dalton = [(20, 10), (3, 15), (15, 5), (3, 23), (5, 7), (15, 21), (13, 18), (1, 2), (3, 5), (10, 4), (7, 13), (3, 2), (22, 16), (22, 13), (15, 17), (22, 11), (11, 24), (6, 14), (16, 9), (19, 5), (15, 8), (10, 7), (23, 4
 ), (19, 2), (3, 4), (7, 9), (23, 8), (9, 13), (20, 19)]
 
+# firstnetlist_firstmap = functions.Astar_firstmap_firstnetlist(grid, gates)
+# quit()
 routeBookAstar = functions.makeObjects(dalton, gates)
 routeBookAstar = functions.Astarroutemelle(routeBookAstar, grid, gates)
 quit()
+
 
 
 routeBookAstar = functions.makeObjects(netlists.netlist_2, gates)
