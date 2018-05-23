@@ -65,14 +65,22 @@ def makeObjects(netlist, gates):
     return emptyRouteBook
 
 
-def gridMat(gates):
-    # make matrix of grid
-    matGrid = np.zeros([18, 13, 10]) + 99
+def gridMat(gates, chip):
+    if chip == "groot":
+        # make matrix of grid
+        matGrid = np.zeros([18, 17, 10]) + 99
 
-    for gate in gates:
-        matGrid[gate.x, gate.y, gate.z] = gate.gate
-    return matGrid
+        for gate in gates:
+            matGrid[gate.x, gate.y, gate.z] = gate.gate
+        return matGrid
 
+    else:
+        # make matrix of grid
+        matGrid = np.zeros([18, 13, 10]) + 99
+
+        for gate in gates:
+            matGrid[gate.x, gate.y, gate.z] = gate.gate
+        return matGrid
 
 def randomRouteBook(routeBook, gates, steps=1000):
 
@@ -416,7 +424,7 @@ def checker (routeBook):
 # hier begint het Astar algoritme met bijbehorende functies
 # Astar returned uiteindelijk de wire/route van A*
 # er wordt een matrix gedefinieerd waarbij de richtingen van nodes worden weergeven
-def matrix_store_direction():
+def matrix_store_direction(chip):
     # richtingen matrix geven
     # 1 links
     # 2 rechts
@@ -424,9 +432,12 @@ def matrix_store_direction():
     # 4 beneden
     # 5 voor
     # 6 achter
-
-    matgrid = np.zeros([18, 13, 10])
-    return matgrid
+    if chip == "groot":
+        matgrid = np.zeros([18, 17, 10])
+        return matgrid
+    else:
+        matgrid = np.zeros([18, 13, 10])
+        return matgrid
 
 def astarRouteFinder (routeBook, grid):
 
@@ -751,7 +762,7 @@ def astarRouteFinder (routeBook, grid):
 
 
 # Astar heeft een grid, gates en een wire nodig
-def Astar(netPoint, grid, index):
+def Astar(netPoint, grid, index, chip):
     locfrom = [netPoint.locFrom[0], netPoint.locFrom[1], netPoint.locFrom[2]]
     gridwithnodes = deepcopy(grid)
     locto = [netPoint.locTo[0], netPoint.locTo[1], netPoint.locTo[2]]
@@ -765,7 +776,7 @@ def Astar(netPoint, grid, index):
         route.append(locto)
         route.append(locfrom)
     else:
-        route = putwire(gridwithnodes, locfrom, locto, index)
+        route = putwire(gridwithnodes, locfrom, locto, index, chip)
         if route != []:
             route.append(locfrom)
     route = list(reversed(route))
@@ -773,20 +784,20 @@ def Astar(netPoint, grid, index):
     return route
 
 # putwire plaatst nodes totdat de locatie bereikt is
-def putwire(gridwithnodes, locfrom, locto, index):
+def putwire(gridwithnodes, locfrom, locto, index, chip):
     start = locfrom
-    direction = matrix_store_direction()
+    direction = matrix_store_direction(chip)
     stop = 0
     queue = []
 
     i=0
 
     while (distance(start, locto) != 1) and stop == 0:
-        gridwithnodes, direction, queue = putnodes(start, gridwithnodes, locto, locfrom, direction, index, queue)
+        gridwithnodes, direction, queue = putnodes(start, gridwithnodes, locto, locfrom, direction, index, queue, chip)
 
         start, stop, queue = minimumnodes(gridwithnodes, queue)
 
-        if i == 2000:
+        if i == 10000:
             print("niet normaal meer")
             quit()
         i = i + 1
@@ -805,7 +816,7 @@ def putwire(gridwithnodes, locfrom, locto, index):
     return route
 
 #  nodes plaatsen
-def putnodes(start, grid, destination, locfrom, direction, index, priority_queue):
+def putnodes(start, grid, destination, locfrom, direction, index, priority_queue, chip):
 
     if grid[start[0]][start[1]][start[2]] >= 100:
 
@@ -824,7 +835,6 @@ def putnodes(start, grid, destination, locfrom, direction, index, priority_queue
     if priority_queue != []:
         priority_queue.pop(0)
 
-
     nodelinkspotentieel = 1000000
     noderechtspotentieel = 1000000
     nodevoorpotentieel = 1000000
@@ -833,10 +843,10 @@ def putnodes(start, grid, destination, locfrom, direction, index, priority_queue
     nodebenedenpotentieel = 1000000
 
     # boven
-    if checkexistance(nodeboven) and check_isempty(nodeboven, grid):
+    if checkexistance(nodeboven, chip) and check_isempty(nodeboven, grid):
         nodebovenpotentieel = 100 + Gcost(start, destination, grid, nodeboven, index) + distance(nodeboven, destination)
 
-    if checkexistance(nodeboven) and nodebovenpotentieel < grid[nodeboven[0]][nodeboven[1]][nodeboven[2]]:
+    if checkexistance(nodeboven, chip) and nodebovenpotentieel < grid[nodeboven[0]][nodeboven[1]][nodeboven[2]]:
         former_value = grid[nodeboven[0]][nodeboven[1]][nodeboven[2]]
         grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = nodebovenpotentieel
         direction[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 3
@@ -844,17 +854,16 @@ def putnodes(start, grid, destination, locfrom, direction, index, priority_queue
         priority_queue.pop(index)
         priority_queue.append([nodebovenpotentieel, [nodeboven[0], nodeboven[1], nodeboven[2]]])
 
-    elif checkexistance(nodeboven) and grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] == 99:
+    elif checkexistance(nodeboven, chip) and grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] == 99:
         grid[nodeboven[0]][nodeboven[1]][nodeboven[2]] = nodebovenpotentieel
         direction[nodeboven[0]][nodeboven[1]][nodeboven[2]] = 3
-
         priority_queue.append([nodebovenpotentieel,[nodeboven[0], nodeboven[1], nodeboven[2]]])
 
     # beneden
-    if checkexistance(nodebeneden) and check_isempty(nodebeneden, grid):
+    if checkexistance(nodebeneden, chip) and check_isempty(nodebeneden, grid):
         nodebenedenpotentieel = 100 + Gcost(start, destination, grid, nodebeneden, index) + distance(nodebeneden, destination)
 
-    if checkexistance(nodebeneden) and nodebenedenpotentieel < grid[nodebeneden[0]][nodebeneden[1]][nodebeneden[2]]:
+    if checkexistance(nodebeneden, chip) and nodebenedenpotentieel < grid[nodebeneden[0]][nodebeneden[1]][nodebeneden[2]]:
         former_value = grid[nodebeneden[0]][nodebeneden[1]][nodebeneden[2]]
         grid[nodebeneden[0]][nodebeneden[1]][nodebeneden[2]] = nodebenedenpotentieel
         direction[nodebeneden[0]][nodebeneden[1]][nodebeneden[2]] = 4
@@ -862,7 +871,7 @@ def putnodes(start, grid, destination, locfrom, direction, index, priority_queue
         priority_queue.pop(index)
         priority_queue.append([nodebenedenpotentieel, [nodebeneden[0], nodebeneden[1], nodebeneden[2]]])
 
-    elif checkexistance(nodebeneden) and grid[nodebeneden[0]][nodebeneden[1]][nodebeneden[2]] == 99:
+    elif checkexistance(nodebeneden, chip) and grid[nodebeneden[0]][nodebeneden[1]][nodebeneden[2]] == 99:
         grid[nodebeneden[0]][nodebeneden[1]][nodebeneden[2]] = nodebenedenpotentieel
         direction[nodebeneden[0]][nodebeneden[1]][nodebeneden[2]] = 4
         priority_queue.append([nodebenedenpotentieel, [nodebeneden[0], nodebeneden[1], nodebeneden[2]]])
@@ -870,11 +879,11 @@ def putnodes(start, grid, destination, locfrom, direction, index, priority_queue
 
 
     # links
-    if  checkexistance(nodelinks) and check_isempty(nodelinks, grid):
+    if  checkexistance(nodelinks, chip) and check_isempty(nodelinks, grid):
         nodelinkspotentieel = 100 + Gcost(start, destination, grid, nodelinks, index) + distance(nodelinks, destination)
 
 
-    if checkexistance(nodelinks) and nodelinkspotentieel < grid[nodelinks[0]][nodelinks[1]][nodelinks[2]]:
+    if checkexistance(nodelinks, chip) and nodelinkspotentieel < grid[nodelinks[0]][nodelinks[1]][nodelinks[2]]:
         former_value = grid[nodelinks[0]][nodelinks[1]][nodelinks[2]]
         grid[nodelinks[0]][nodelinks[1]][nodelinks[2]] = nodelinkspotentieel
         direction[nodelinks[0]][nodelinks[1]][nodelinks[2]] = 1
@@ -882,16 +891,16 @@ def putnodes(start, grid, destination, locfrom, direction, index, priority_queue
         priority_queue.pop(index)
         priority_queue.append([nodelinkspotentieel, [nodelinks[0], nodelinks[1], nodelinks[2]]])
 
-    elif checkexistance(nodelinks) and grid[nodelinks[0]][nodelinks[1]][nodelinks[2]] == 99:
+    elif checkexistance(nodelinks, chip) and grid[nodelinks[0]][nodelinks[1]][nodelinks[2]] == 99:
         grid[nodelinks[0]][nodelinks[1]][nodelinks[2]] = nodelinkspotentieel
         direction[nodelinks[0]][nodelinks[1]][nodelinks[2]] = 1
         priority_queue.append([nodelinkspotentieel, [nodelinks[0], nodelinks[1], nodelinks[2]]])
 
     # rechts
-    if checkexistance(noderechts) and check_isempty(noderechts, grid):
+    if checkexistance(noderechts, chip) and check_isempty(noderechts, grid):
         noderechtspotentieel = 100 + Gcost(start, destination, grid, noderechts, index) + distance(noderechts, destination)
 
-    if checkexistance(noderechts) and noderechtspotentieel < grid[noderechts[0]][noderechts[1]][noderechts[2]]:
+    if checkexistance(noderechts, chip) and noderechtspotentieel < grid[noderechts[0]][noderechts[1]][noderechts[2]]:
         former_value = grid[noderechts[0]][noderechts[1]][noderechts[2]]
         grid[noderechts[0]][noderechts[1]][noderechts[2]] = noderechtspotentieel
         direction[noderechts[0]][noderechts[1]][noderechts[2]] = 2
@@ -899,7 +908,7 @@ def putnodes(start, grid, destination, locfrom, direction, index, priority_queue
         priority_queue.pop(index)
         priority_queue.append([noderechtspotentieel, [noderechts[0], noderechts[1], noderechts[2]]])
 
-    elif checkexistance(noderechts) and grid[noderechts[0]][noderechts[1]][noderechts[2]] == 99:
+    elif checkexistance(noderechts, chip) and grid[noderechts[0]][noderechts[1]][noderechts[2]] == 99:
         grid[noderechts[0]][noderechts[1]][noderechts[2]] = noderechtspotentieel
         direction[noderechts[0]][noderechts[1]][noderechts[2]] = 2
         priority_queue.append([noderechtspotentieel, [noderechts[0], noderechts[1], noderechts[2]]])
@@ -907,10 +916,10 @@ def putnodes(start, grid, destination, locfrom, direction, index, priority_queue
 
 
     # voor
-    if checkexistance(nodevoor) and check_isempty(nodevoor, grid):
+    if checkexistance(nodevoor, chip) and check_isempty(nodevoor, grid):
         nodevoorpotentieel = 100 + Gcost(start, destination, grid, nodevoor, index) + distance(nodevoor, destination)
 
-    if checkexistance(nodevoor) and nodevoorpotentieel < grid[nodevoor[0]][nodevoor[1]][nodevoor[2]]:
+    if checkexistance(nodevoor, chip) and nodevoorpotentieel < grid[nodevoor[0]][nodevoor[1]][nodevoor[2]]:
         former_value = grid[nodevoor[0]][nodevoor[1]][nodevoor[2]]
         grid[nodevoor[0]][nodevoor[1]][nodevoor[2]] = nodevoorpotentieel
         direction[nodevoor[0]][nodevoor[1]][nodevoor[2]] = 5
@@ -918,16 +927,16 @@ def putnodes(start, grid, destination, locfrom, direction, index, priority_queue
         priority_queue.pop(index)
         priority_queue.append([nodevoorpotentieel, [nodevoor[0], nodevoor[1], nodevoor[2]]])
 
-    elif checkexistance(nodevoor) and grid[nodevoor[0]][nodevoor[1]][nodevoor[2]] == 99:
+    elif checkexistance(nodevoor, chip) and grid[nodevoor[0]][nodevoor[1]][nodevoor[2]] == 99:
         grid[nodevoor[0]][nodevoor[1]][nodevoor[2]] = nodevoorpotentieel
         direction[nodevoor[0]][nodevoor[1]][nodevoor[2]] = 5
         priority_queue.append([nodevoorpotentieel, [nodevoor[0], nodevoor[1], nodevoor[2]]])
 
     # achter
-    if checkexistance(nodeachter) and check_isempty(nodeachter, grid):
+    if checkexistance(nodeachter, chip) and check_isempty(nodeachter, grid):
         nodeachterpotentieel = 100 + Gcost(start, destination, grid, nodeachter, index) + distance(nodeachter, destination)
 
-    if checkexistance(nodeachter) and nodeachterpotentieel < grid[nodeachter[0]][nodeachter[1]][nodeachter[2]]:
+    if checkexistance(nodeachter, chip) and nodeachterpotentieel < grid[nodeachter[0]][nodeachter[1]][nodeachter[2]]:
         former_value = grid[nodeachter[0]][nodeachter[1]][nodeachter[2]]
         grid[nodeachter[0]][nodeachter[1]][nodeachter[2]] = nodeachterpotentieel
         direction[nodeachter[0]][nodeachter[1]][nodeachter[2]] = 6
@@ -935,7 +944,7 @@ def putnodes(start, grid, destination, locfrom, direction, index, priority_queue
         priority_queue.pop(index)
         priority_queue.append([nodeachterpotentieel, [nodeachter[0], nodeachter[1], nodeachter[2]]])
 
-    elif checkexistance(nodeachter) and grid[nodeachter[0]][nodeachter[1]][nodeachter[2]] == 99:
+    elif checkexistance(nodeachter, chip) and grid[nodeachter[0]][nodeachter[1]][nodeachter[2]] == 99:
         grid[nodeachter[0]][nodeachter[1]][nodeachter[2]] = nodeachterpotentieel
         direction[nodeachter[0]][nodeachter[1]][nodeachter[2]] = 6
         priority_queue.append([nodeachterpotentieel, [nodeachter[0], nodeachter[1], nodeachter[2]]])
@@ -952,11 +961,18 @@ def distance(location, destination):
     return distancee
 
 # kijken of de te plaatsen node zich wel in het veld bevindt
-def checkexistance(node):
-    if (node[2]<10 and node[2]>=0 and node[1]<13 and node[1]>=0 and node[0]>=0 and node[0]<18):
-        return True
-    else:
-        return False
+def checkexistance(node, chip):
+    if chip == "klein":
+        if (node[0]>=0 and node[0]<18 and node[1]<13 and node[1]>=0 and node[2]<8 and node[2]>=0):
+            return True
+        else:
+            return False
+
+    if chip == "groot":
+        if (node[0]>=0 and node[0]<18 and node[1]<17 and node[1]>=0 and node[2]<8 and node[2]>=0):
+            return True
+        else:
+            return False
 
 # als een element in matrix gelijk is aan 99 dan wordt is daar geen wire node of gate
 def check_isempty(node, grid):
@@ -994,7 +1010,6 @@ def minimumnodes(grid, queue):
 
 # route wordt geplaatst, alle nodes zijn gegeven
 def findroute(gridwithnodes, locfrom, locto, start, direction):
-    print('in findroute')
     index = 0
     route = []
     route.append(locto)
@@ -1005,13 +1020,13 @@ def findroute(gridwithnodes, locfrom, locto, start, direction):
         if count == 1000:
             sys.exit()
         routeelement = checkclosednode(direction, start)
-        print(routeelement)
         route.append(routeelement)
         start = routeelement
     return route
 
 
 def Gcost(start, destination, grid, node, index):
+    # komt niet in de buurt van surrounded nodes
     if index == 1:
         if node in surround_list:
             count_surrounded = surround_list.count(node)
@@ -1027,6 +1042,7 @@ def Gcost(start, destination, grid, node, index):
                 gcost = 1
             return gcost
 
+    # gaat de hoogte in en komt niet in de buurt van surrounded nodes
     elif index ==2:
         if node in surround_list:
             count_surrounded = surround_list.count(node)
@@ -1042,6 +1058,7 @@ def Gcost(start, destination, grid, node, index):
                 gcost = 1 + 14 - 2*node[2]
             return gcost
 
+    # pure A*
     else:
         if grid[start[0]][start[1]][start[2]] > 10000:
             gcost = grid[start[0]][start[1]][start[2]] - 10000 - distance(start, destination) + 1
@@ -1187,7 +1204,35 @@ def Astarroutemelle(routeBookAstar, grid, gates):
 
         print(j)
 
-        routee = Astar(netPoint, grid, 1)
+        routee = Astar(netPoint, grid, 2, "klein")
+
+        netPoint.route = routee
+        grid = changeMat(routee, grid)
+    toc = time()
+
+    print("time")
+    print(toc - tic)
+    score = getScore(routeBookAstar)
+    print("score")
+    print(getScore(routeBookAstar))
+    for route in routeBookAstar:
+        print(route)
+
+    plotLines(gates, routeBookAstar)
+    quit()
+
+def Astarroutemelle2(routeBookAstar, grid, gates):
+    # maak route met A-star
+    # MOET IN FUNCTIE
+    tic = time()
+    print("beginbeginbegin")
+    j = 0
+    for netPoint in routeBookAstar:
+        j = j + 1
+
+        print(j)
+
+        routee = Astar(netPoint, grid, 2, "groot")
 
         netPoint.route = routee
         grid = changeMat(routee, grid)
