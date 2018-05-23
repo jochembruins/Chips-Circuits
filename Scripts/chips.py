@@ -25,14 +25,14 @@ from random import shuffle
 
 ## DATA
 # make appropriate format of gate locations
-gatesLoc = genfromtxt('../Data/gates2.csv', delimiter=';')
+gatesLoc = genfromtxt('../Data/gates.csv', delimiter=';')
 gates = functions.makeLocations(gatesLoc)
 
 # initialize 13 x 18 x 8 (= L x W x H) grid with gates
 grid = functions.gridMat(gates)
 
 # maak netlist
-netlistDalton = classes.wire.daltonMethod(netlists.netlist_5, gates)[0]
+netlistDalton = classes.wire.daltonMethod(netlists.netlist_1, gates)[0]
 
 # make object for each netlist item
 routeBook = functions.makeObjects(netlistDalton, gates)
@@ -42,22 +42,25 @@ routeBookEmpty = deepcopy(routeBook)
 
 
 
-## RANDOM ROUTEFINDER
+# RANDOM ROUTEFINDER
 # leg wires van netlist adhv random netlist volgordes
-# randomRoute = functions.randomRouteBook(routeBookEmpty, gates, 100)
-# score = functions.getScore(randomRoute[2])
+randomRoute = functions.randomRouteBook(routeBookEmpty, gates, 100)
+score = functions.getScore(randomRoute[2])
 # functions.plotLines(gates, randomRoute[2])
 
 
 # for route in randomRoute[2]:
 #     functions.changeMat(route.route, grid)
 # print(grid)
+for route in randomRoute[2]:
+	grid = functions.changeMat(route.route, grid)
 
-# newRoute = functions.replaceLines(randomRoute[2], grid)
-# print(len(newRoute[0]))
 
-# print(functions.getScore(newRoute[0]))
-# print(functions.checker(newRoute[0]))
+newRoute = functions.replaceLines(randomRoute[2], randomRoute[3])
+print(len(newRoute[0]))
+
+print(functions.getScore(newRoute[0]))
+print(functions.checker(newRoute[0]))
 
 # newNewRoute = functions.replaceLine(randomRoute[2], randomRoute[3], 100)
 

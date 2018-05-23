@@ -67,7 +67,7 @@ def makeObjects(netlist, gates):
 
 def gridMat(gates):
     # make matrix of grid
-    matGrid = np.zeros([18, 17, 10]) + 99
+    matGrid = np.zeros([18, 13, 10]) + 99
 
     for gate in gates:
         matGrid[gate.x, gate.y, gate.z] = gate.gate
@@ -307,12 +307,12 @@ def plotLines(gates, routeBook):
 
     # definieer assen
     ax.set_xlim([0, 18])
-    ax.set_ylim([0, 17])
+    ax.set_ylim([0, 13])
     ax.set_zlim([0, 10])
 
     # zet ticks op de assem
     ax.set_xticks(np.arange(0, 18, 1))
-    ax.set_yticks(np.arange(0, 17, 1))
+    ax.set_yticks(np.arange(0, 13, 1))
     ax.set_zticks(np.arange(0, 10, 1))
 
     # voeg labels toe
@@ -425,7 +425,7 @@ def matrix_store_direction():
     # 5 voor
     # 6 achter
 
-    matgrid = np.zeros([18, 17, 10])
+    matgrid = np.zeros([18, 13, 10])
     return matgrid
 
 def astarRouteFinder (routeBook, grid):
@@ -445,20 +445,20 @@ def astarRouteFinder (routeBook, grid):
                 if grid[loc[0], loc[1], loc[2]] != 99:
                     count += 1
             if count == 5:
-                routeBookAstarEmpty, routeBookAstarDone, grid = searchLocFrom(netPoint, routeBookAstarEmpty, routeBookAstarDone, grid)   
+                routeBookAstarEmpty, routeBookAstarDone, grid = searchLocFrom(netPoint, routeBookAstarEmpty, routeBookAstarDone, grid)[0:3]   
 
             count = 0
             for loc in netPoint.toSurround:
                 if grid[loc[0], loc[1], loc[2]] != 99:
                     count += 1
             if count == 5:
-                routeBookAstarEmpty, routeBookAstarDone, grid = searchLocTo(netPoint, routeBookAstarEmpty, routeBookAstarDone, grid)         
+                routeBookAstarEmpty, routeBookAstarDone, grid = searchLocTo(netPoint, routeBookAstarEmpty, routeBookAstarDone, grid)[0:3]         
 
 
             print(len(routeBookAstarEmpty))
             print(len(routeBookAstarDone))
 
-            route = Astar(netPoint, grid, 2)
+            route = Astar(netPoint, grid, 1)
 
             if route != []:
                 netPoint.route = route
@@ -467,12 +467,13 @@ def astarRouteFinder (routeBook, grid):
                 doneWire = routeBookAstarEmpty.pop(routeBookAstarEmpty.index(netPoint))
                 routeBookAstarDone.append(doneWire)
             
-            if loops == 100:
+            if loops == 120:
                 routeBookAstarEmpty = routeBookAstarEmpty + routeBookAstarDone
                 routeBookAstarDone = []
-                shuffle(routeBookAstarEmpty)
+                # shuffle(routeBookAstarEmpty)
                 grid = deepcopy(gridEmpty)
                 loops = 0
+                
 
     print("Returning: ")
     return routeBookAstarDone
@@ -622,7 +623,7 @@ def distance(location, destination):
 
 # kijken of de te plaatsen node zich wel in het veld bevindt
 def checkexistance(node):
-    if (node[2]<10 and node[2]>=0 and node[1]<17 and node[1]>=0 and node[0]>=0 and node[0]<18):
+    if (node[2]<10 and node[2]>=0 and node[1]<13 and node[1]>=0 and node[0]>=0 and node[0]<18):
         return True
     else:
         return False
@@ -649,7 +650,7 @@ def minimumnodes(grid):
     zvalue = 0
     stop = 0
     for x in range(18):
-        for y in range(17):
+        for y in range(13):
             for z in range (10):
                 if grid[x][y][z] < minimum and grid[x][y][z]>100:
                     minimum = grid[x][y][z]
@@ -820,9 +821,9 @@ def searchLocFrom(netPoint, routeBookEmpty, routeBookDone, grid):
                         return routeBookEmpty, routeBookDone, grid, nextLocFrom
 
 def GcostForGates(gates):
-    grid = np.zeros([18, 17, 10])
+    grid = np.zeros([18, 13, 10])
     for x in range(18):
-        for y in range(17):
+        for y in range(13):
             for z in range(10):
                 distancee = 0
                 for i in gates:
@@ -835,14 +836,13 @@ def GcostForGates(gates):
 def replaceLines(routeBook, grid):
     for netPoint in routeBook:
         grid = delRoute(netPoint.route, grid)
-        netPoint.route = Astar(netPoint, grid)
+        netPoint.route = Astar(netPoint, grid, 1)
         grid = changeMat(netPoint.route, grid)
         print(netPoint.route)
     return routeBook, grid
 
 def replaceLine(routeBook, grid, steps = 2000):
     for i in range(0, steps):
-        print(i)
         index = random.randrange(0, len(routeBook))
         grid = delRoute(routeBook[index].route, grid)
         routeBook[index].route = Astar(routeBook[index], grid, 0)
