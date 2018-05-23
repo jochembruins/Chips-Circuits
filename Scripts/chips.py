@@ -22,6 +22,8 @@ import netlists
 import classes
 from copy import deepcopy
 from random import shuffle
+import statistics
+import pandas as pd
 
 ## DATA
 # make appropriate format of gate locations
@@ -46,62 +48,54 @@ routeBookEmpty = deepcopy(routeBook)
 # leg wires van netlist adhv random netlist volgordes
 randomRoute = functions.randomRouteBook(routeBookEmpty, gates, 100)
 score = functions.getScore(randomRoute[2])
-# functions.plotLines(gates, randomRoute[2])
+# statistics.plotChip(gates, randomRoute[2])
 
 
-# for route in randomRoute[2]:
-#     functions.changeMat(route.route, grid)
-# print(grid)
 for route in randomRoute[2]:
 	grid = functions.changeMat(route.route, grid)
 
 
-newRoute = functions.replaceLines(randomRoute[2], randomRoute[3])
-print(len(newRoute[0]))
 
-print(functions.getScore(newRoute[0]))
-print(functions.checker(newRoute[0]))
-
-# newNewRoute = functions.replaceLine(randomRoute[2], randomRoute[3], 100)
-
-# # for route in newNewRoute:
-# #     print(route.route)
-
-# print(functions.getScore(newNewRoute))
-# print(functions.checker(newNewRoute))
-# #
-# functions.plotLines(gates, newNewRoute)
+NewRoute = functions.replaceLine(randomRoute[2], grid, 1, 100)
+replaceData = NewRoute[1]
+print(replaceData)
 
 
-# # # HILLCLIMBER
-# # laat hilclimber werken
-# HillClimber = functions.hillClimb(randomRoute[0], randomRoute[1], gates, 1000)
+# # HILLCLIMBER
+# laat hilclimber werken
+HillClimber = functions.hillClimb(randomRoute[0], randomRoute[1], gates, 100)
+hillData = HillClimber[2]
+print(hillData)
 
-# # krijg beste routeboek
-# routeBookBest = HillClimber[0]
+result = pd.concat([replaceData, hillData], axis=1, join='inner')
+print(result)
+statistics.plotLine(result, 'Hillclimber en Replacelines')
 
-# check route hillclimber
-# check = functions.checker(routeBookBest)
-#
-# print(HillClimber[1])
+# krijg beste routeboek
+routeBookBest = HillClimber[0]
 
-# # plot gates en lijnen
-# functions.plotLines(gates, routeBookBest)
+#check route hillclimber
+check = functions.checker(routeBookBest)
+
+print(HillClimber[1])
+
+# plot gates en lijnen
+statistics.plotChip(gates, routeBookBest)
 
 ## A-star
 
-newRoutes = functions.astarRouteFinder(routeBookEmpty, grid)
+# newRoutes = functions.astarRouteFinder(routeBookEmpty, grid)
 
-print(len(newRoutes))
+# print(len(newRoutes))
 
-print(functions.checker(newRoutes))
+# print(functions.checker(newRoutes))
 
-print(functions.getScore(newRoutes))
+# print(functions.getScore(newRoutes))
 
-for route in newRoutes:
-	print(route)
+# for route in newRoutes:
+# 	print(route)
 
-functions.plotLines(gates, newRoutes)
+# statistics.plotChip(gates, newRoutes)
 
 # NIET VERWIJDEREN
 # routes die werken voor test
@@ -157,7 +151,7 @@ quit()
 # for route in routeBookAstar:
 #     print(route)
 
-# functions.plotLines(gates, routeBookAstar)
+# statistics.plotChip(gates, routeBookAstar)
 # print(tic-toc)
 # score = functions.getScore(routeBookAstar)
 # print(score)
