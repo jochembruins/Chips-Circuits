@@ -61,21 +61,21 @@ lowerBound = functions.getLowerBound(routeBook)
 # maak kopie van routeboek
 routeBookEmpty = deepcopy(routeBook)
 
-# ## RANDOM ROUTEFINDER
-# # leg wires van netlist adhv random netlist volgordes met breakthrough algoritme
-# # 3e argument = aantal verschillende netlists
-# randomRoute = functions.randomRouteBook(routeBookEmpty, gates, 3000)
-#
+## RANDOM ROUTEFINDER
+# leg wires van netlist adhv random netlist volgordes met breakthrough algoritme
+# 3e argument = aantal verschillende netlists
+randomRoute = functions.randomRouteBook(routeBookEmpty, gates, 100)
+
 # print info over uitkomst
-# score = functions.getScore(randomRoute[2])
-# print("Beste score van random:", score)
-# check = functions.checker(randomRoute[2])
-# statistics.plotChip(gates, randomRoute[2])
+score = functions.getScore(randomRoute[2])
+print("Beste score van random:", score)
+check = functions.checker(randomRoute[2])
+statistics.plotChip(gates, randomRoute[2])
 
 ## DALTON METHODE
-netlistDalton = classes.wire.daltonMethod(netlist, gates)
+# netlistDalton = classes.wire.daltonMethod(netlist, gates)
 # maak object van iedere netPoint
-daltonRouteBook = functions.makeObjects(netlistDalton, gates)
+# daltonRouteBook = functions.makeObjects(netlistDalton, gates)
 # HIER ASTAR GEWOGEN EN HILLCLIMBER OP DALTONLIST
 
 ## UI METHODE
@@ -129,19 +129,19 @@ daltonRouteBook = functions.makeObjects(netlistDalton, gates)
 # statistics.plotChip(gates, routeBookBest)
 
 # A-star
-
-newRoutes = functions.astarRouteFinder(routeBookEmpty, grid)
-
-print(len(newRoutes))
-
-print(functions.checker(newRoutes[0]))
-
-print(functions.getScore(newRoutes[0]))
-
-for route in newRoutes[1]:
-	print(route)
-
-statistics.plotChip(gates, newRoutes[0])
+#
+# newRoutes = functions.astarRouteFinder(routeBookEmpty, grid)
+#
+# print(len(newRoutes))
+#
+# print(functions.checker(newRoutes[0]))
+#
+# print(functions.getScore(newRoutes[0]))
+#
+# for route in newRoutes[1]:
+# 	print(route)
+#
+# statistics.plotChip(gates, newRoutes[0])
 
 # NIET VERWIJDEREN
 # routes die werken voor test

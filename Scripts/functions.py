@@ -66,7 +66,7 @@ def makeObjects(netlist, gates):
 
     return emptyRouteBook
 
-def gridMat(gates, chip):
+def gridMat(gates, chip = "klein"):
     if chip == "groot":
         # make matrix of grid
         matGrid = np.zeros([18, 17, 10]) + 99
