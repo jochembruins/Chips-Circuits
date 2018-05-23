@@ -73,9 +73,9 @@ routeBookEmpty = deepcopy(routeBook)
 # statistics.plotChip(gates, randomRoute[2])
 
 ## DALTON METHODE
-netlistDalton = classes.wire.daltonMethod(netlist, gates)
-# maak object van iedere netPoint
-daltonRouteBook = functions.makeObjects(netlistDalton, gates)
+# netlistDalton = classes.wire.daltonMethod(netlist, gates)
+# # maak object van iedere netPoint
+# daltonRouteBook = functions.makeObjects(netlistDalton, gates)
 # HIER ASTAR GEWOGEN EN HILLCLIMBER OP DALTONLIST
 
 ## UI METHODE
