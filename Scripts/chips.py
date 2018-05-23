@@ -27,14 +27,14 @@ import pandas as pd
 
 ## DATA
 # make appropriate format of gate locations
-gatesLoc = genfromtxt('../Data/gates.csv', delimiter=';')
+gatesLoc = genfromtxt('../Data/gates2.csv', delimiter=';')
 gates = functions.makeLocations(gatesLoc)
 
 # initialize 13 x 18 x 8 (= L x W x H) grid with gates
-grid = functions.gridMat(gates)
+grid = functions.gridMat(gates, "groot")
 
 # maak netlist
-netlistDalton = classes.wire.daltonMethod(netlists.netlist_1, gates)[0]
+netlistDalton = classes.wire.daltonMethod(netlists.netlist_5, gates)[0]
 
 # make object for each netlist item
 routeBook = functions.makeObjects(netlistDalton, gates)
@@ -44,45 +44,45 @@ routeBookEmpty = deepcopy(routeBook)
 
 
 
-# RANDOM ROUTEFINDER
-# leg wires van netlist adhv random netlist volgordes
-randomRoute = functions.randomRouteBook(routeBookEmpty, gates, 3000)
-score = functions.getScore(randomRoute[2])
+# # RANDOM ROUTEFINDER
+# # leg wires van netlist adhv random netlist volgordes
+# randomRoute = functions.randomRouteBook(routeBookEmpty, gates, 3000)
+# score = functions.getScore(randomRoute[2])
 
-print(len(randomRoute[2]))
-for route in randomRoute[2]:
-	print(route.route)
-statistics.plotChip(gates, randomRoute[2])
-
-
-for route in randomRoute[2]:
-	grid = functions.changeMat(route.route, grid)
+# print(len(randomRoute[2]))
+# for route in randomRoute[2]:
+# 	print(route.route)
+# statistics.plotChip(gates, randomRoute[2])
 
 
-
-NewRoute = functions.replaceLine(randomRoute[2], grid, 1, 1000)
-
-for route in NewRoute[0]:
-	print(route.route)
-
-print(functions.getScore(NewRoute[0]))
-print(functions.checker(NewRoute[0]))
-
-print(len(NewRoute[0]))
-
-replaceData = NewRoute[1]
-print(replaceData)
+# for route in randomRoute[2]:
+# 	grid = functions.changeMat(route.route, grid)
 
 
-# # HILLCLIMBER
-# laat hilclimber werken
-HillClimber = functions.hillClimb(randomRoute[0], randomRoute[1], gates, 1000)
-hillData = HillClimber[2]
-print(hillData)
 
-result = pd.concat([replaceData, hillData], axis=1, join='inner')
-print(result)
-statistics.plotLine(result, 'Hillclimber en Replacelines')
+# NewRoute = functions.replaceLine(randomRoute[2], grid, 1, 1000)
+
+# for route in NewRoute[0]:
+# 	print(route.route)
+
+# print(functions.getScore(NewRoute[0]))
+# print(functions.checker(NewRoute[0]))
+
+# print(len(NewRoute[0]))
+
+# replaceData = NewRoute[1]
+# print(replaceData)
+
+
+# # # HILLCLIMBER
+# # laat hilclimber werken
+# HillClimber = functions.hillClimb(randomRoute[0], randomRoute[1], gates, 1000)
+# hillData = HillClimber[2]
+# print(hillData)
+
+# result = pd.concat([replaceData, hillData], axis=1, join='inner')
+# print(result)
+# statistics.plotLine(result, 'Hillclimber en Replacelines')
 
 # # krijg beste routeboek
 # routeBookBest = HillClimber[0]
@@ -97,18 +97,18 @@ statistics.plotLine(result, 'Hillclimber en Replacelines')
 
 # A-star
 
-# newRoutes = functions.astarRouteFinder(routeBookEmpty, grid)
+newRoutes = functions.astarRouteFinder(routeBookEmpty, grid)
 
-# print(len(newRoutes))
+print(len(newRoutes))
 
-# print(functions.checker(newRoutes))
+print(functions.checker(newRoutes[0]))
 
-# print(functions.getScore(newRoutes))
+print(functions.getScore(newRoutes[0]))
 
-# for route in newRoutes:
-# 	print(route)
+for route in newRoutes[1]:
+	print(route)
 
-# statistics.plotChip(gates, newRoutes)
+statistics.plotChip(gates, newRoutes[0])
 
 # NIET VERWIJDEREN
 # routes die werken voor test
@@ -117,19 +117,19 @@ statistics.plotLine(result, 'Hillclimber en Replacelines')
 
 
 
-firstnetlist_firstmap = functions.Astar_firstmap_firstnetlist(grid, gates)
-quit()
-dalton = [(20, 10), (3, 15), (15, 5), (3, 23), (5, 7), (15, 21), (13, 18), (1, 2), (3, 5), (10, 4), (7, 13), (3, 2), (22, 16), (22, 13), (15, 17), (22, 11), (11, 24), (6, 14), (16, 9), (19, 5), (15, 8), (10, 7), (23, 4
-), (19, 2), (3, 4), (7, 9), (23, 8), (9, 13), (20, 19)]
+# firstnetlist_firstmap = functions.Astar_firstmap_firstnetlist(grid, gates)
+# quit()
+# dalton = [(20, 10), (3, 15), (15, 5), (3, 23), (5, 7), (15, 21), (13, 18), (1, 2), (3, 5), (10, 4), (7, 13), (3, 2), (22, 16), (22, 13), (15, 17), (22, 11), (11, 24), (6, 14), (16, 9), (19, 5), (15, 8), (10, 7), (23, 4
+# ), (19, 2), (3, 4), (7, 9), (23, 8), (9, 13), (20, 19)]
 
 
-netlist = netlists.netlist_4
-gatesLoc = genfromtxt('../Data/gates2.csv', delimiter=';')
-gates = functions.makeLocations(gatesLoc)
-routeBookAstar = functions.makeObjects(netlist, gates)
-grid2 = functions.gridMat(gates, "groot")
-routeBookAstar = functions.Astarroutemelle2(routeBookAstar, grid2, gates)
-quit()
+# netlist = netlists.netlist_4
+# gatesLoc = genfromtxt('../Data/gates2.csv', delimiter=';')
+# gates = functions.makeLocations(gatesLoc)
+# routeBookAstar = functions.makeObjects(netlist, gates)
+# grid2 = functions.gridMat(gates, "groot")
+# routeBookAstar = functions.Astarroutemelle2(routeBookAstar, grid2, gates)
+# quit()
 
 # routeBookAstar = functions.makeObjects(netlists.netlist_2, gates)
 
