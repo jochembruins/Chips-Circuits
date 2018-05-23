@@ -22,53 +22,78 @@ import netlists
 import classes
 from copy import deepcopy
 from random import shuffle
+import sys
 
-## DATA
-# make appropriate format of gate locations
-gatesLoc = genfromtxt('../Data/gates2.csv', delimiter=';')
+if len(sys.argv) == 1:
+    print("Usage: chips.py N \nN = 1, 2, 3, a; where '1' stands for netlist 1 and 'a' for all three netlists")
+    exit()
+
+if sys.argv[1] == '1':
+    netlist = netlists.netlist_1
+elif sys.argv[1] == '2':
+    netlist = netlists.netlist_2
+elif sys.argv[1] == '3':
+    netlist = netlists.netlist_3
+elif sys.argv[1] == "a":
+    print("hoi")
+else:
+    print("usage not correct")
+    print("Usage: chips.py N \nN = 1, 2, 3, a; where '1' stands for netlist 1 and 'a' for all three netlists")
+    exit()
+
+## PREPAREER DATA
+# giet gate locaties in goede format
+gatesLoc = genfromtxt('../Data/gates.csv', delimiter=';')
 gates = functions.makeLocations(gatesLoc)
 
-# initialize 13 x 18 x 8 (= L x W x H) grid with gates
+# maak 13 x 18 x 8 (= L x W x H) grid met gates
 grid = functions.gridMat(gates)
 
-# maak netlist
-netlistDalton = classes.wire.daltonMethod(netlists.netlist_5, gates)[0]
+# maak object van iedere netPoint
+routeBook = functions.makeObjects(netlist, gates)
 
-# make object for each netlist item
-routeBook = functions.makeObjects(netlistDalton, gates)
+# bepaal lowerbound aka Manhattan distance van netlist
+# DIT MOET IN DE OUTPUTTABEL ERGENS NEERGEZET WORDEN
+lowerBound = functions.getLowerBound(routeBook)
 
 # maak kopie van routeboek
 routeBookEmpty = deepcopy(routeBook)
 
-
-
-## RANDOM ROUTEFINDER
-# leg wires van netlist adhv random netlist volgordes
+# ## RANDOM ROUTEFINDER
+# # leg wires van netlist adhv random netlist volgordes met breakthrough algoritme
+# # 3e argument = aantal verschillende netlists
 # randomRoute = functions.randomRouteBook(routeBookEmpty, gates, 100)
 # score = functions.getScore(randomRoute[2])
-# functions.plotLines(gates, randomRoute[2])
+# print("Beste score van random:", score)
+# check = functions.checker(randomRoute[2])
 
 
+## DALTON METHODE
+netlistDalton = classes.wire.daltonMethod(netlist, gates)
+# maak object van iedere netPoint
+daltonRouteBook = functions.makeObjects(netlistDalton, gates)
+# HIER ASTAR GEWOGEN EN HILLCLIMBER OP DALTONLIST
+
+## UI METHODE
+# netlistUi = classes.wire.UIMethod_forprint1(netlist, gates)
+# # maak object van iedere netPoint
+# uiRouteBook = functions.makeObjects(netlistUi, gates)
+# HIER ASTAR GEWOGEN EN HILLCLIMBER OP UILIST
+
+## REPLACELINE \W ASTAR HILLCLIMBER
+# maak nieuw grid adhv het beste gevonden routebook
 # for route in randomRoute[2]:
 #     functions.changeMat(route.route, grid)
-# print(grid)
 
-# newRoute = functions.replaceLines(randomRoute[2], grid)
-# print(len(newRoute[0]))
-
-# print(functions.getScore(newRoute[0]))
-# print(functions.checker(newRoute[0]))
-
-# newNewRoute = functions.replaceLine(randomRoute[2], randomRoute[3], 100)
-
-# # for route in newNewRoute:
-# #     print(route.route)
-
+# DIT MOET NOG AANGEPAST WORDEN OP NIEUWE INDEX IN FUNCTIE
+# verbeter route door met pure A* lijnen opnieuw te leggen
+# newNewRoute = functions.replaceLine(newRoute[0], newRoute[1], 100)
 # print(functions.getScore(newNewRoute))
 # print(functions.checker(newNewRoute))
-# #
+# print(len(newNewRoute))
+# # for route in newNewRoute:
+# #     print(route)
 # functions.plotLines(gates, newNewRoute)
-
 
 # # # HILLCLIMBER
 # # laat hilclimber werken
@@ -87,18 +112,18 @@ routeBookEmpty = deepcopy(routeBook)
 
 ## A-star
 
-newRoutes = functions.astarRouteFinder(routeBookEmpty, grid)
-
-print(len(newRoutes))
-
-print(functions.checker(newRoutes))
-
-print(functions.getScore(newRoutes))
-
-for route in newRoutes:
-	print(route)
-
-functions.plotLines(gates, newRoutes)
+# newRoutes = functions.astarRouteFinder(routeBookEmpty, grid)
+#
+# print(len(newRoutes))
+#
+# print(functions.checker(newRoutes))
+#
+# print(functions.getScore(newRoutes))
+#
+# for route in newRoutes:
+# 	print(route)
+#
+# functions.plotLines(gates, newRoutes)
 
 # NIET VERWIJDEREN
 # routes die werken voor test

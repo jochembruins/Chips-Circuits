@@ -73,23 +73,32 @@ def gridMat(gates):
         matGrid[gate.x, gate.y, gate.z] = gate.gate
     return matGrid
 
+def getLowerBound(routeBook):
+    lowerBound = 0
+    for netPoint in routeBook:
+        x_dist = abs(netPoint.locFrom[0] - netPoint.locTo[0])
+        y_dist = abs(netPoint.locFrom[1] - netPoint.locTo[1])
+        z_dist = abs(netPoint.locFrom[2] - netPoint.locTo[2])
+        lowerBound += z_dist + y_dist + x_dist
+    return lowerBound
+
 
 def randomRouteBook(routeBook, gates, steps=1000):
 
     random.seed(2)
-    bestRouteBook = []
+    bestRouteBookIn = []
 
     score = 2000
     file  = open('../csv/random.csv', "w")
     writer = csv.writer(file, delimiter=',')
+    gridEmpty = gridMat(gates)
 
     for i in range(0, steps):
         print(i)
         newRouteBook = deepcopy(routeBook)
-
         shuffle(newRouteBook)
 
-        grid = gridMat(gates)
+        grid = deepcopy(gridEmpty)
 
         tmp_newRouteBook = deepcopy(newRouteBook)
 
@@ -100,13 +109,10 @@ def randomRouteBook(routeBook, gates, steps=1000):
 
         # probeer nieuwe route te vinden
         try:
-            newRouteFound = routeFinder(tmp_newRouteBook, grid)[1]
-
+            newRouteFound = breakThroughFinder(tmp_newRouteBook, grid)[1]
             finished = True
         except:
             finished = False
-
-
 
         # bereken nieuwe score
         if finished:
@@ -120,7 +126,7 @@ def randomRouteBook(routeBook, gates, steps=1000):
             if check == True:
                 # sla score en route op als beste is
                 if newScore < score:
-                    bestRouteBook = deepcopy(newRouteBook)
+                    bestRouteBookIn = deepcopy(newRouteBook)
                     bestRouteFound = deepcopy(newRouteFound)
                     score = newScore
                     print('betere oplossing')
@@ -129,18 +135,16 @@ def randomRouteBook(routeBook, gates, steps=1000):
             else:
                 for ding in newRouteFound:
                     print(ding)
-
     file.close()
-    return bestRouteBook, score, bestRouteFound, grid
+    return bestRouteBookIn, score, bestRouteFound, grid
 
 
-def routeFinder(routeBook, grid):
+def breakThroughFinder(routeBook, grid):
     routeBookEmpty = routeBook
     routeBookDone = []
     count = 0
     while routeBookEmpty != []:
         for netPoint in routeBookEmpty:
-            stop = 0
             route = []
             cursor = [netPoint.locFrom[0], netPoint.locFrom[1], netPoint.locFrom[2]]
             locTo = [netPoint.locTo[0], netPoint.locTo[1], netPoint.locTo[2]]
@@ -262,13 +266,13 @@ def routeFinder(routeBook, grid):
             route.append(netPoint.locTo)
             count += 1
 
-            if count == 150:
+            if count == 300:
                 # print('meer dan 150')
                 sys.exit
 
 
             for step in route:
-                if step[2] > 29:
+                if step[2] > 15:
                     # print('te hoog')
                     sys.exit
 
@@ -282,7 +286,6 @@ def routeFinder(routeBook, grid):
 
             # update matrix for route
             changeMat(netPoint.route, grid)
-
     return routeBookEmpty, routeBookDone, grid
 
 def changeMat(route, grid):
@@ -307,12 +310,12 @@ def plotLines(gates, routeBook):
 
     # definieer assen
     ax.set_xlim([0, 18])
-    ax.set_ylim([0, 17])
+    ax.set_ylim([0, 13])
     ax.set_zlim([0, 10])
 
     # zet ticks op de assem
     ax.set_xticks(np.arange(0, 18, 1))
-    ax.set_yticks(np.arange(0, 17, 1))
+    ax.set_yticks(np.arange(0, 13, 1))
     ax.set_zticks(np.arange(0, 10, 1))
 
     # voeg labels toe
@@ -365,7 +368,7 @@ def hillClimb(routeBook, score, gates, steps=1000):
       
         # probeer nieuwe route te vinden
         try:
-            newRouteFound = routeFinder(tmp_newRouteBook, grid)[1]
+            newRouteFound = breakThroughFinder(tmp_newRouteBook, grid)[1]
             finished = True
         except:
             finished = False
@@ -425,7 +428,7 @@ def matrix_store_direction():
     # 5 voor
     # 6 achter
 
-    matgrid = np.zeros([18, 17, 10])
+    matgrid = np.zeros([18, 13, 10])
     return matgrid
 
 def astarRouteFinder (routeBook, grid):
@@ -497,7 +500,6 @@ def Astar(netPoint, grid, index):
         if route != []:
             route.append(locfrom)
     route = list(reversed(route))
-
     return route
 
 # putwire plaatst nodes totdat de locatie bereikt is
@@ -612,7 +614,7 @@ def putnodes(start, grid, destination, locfrom, direction, index):
     return grid, direction
 
 
-# disntance berekenen tussen twee punten
+# distance berekenen tussen twee punten
 def distance(location, destination):
     x_dist = abs(destination[0] - location[0])
     y_dist = abs(destination[1] - location[1])
@@ -622,7 +624,7 @@ def distance(location, destination):
 
 # kijken of de te plaatsen node zich wel in het veld bevindt
 def checkexistance(node):
-    if (node[2]<10 and node[2]>=0 and node[1]<17 and node[1]>=0 and node[0]>=0 and node[0]<18):
+    if (node[2]<10 and node[2]>=0 and node[1]<13 and node[1]>=0 and node[0]>=0 and node[0]<18):
         return True
     else:
         return False
@@ -649,7 +651,7 @@ def minimumnodes(grid):
     zvalue = 0
     stop = 0
     for x in range(18):
-        for y in range(17):
+        for y in range(13):
             for z in range (10):
                 if grid[x][y][z] < minimum and grid[x][y][z]>100:
                     minimum = grid[x][y][z]
@@ -795,7 +797,6 @@ def searchLocTo(netPoint, routeBookEmpty, routeBookDone, grid):
                         routeBookEmpty.append(netPointToDelete)
                         # delete line from routebookdone list
                         del routeBookDone[routeBookDone.index(netPointToDelete)]
-                        # locTo = [nextLocTo[0], nextLocTo[1], nextLocTo[2]]
 
                         return routeBookEmpty, routeBookDone, grid, nextLocTo
 
@@ -820,9 +821,9 @@ def searchLocFrom(netPoint, routeBookEmpty, routeBookDone, grid):
                         return routeBookEmpty, routeBookDone, grid, nextLocFrom
 
 def GcostForGates(gates):
-    grid = np.zeros([18, 17, 10])
+    grid = np.zeros([18, 13, 10])
     for x in range(18):
-        for y in range(17):
+        for y in range(13):
             for z in range(10):
                 distancee = 0
                 for i in gates:
@@ -835,17 +836,16 @@ def GcostForGates(gates):
 def replaceLines(routeBook, grid):
     for netPoint in routeBook:
         grid = delRoute(netPoint.route, grid)
-        netPoint.route = Astar(netPoint, grid)
+        netPoint.route = Astar(netPoint, grid, 0)
         grid = changeMat(netPoint.route, grid)
-        print(netPoint.route)
     return routeBook, grid
 
-def replaceLine(routeBook, grid, steps = 2000):
+def replaceLine(routeBook, grid, steps = 500):
     for i in range(0, steps):
         print(i)
         index = random.randrange(0, len(routeBook))
         grid = delRoute(routeBook[index].route, grid)
-        routeBook[index].route = Astar(routeBook[index], grid, 0)
+        routeBook[index].route = Astar(routeBook[index], grid, 5)
         grid = changeMat(routeBook[index].route, grid)
         print(routeBook[index].route)
     return routeBook
