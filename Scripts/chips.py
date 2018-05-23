@@ -22,6 +22,8 @@ import netlists
 import classes
 from copy import deepcopy
 from random import shuffle
+import statistics
+import pandas as pd
 import sys
 
 if len(sys.argv) == 1:
@@ -62,11 +64,13 @@ routeBookEmpty = deepcopy(routeBook)
 # ## RANDOM ROUTEFINDER
 # # leg wires van netlist adhv random netlist volgordes met breakthrough algoritme
 # # 3e argument = aantal verschillende netlists
-# randomRoute = functions.randomRouteBook(routeBookEmpty, gates, 100)
+# randomRoute = functions.randomRouteBook(routeBookEmpty, gates, 3000)
+#
+# print info over uitkomst
 # score = functions.getScore(randomRoute[2])
 # print("Beste score van random:", score)
 # check = functions.checker(randomRoute[2])
-
+# statistics.plotChip(gates, randomRoute[2])
 
 ## DALTON METHODE
 netlistDalton = classes.wire.daltonMethod(netlist, gates)
@@ -80,50 +84,63 @@ daltonRouteBook = functions.makeObjects(netlistDalton, gates)
 # uiRouteBook = functions.makeObjects(netlistUi, gates)
 # HIER ASTAR GEWOGEN EN HILLCLIMBER OP UILIST
 
-## REPLACELINE \W ASTAR HILLCLIMBER
+## HILLCLIMBER: VERWIJDER ÉÉN LIJN, LEG TERUG MET A*
 # maak nieuw grid adhv het beste gevonden routebook
 # for route in randomRoute[2]:
-#     functions.changeMat(route.route, grid)
+#     grid = functions.changeMat(route.route, grid)
 
 # DIT MOET NOG AANGEPAST WORDEN OP NIEUWE INDEX IN FUNCTIE
 # verbeter route door met pure A* lijnen opnieuw te leggen
-# newNewRoute = functions.replaceLine(newRoute[0], newRoute[1], 100)
-# print(functions.getScore(newNewRoute))
-# print(functions.checker(newNewRoute))
-# print(len(newNewRoute))
-# # for route in newNewRoute:
-# #     print(route)
-# functions.plotLines(gates, newNewRoute)
+# NewRoute = functions.replaceLine(randomRoute[2], grid, 1, 1000)
 
-# # # HILLCLIMBER
+# print info over uitkomsten
+# print(functions.getScore(NewRoute[0]))
+# print(functions.checker(NewRoute[0]))
+# print(len(NewRoute))
+# for route in NewRoute:
+#     print(route.route)
+# functions.plotLines(gates, NewRoute)
+
+# returnt lijst met scores na iedere iteratie
+# replaceData = NewRoute[1]
+# print(replaceData)
+
+## HILLCLIMBER: WISSEL TWEE NETPOINTS, LEG HELE NETLIST OPNIEUW
 # # laat hilclimber werken
 # HillClimber = functions.hillClimb(randomRoute[0], randomRoute[1], gates, 1000)
+# hillData = HillClimber[2]
+# print(hillData)
+#
+# # maak een plot van beide hillclimbers
+# result = pd.concat([replaceData, hillData], axis=1, join='inner')
+# print(result)
+# statistics.plotLine(result, 'Hillclimber en Replacelines')
 
 # # krijg beste routeboek
 # routeBookBest = HillClimber[0]
 
-# check route hillclimber
+# #check route hillclimber
 # check = functions.checker(routeBookBest)
-#
+
 # print(HillClimber[1])
 
 # # plot gates en lijnen
-# functions.plotLines(gates, routeBookBest)
+# statistics.plotChip(gates, routeBookBest)
 
-## A-star
+# A-star
 
 # newRoutes = functions.astarRouteFinder(routeBookEmpty, grid)
-#
+
 # print(len(newRoutes))
-#
+
 # print(functions.checker(newRoutes))
-#
+
 # print(functions.getScore(newRoutes))
-#
+
 # for route in newRoutes:
 # 	print(route)
-#
-# functions.plotLines(gates, newRoutes)
+
+# statistics.plotChip(gates, newRoutes)
 
 # NIET VERWIJDEREN
 # routes die werken voor test
@@ -131,13 +148,22 @@ daltonRouteBook = functions.makeObjects(netlistDalton, gates)
 # ), (19, 2), (3, 4), (7, 9), (23, 8), (9, 13), (20, 19)]
 
 
+
+# firstnetlist_firstmap = functions.Astar_firstmap_firstnetlist(grid, gates)
+# quit()
 # dalton = [(20, 10), (3, 15), (15, 5), (3, 23), (5, 7), (15, 21), (13, 18), (1, 2), (3, 5), (10, 4), (7, 13), (3, 2), (22, 16), (22, 13), (15, 17), (22, 11), (11, 24), (6, 14), (16, 9), (19, 5), (15, 8), (10, 7), (23, 4
 # ), (19, 2), (3, 4), (7, 9), (23, 8), (9, 13), (20, 19)]
-
-# routeBookAstar = functions.makeObjects(dalton, gates)
-# routeBookAstar = functions.Astarroutemelle(routeBookAstar, grid, gates)
+#
+#
+# netlist = netlists.netlist_4
+# gatesLoc = genfromtxt('../Data/gates2.csv', delimiter=';')
+# gates = functions.makeLocations(gatesLoc)
+# routeBookAstar = functions.makeObjects(netlist, gates)
+# grid2 = functions.gridMat(gates, "groot")
+# routeBookAstar = functions.Astarroutemelle2(routeBookAstar, grid2, gates)
 # quit()
 
+# routeBookAstar = functions.makeObjects(netlists.netlist_2, gates)
 
 # routeBookAstar = functions.makeObjects(netlists.netlist_1, gates)
 
@@ -170,7 +196,7 @@ daltonRouteBook = functions.makeObjects(netlistDalton, gates)
 # for route in routeBookAstar:
 #     print(route)
 
-# functions.plotLines(gates, routeBookAstar)
+# statistics.plotChip(gates, routeBookAstar)
 # print(tic-toc)
 # score = functions.getScore(routeBookAstar)
 # print(score)
