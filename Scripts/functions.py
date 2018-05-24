@@ -16,7 +16,6 @@
 # Bevat alle functies die worden gebruikt in chips.py
 ###########################################################
 from time import time
-import progressbar
 import csv
 import numpy as np
 import classes
@@ -462,6 +461,7 @@ def checker (routeBook):
 
 def astarRouteFinder (routeBook, grid):
 
+    tic = time()
     # hier begint het Astar algoritme met bijbehorende functies
     # Astar returned uiteindelijk de wire/route van A*
     gridEmpty = deepcopy(grid)
@@ -516,7 +516,7 @@ def astarRouteFinder (routeBook, grid):
                 
     toc = time()
     print(toc-tic)
-    for route in routeBookSolved:
+    for route in routeBookAstarDone:
         print(route.netPoint)
     for route in routeBookAstarDone:
         print(route)
