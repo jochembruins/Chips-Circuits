@@ -30,7 +30,7 @@ def plotChip(gates, routeBook, grid):
     if grid == "small":
         ax.set_ylim([0, 13])
     else:
-        ax.set_ylim([0, 18])
+        ax.set_ylim([0, 17])
     ax.set_zlim([0, 10])
 
     # zet ticks op de assem
@@ -38,7 +38,7 @@ def plotChip(gates, routeBook, grid):
     if grid == "small":
         ax.set_yticks(np.arange(0, 13, 1))
     else:
-        ax.set_yticks(np.arange(0, 18, 1))
+        ax.set_yticks(np.arange(0, 17, 1))
     ax.set_zticks(np.arange(0, 10, 1))
 
     # voeg labels toe

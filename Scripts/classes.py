@@ -17,6 +17,7 @@
 ###########################################################
 
 import random
+from copy import deepcopy
 
 
 class Location(object):
@@ -50,19 +51,13 @@ class wire(object):
                (self.netPoint, self.locFrom, self.locTo,
                 self.fromSurround, self.toSurround, self.route)
 
-    # deze functie ordent de netlist
-    # hierbij wordt er geordend op lengte
-    # van een netlistelementconnectie (blauwe lijn)
-    # als argument wordt een netlist genomen + de gates
-
     def daltonMethod(netlist, gate):
         """ deze functie ordent de netlist hierbij wordt er geordend op lengte
             van een netlistelementconnectie (blauwe lijn)
-            als argument wordt een netlist genomen + de gates """
+            als argument wordt een netlist genomen en de gates data """
 
-        lowerBound = 0
         # tweede versie van netlist opgeslagen
-        netlistversion2 = netlist
+        netlistversion2 = deepcopy(netlist)
 
         # lege derde versie van te definieren netlist opgeslagen
         netlistversion3 = []
@@ -103,15 +98,13 @@ class wire(object):
         # return nieuwe netlist
         return netlistversion3
 
-
-
-    def UIMethod_forprint1(netlist, gate):
+    def uiMethod(netlist, gate):
         """ deze functie ordent de netlist, hierbij wordt er geordend op
             hoe ver netlistelementconnecties aan de buitenkant
             van de grid liggen """
 
         # tweede versie van netlist opgeslagen
-        netlistversion2 = netlist
+        netlistversion2 = deepcopy(netlist)
         # lege derde versie van te definiëren netlist opgeslagen
         netlistversion3 = []
         # lengte netlist berekend
@@ -182,8 +175,7 @@ class wire(object):
             # haalde aangewezen element uit netlistversion2
             netlistversion2.pop(numbernetlist)
         # return nieuwe netlist
-        return (netlistversion3)
-
+        return netlistversion3
 
     def changeRouteBook(routeBook):
         
@@ -193,8 +185,8 @@ class wire(object):
 
         # loop to make sure indexes are not the same
         while index1 == index2:
-            index1 = random.randrange(0,len(routeBook))
-            index2 = random.randrange(0,len(routeBook))
+            index1 = random.randrange(0, len(routeBook))
+            index2 = random.randrange(0, len(routeBook))
 
         # swap routes in routebook
         tmp = routeBook[index1]
@@ -202,3 +194,14 @@ class wire(object):
         routeBook[index2] = tmp
 
         return routeBook
+
+class netlist(object):
+    """ maak objecten voor de uitkomsten van opgeloste netlist """
+
+    def __init__(self, name, netlist, constructive, iterative, score, runningtime ):
+        self.name = name
+        self.netlist = netlist
+        self.constructive = cons
+        self.iterative = iter
+        self.score = score
+        self.runningtime = runningtime
