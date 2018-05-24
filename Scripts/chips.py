@@ -16,6 +16,7 @@
 from time import time
 
 from numpy import genfromtxt
+import numpy as np
 import matplotlib.pyplot as plt
 import netlists
 import classes
@@ -27,27 +28,46 @@ import sys
 import functions
 
 if len(sys.argv) == 1:
-    print("Gebruik: chips.py N \nN = 1, 2, 3; waar '1' staat voor netlist 1")
+    print("Gebruik: chips.py N \nN = 1, 2, 3, 4, 5, 6; waar '1' "
+          "staat voor netlist 1")
     exit()
 
-if sys.argv[1] == '1':
+commArg = int(sys.argv[1])
+
+if commArg == 1:
     netlist = netlists.netlist_1
-elif sys.argv[1] == '2':
+elif commArg == 2:
     netlist = netlists.netlist_2
-elif sys.argv[1] == '3':
+elif commArg == 3:
     netlist = netlists.netlist_3
+elif commArg == 4:
+    netlist = netlists.netlist_4
+elif commArg == 5:
+    netlist = netlists.netlist_5
+elif commArg == 6:
+    netlist = netlists.netlist_6
 else:
     print("Gebruik niet correct")
-    print("Gebruik: chips.py N \nN = 1, 2, 3; waar '1' staat voor netlist 1")
+    print("Gebruik: chips.py N \nN = 1, 2, 3, 4, 5, 6; waar '1' staat voor netlist 1")
     exit()
+
+# gebruik kleine of grote grid
+if commArg < 4:
+    size = "small"
+    # laadt gates voor kleine grid
+    gatesLoc = genfromtxt('../Data/gates.csv', delimiter=';')
+else:
+    size = "large"
+    # laadt gates voor grote grid
+    gatesLoc = genfromtxt('../Data/gates2.csv', delimiter=';')
 
 ## PREPAREER DATA
 # giet gate locaties in goede format
-gatesLoc = genfromtxt('../Data/gates.csv', delimiter=';')
+
 gates = functions.makeLocations(gatesLoc)
 
-# maak 13 x 18 x 8 (= L x W x H) grid met gates
-grid = functions.gridMat(gates)
+# maak grid met gates
+grid = functions.gridMat(gates, size)
 
 # maak object van iedere netPoint
 routeBook = functions.makeObjects(netlist, gates)
@@ -60,11 +80,14 @@ lowerBound = functions.getLowerBound(routeBook)
 routeBookEmpty = deepcopy(routeBook)
 
 ## RANDOM ROUTEFINDER
-# leg wires van netlist adhv random netlist volgordes met breakthrough algoritme
+# leg wires van netlist adhv random netlist volgordes
+# met breakthrough algoritme
 # 3e argument = aantal verschillende netlists
 # randomRoute = functions.randomRouteBook(routeBookEmpty, gates, 100)
 
+
 # print info over uitkomst
+
 # score = functions.getScore(randomRoute[2])
 # print("Beste score van random:", score)
 # check = functions.checker(randomRoute[2])
@@ -90,13 +113,13 @@ routeBookEmpty = deepcopy(routeBook)
 #     grid = functions.changeMat(route.route, grid)
 
 # DIT MOET NOG AANGEPAST WORDEN OP NIEUWE INDEX IN FUNCTIE
-# verbeter route door met pure A* lijnen opnieuw te leggen
-# NewRoute = functions.replaceLine(randomRoute[2], grid, 1, 1000)
-
-# print info over uitkomsten
+# # verbeter route door met pure A* lijnen opnieuw te leggen
+# NewRoute = functions.replaceLine(randomRoute[2], grid, 1, size, 1000)
+#
+# # print info over uitkomsten
 # print(functions.getScore(NewRoute[0]))
 # print(functions.checker(NewRoute[0]))
-# print(len(NewRoute))
+# print(len(NewRoute[0]))
 # for route in NewRoute:
 #     print(route.route)
 # functions.plotLines(gates, NewRoute)
@@ -128,27 +151,50 @@ routeBookEmpty = deepcopy(routeBook)
 # # plot gates en lijnen
 # statistics.plotChip(gates, routeBookBest)
 
-# A-star
+# # A-star
+#
+# # dit is debug MELLE
+# print("debug")
+# newRoutes = functions.aStarRouteFinder(routeBookEmpty, grid)
+#
+# # Hier begint de aanpassing van de grid
+# for route in newRoutes[0]:
+#     grid = functions.changeMat(route.route, grid)
+#
+# hoi = functions.replaceLine(newRoutes[0], grid, 1, "klein" , steps = 2000)
+#
+#
+# # print(len(newRoutes))
+# #
+# # print(functions.checker(newRoutes[0]))
+# #
+# # print(functions.getScore(newRoutes[0]))
+# #
+# # for route in newRoutes[1]:
+# # 	print(route)
+#
+# print("hoi")
+# statistics.plotChip(gates, newRoutes[0])
 
-# dit is debug MELLE
-print("debug")
+#
 newRoutes = functions.aStarRouteFinder(routeBookEmpty, grid)
+print(functions.checker(newRoutes[0]))
+print(functions.getScore(newRoutes[0]))
 
-# Hier begint de aanpassing van de grid
+for route in newRoutes[1]:
+	print(route.netPoint, end = ", ")
+statistics.plotChip(gates, newRoutes[0])
+
+# maak nieuw grid adhv het beste gevonden routebook
 for route in newRoutes[0]:
     grid = functions.changeMat(route.route, grid)
 
-hoi = functions.replaceLine(newRoutes[0], grid, 1, "klein" , steps = 2000)
+# DIT MOET NOG AANGEPAST WORDEN OP NIEUWE INDEX IN FUNCTIE
+# verbeter route door met pure A* lijnen opnieuw te leggen
+NewRoute = functions.replaceLine(newRoutes[0], grid, 1, size, 500)
 
-
-# print(len(newRoutes))
-#
-# print(functions.checker(newRoutes[0]))
-#
-# print(functions.getScore(newRoutes[0]))
-#
-# for route in newRoutes[1]:
-# 	print(route)
-
-print("hoi")
-statistics.plotChip(gates, newRoutes[0])
+# print info over uitkomsten
+print(functions.getScore(NewRoute[0]))
+print(functions.checker(NewRoute[0]))
+print(len(NewRoute[0]))
+statistics.plotChip(gates, NewRoute[0])

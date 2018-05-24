@@ -59,17 +59,17 @@ def makeObjects(netlist, gates):
                          gates[netPoint[0]].y + 1,
                          gates[netPoint[0]].z],
                         [gates[netPoint[0]].x,
-                        gates[netPoint[0]].y - 1,
-                        gates[netPoint[0]].z],
+                         gates[netPoint[0]].y - 1,
+                         gates[netPoint[0]].z],
                         [gates[netPoint[0]].x + 1,
-                        gates[netPoint[0]].y,
-                        gates[netPoint[0]].z],
+                         gates[netPoint[0]].y,
+                         gates[netPoint[0]].z],
                         [gates[netPoint[0]].x - 1,
-                        gates[netPoint[0]].y,
-                        gates[netPoint[0]].z],
+                         gates[netPoint[0]].y,
+                         gates[netPoint[0]].z],
                         [gates[netPoint[0]].x,
-                        gates[netPoint[0]].y,
-                        gates[netPoint[0]].z + 1]]
+                         gates[netPoint[0]].y,
+                         gates[netPoint[0]].z + 1]]
         toSurround = [[gates[netPoint[1]].x,
                        gates[netPoint[1]].y + 1,
                        gates[netPoint[1]].z],
@@ -94,7 +94,7 @@ def makeObjects(netlist, gates):
     return emptyRouteBook
 
 
-def gridMat(gates, chip = "small"):
+def gridMat(gates, chip="small"):
     """" Maakt matrix van de grid met gateslocatie-info"""
     if chip == "large":
         matGrid = np.zeros([18, 17, 30]) + 99
@@ -283,15 +283,16 @@ def breakThroughFinder(routeBook, grid):
                                         == [routePoint[0],
                                             routePoint[1],
                                             routePoint[2]]:
-
                                     # verwijder lijn in grid
-                                    grid = delRoute(netPointToDelete.route, grid)
+                                    grid = delRoute(netPointToDelete.route,
+                                                    grid)
                                     netPointToDelete.route = []
 
                                     # voeg verwijderde lijn terug aan
                                     # routebookempty list
                                     routeBookEmpty.append(netPointToDelete)
-                                    del routeBookDone[routeBookDone.index(netPointToDelete)]
+                                    del routeBookDone[
+                                        routeBookDone.index(netPointToDelete)]
                                     break
 
                 # als een stap naar beneden mogelijk is doe dat
@@ -318,7 +319,6 @@ def breakThroughFinder(routeBook, grid):
                                     == [routePoint[0],
                                         routePoint[1],
                                         routePoint[2]]:
-
                                 # verwijder lijn in grid
                                 grid = delRoute(netPointToDelete.route, grid)
                                 netPointToDelete.route = []
@@ -326,7 +326,8 @@ def breakThroughFinder(routeBook, grid):
                                 # voeg verwijderde lijn terug in routebookempty
                                 # list
                                 routeBookEmpty.append(netPointToDelete)
-                                del routeBookDone[routeBookDone.index(netPointToDelete)]
+                                del routeBookDone[
+                                    routeBookDone.index(netPointToDelete)]
                                 cursor[2] -= 1
 
                                 route.append([cursor[0], cursor[1], cursor[2]])
@@ -409,20 +410,20 @@ def hillClimb(routeBook, score, gates, steps=1000):
     for i in range(0, steps):
         # maak lege grid
         grid = gridMat(gates)
-        
+
         if i != 0:
             # verwissel willekeurig twee punten van de netlist
             newRouteBook = classes.wire.changeRouteBook(bestRouteBook)
         else:
             print('same')
             newRouteBook = bestRouteBook
-        
-        tmp_newRouteBook = deepcopy(newRouteBook)  
-        
+
+        tmp_newRouteBook = deepcopy(newRouteBook)
+
         # checkt of het route vinden is gelukt
         finished = False
         # newScore = score
-      
+
         # probeer nieuwe route te vinden
         try:
             newRouteFound = breakThroughFinder(tmp_newRouteBook, grid)[1]
@@ -431,11 +432,11 @@ def hillClimb(routeBook, score, gates, steps=1000):
             finished = False
 
         # bereken nieuwe score   
-        if finished: 
+        if finished:
             newScore = getScore(newRouteFound)
             print("oude score: ", score)
             print("nieuwe score: ", newScore)
-            
+
             check = checker(newRouteFound)
 
             if check is True:
@@ -447,9 +448,8 @@ def hillClimb(routeBook, score, gates, steps=1000):
                     print('lager')
                 else:
                     print('hoger')
-        
-        
-        writer.writerow([i,score])
+
+        writer.writerow([i, score])
         hillData = hillData.append({'Score Hillclimber': score},
                                    ignore_index=True)
     print(hillData)
@@ -458,7 +458,7 @@ def hillClimb(routeBook, score, gates, steps=1000):
     return bestRouteFound, score, hillData
 
 
-def checker (routeBook):
+def checker(routeBook):
     """ Checkt voor duplicaten in gevonden oplossing"""
     seen = []
     repeated = []
@@ -516,12 +516,11 @@ def aStarRouteFinder(routeBook, grid):
 
             # verwijdert onnodige lijnen indien ingesloten
             if count == 5:
-                routeBookEmpty, routeBookDone, grid = searchLocFrom(netPoint,
-                                                                    routeBookEmpty,
-                                                                    routeBookDone,
-                                                                    grid)[0:3]
+                routeBookEmpty, routeBookDone, grid \
+                    = searchLocFrom(netPoint, routeBookEmpty,
+                                    routeBookDone, grid)[0:3]
 
-                # controleert of de begingate van de lijn is ingesloten
+            # controleert of de begingate van de lijn is ingesloten
             count = 0
             for loc in netPoint.toSurround:
                 if grid[loc[0], loc[1], loc[2]] != 99:
@@ -535,7 +534,8 @@ def aStarRouteFinder(routeBook, grid):
                                                                   grid)[0:3]
 
                 # leg de route met Astar
-            route = aStar(netPoint, grid, 2, 'small')
+            route = aStar(netPoint, grid, 2, 'large')
+
 
             # voeg nieuwe route toe aan netPoins als Astar succesvol is
             if route != []:
@@ -642,7 +642,6 @@ def putNodes(start, grid, destination, direction, index, priorityQueue, chip):
 
     # als er vanuit startpunt node geplaatst is:
     if grid[start[0]][start[1]][start[2]] >= 100:
-
         # node updaten naar gesloten node
         grid[start[0]][start[1]][start[2]] = closedNodeValue - 100 + \
                                              grid[start[0]][start[1]][start[2]]
@@ -659,7 +658,7 @@ def putNodes(start, grid, destination, direction, index, priorityQueue, chip):
     if priorityQueue != []:
         priorityQueue.pop(0)
 
-    # de potentiële nodes worden met een groot getal geïnitialiseerd
+    # de potentiële nodes worden met een large getal geïnitialiseerd
     nodePotentieel = [1000000, 1000000, 1000000, 1000000, 1000000, 1000000]
 
     #  itereren aantal omringenden startpunt
@@ -697,7 +696,7 @@ def putNodes(start, grid, destination, direction, index, priorityQueue, chip):
         # node bestaat en potentiële waarde lager dan waarde en niks geplaatst:
         elif checkExistance(nodeList[i], chip) and \
                 grid[nodeList[i][0]][nodeList[i][1]][nodeList[i][2]] == 99:
-            grid[nodeList[i][0]][nodeList[i][1]][nodeList[i][2]]\
+            grid[nodeList[i][0]][nodeList[i][1]][nodeList[i][2]] \
                 = nodePotentieel[i]
             direction[nodeList[i][0]][nodeList[i][1]][nodeList[i][2]] = i + 1
             priorityQueue.append([nodePotentieel[i],
@@ -794,7 +793,6 @@ def findRoute(locFrom, locTo, start, direction):
 
     # zolang het vertrekpunt niet bereikt is
     while distance(locFrom, start) != 1:
-
         # kijk naar waar gesloten node wijst
         routeElement = checkClosedNode(direction, start)
 
@@ -821,9 +819,9 @@ def gCost(start, destination, grid, node, index):
 
                 # gcost += 1  + 10 tot de macht hoeveelheid gates
                 gCost = grid[start[0]][start[1]][start[2]] - clodesNodeValue - \
-                        distance(start, destination) + 1 + 10**countSurrounded
+                        distance(start, destination) + 1 + 10 ** countSurrounded
             else:
-                gCost = 1 + 10**countSurrounded
+                gCost = 1 + 10 ** countSurrounded
             return gCost
         else:
             if grid[start[0]][start[1]][start[2]] > clodesNodeValue:
@@ -845,18 +843,19 @@ def gCost(start, destination, grid, node, index):
 
                 # gcost += 1  + 10 tot macht gates + 14 - 2*Z-dimensie node
                 gCost = grid[start[0]][start[1]][start[2]] - clodesNodeValue - \
-                        distance(start, destination) + 1 + 10*countSurrounded \
-                        + 2*(maximumHeightGrid - node[2])
+                        distance(start, destination) + 1 + 10 * countSurrounded \
+                        + 2 * (maximumHeightGrid - node[2])
             else:
-                gCost = 1 + 10*countSurrounded + 2*(maximumHeightGrid - node[2])
+                gCost = 1 + 10 * countSurrounded + 2 * (
+                            maximumHeightGrid - node[2])
             return gCost
         else:
             if grid[start[0]][start[1]][start[2]] > clodesNodeValue:
                 gCost = grid[start[0]][start[1]][start[2]] - clodesNodeValue - \
                         distance(start, destination) + 1 + \
-                        2*(maximumHeightGrid - node[2])
+                        2 * (maximumHeightGrid - node[2])
             else:
-                gCost = 1 + 2*(maximumHeightGrid - node[2])
+                gCost = 1 + 2 * (maximumHeightGrid - node[2])
             return gCost
 
     # pure A*
@@ -967,12 +966,12 @@ def searchLocFrom(netPoint, routeBookEmpty, routeBookDone, grid):
                 if nextLocFrom == [routePoint[0], routePoint[1], routePoint[2]]:
                     if grid[routePoint[0], routePoint[1], routePoint[2]] == 50 \
                             and netPointToDelete.locTo != [netPoint.locFrom[0],
-                                                       netPoint.locFrom[1],
-                                                       netPoint.locFrom[2]] \
+                                                           netPoint.locFrom[1],
+                                                           netPoint.locFrom[2]] \
                             and netPointToDelete.locFrom != [
-                                                        netPoint.locFrom[0],
-                                                         netPoint.locFrom[1],
-                                                         netPoint.locFrom[2]]:
+                        netPoint.locFrom[0],
+                        netPoint.locFrom[1],
+                        netPoint.locFrom[2]]:
                         # haal lijn van grid weg
                         grid = delRoute(netPointToDelete.route, grid)
                         netPointToDelete.route = []
@@ -1000,6 +999,7 @@ def GcostForGates(gates):
     return grid
 
 
+
 def replaceLine(routeBook, grid, order, chip, steps = 2000):
     """ Hillclimber algoritme,
         neemt een bestaande oplossing, verwijderd vervolgens achter elkaar
@@ -1025,7 +1025,7 @@ def replaceLine(routeBook, grid, order, chip, steps = 2000):
         else:
             index = i % len(newRouteBook)
             print(index)
-        
+
         print(newRouteBook[index].route)
         delRoute(newRouteBook[index].route, newGrid)
         newRouteBook[index].route = aStar(newRouteBook[index], newGrid, 0, chip)
