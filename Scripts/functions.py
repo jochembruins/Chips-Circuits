@@ -461,10 +461,11 @@ def checker (routeBook):
         print(repeated)
         return False
 
-# hier begint het Astar algoritme met bijbehorende functies
-# Astar returned uiteindelijk de wire/route van A*
+
 def astarRouteFinder (routeBook, grid):
-    tic = time()
+
+    # hier begint het Astar algoritme met bijbehorende functies
+    # Astar returned uiteindelijk de wire/route van A*
     gridEmpty = deepcopy(grid)
     routeBookAstarEmpty = deepcopy(routeBook)
     routeBookAstarDone = []
