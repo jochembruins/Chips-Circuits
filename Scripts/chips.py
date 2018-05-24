@@ -54,46 +54,45 @@ else:
 # gebruik kleine of grote grid
 if commArg < 4:
     size = "small"
-    # laadt gates voor kleine grid
+    # laadt gates locaties voor kleine grid
     gatesLoc = genfromtxt('../Data/gates.csv', delimiter=';')
 else:
     size = "large"
-    # laadt gates voor grote grid
+    # laadt gates locaties voor grote grid
     gatesLoc = genfromtxt('../Data/gates2.csv', delimiter=';')
 
 ## PREPAREER DATA
 # giet gate locaties in goede format
-
 gates = functions.makeLocations(gatesLoc)
 
 # maak grid met gates
 grid = functions.gridMat(gates, size)
 
-# maak object van iedere netPoint
+# maak object van iedere netPoint in netlist
 routeBook = functions.makeObjects(netlist, gates)
 
 # bepaal lowerbound aka Manhattan distance van netlist
 # DIT MOET IN DE OUTPUTTABEL ERGENS NEERGEZET WORDEN
 lowerBound = functions.getLowerBound(routeBook)
 
+
 # maak kopie van routeboek
 routeBookEmpty = deepcopy(routeBook)
 
-## RANDOM ROUTEFINDER
+# ## RANDOM ROUTEFINDER
 # leg wires van netlist adhv random netlist volgordes
 # met breakthrough algoritme
 # 3e argument = aantal verschillende netlists
 # randomRoute = functions.randomRouteBook(routeBookEmpty, gates, 100)
 
 
-# print info over uitkomst
-
+# # print info over uitkomst
 # score = functions.getScore(randomRoute[2])
 # print("Beste score van random:", score)
 # check = functions.checker(randomRoute[2])
 # statistics.plotChip(gates, randomRoute[2], size)
 
-## DALTON METHODE
+# ## DALTON METHODE
 # netlistDalton = classes.wire.daltonMethod(netlist, gates)
 # # maak object van iedere netPoint
 # daltonRouteBook = functions.makeObjects(netlistDalton, gates)
@@ -150,31 +149,6 @@ routeBookEmpty = deepcopy(routeBook)
 
 # # plot gates en lijnen
 # statistics.plotChip(gates, routeBookBest, size)
-
-# # A-star
-#
-# # dit is debug MELLE
-# print("debug")
-# newRoutes = functions.aStarRouteFinder(routeBookEmpty, grid)
-#
-# # Hier begint de aanpassing van de grid
-# for route in newRoutes[0]:
-#     grid = functions.changeMat(route.route, grid)
-#
-# hoi = functions.replaceLine(newRoutes[0], grid, 1, "klein" , steps = 2000)
-#
-#
-# # print(len(newRoutes))
-# #
-# # print(functions.checker(newRoutes[0]))
-# #
-# # print(functions.getScore(newRoutes[0]))
-# #
-# # for route in newRoutes[1]:
-# # 	print(route)
-#
-# print("hoi")
-# statistics.plotChip(gates, newRoutes[0])
 
 #
 newRoutes = functions.aStarRouteFinder(routeBookEmpty, grid, size)
