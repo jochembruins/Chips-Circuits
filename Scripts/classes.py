@@ -18,8 +18,10 @@
 
 import random
 
-# make objects per gate
+
 class Location(object):
+    """ maak objecten voor de gate locaties """
+
     def __init__(self, gate, x, y, z):
         self.gate = gate
         self.x = int(x)
@@ -27,9 +29,13 @@ class Location(object):
         self.z = int(z)
 
     def __str__(self):
-        return "gate: %i, x: %i, y: %i, z: %i" % (self.gate, self.x, self.y, self.z)
+        return "gate: %i, x: %i, y: %i, z: %i" \
+               % (self.gate, self.x, self.y, self.z)
+
 
 class wire(object):
+    """ maak objecten voor iedere netPoint in de netlist """
+
     def __init__(self, netPoint, locFrom, locTo, fromSurround, toSurround, route):
         self.netPoint = netPoint
         self.locFrom = locFrom
@@ -39,14 +45,21 @@ class wire(object):
         self.route = route
 
     def __str__(self):
-        return "netPoint: %s, locFrom: %s, locTo: %s, fromSurround: %s toSurround: %s route: %s" % \
-               (self.netPoint, self.locFrom, self.locTo, self.fromSurround, self.toSurround, self.route)
+        return "netPoint: %s, locFrom: %s, locTo: %s, " \
+               "fromSurround: %s toSurround: %s route: %s" % \
+               (self.netPoint, self.locFrom, self.locTo,
+                self.fromSurround, self.toSurround, self.route)
 
     # deze functie ordent de netlist
-    # hierbij wordt er geordend op lengte van een netlistelementconnectie (blauwe lijn)
+    # hierbij wordt er geordend op lengte
+    # van een netlistelementconnectie (blauwe lijn)
     # als argument wordt een netlist genomen + de gates
 
     def daltonMethod(netlist, gate):
+        """ deze functie ordent de netlist hierbij wordt er geordend op lengte
+            van een netlistelementconnectie (blauwe lijn)
+            als argument wordt een netlist genomen + de gates """
+
         lowerBound = 0
         # tweede versie van netlist opgeslagen
         netlistversion2 = netlist
@@ -80,7 +93,7 @@ class wire(object):
                 if (som < minimum):
                     minimum = som
                     numbernetlist = i
-            lowerBound += som
+
             # zet zojuist bepaalde netlistelement in netlistversion3
             netlistversion3.append(netlistversion2[numbernetlist])
             
@@ -91,10 +104,11 @@ class wire(object):
         return netlistversion3
 
 
-    # deze functie ordent de netlist
-    # hierbij wordt er geordend of een netlistelementconnectie (blauwe lijn) aan de buitenkant ligt
-    # als argument wordt een netlist genomen + de gates
+
     def UIMethod_forprint1(netlist, gate):
+        """ deze functie ordent de netlist, hierbij wordt er geordend op
+            hoe ver netlistelementconnecties aan de buitenkant
+            van de grid liggen """
 
         # tweede versie van netlist opgeslagen
         netlistversion2 = netlist
@@ -138,7 +152,8 @@ class wire(object):
                 else:
                     y1waarde = hoogte - gate[listelement1].y
 
-                # de waarde van de eerste gate is het minimum van de x1- en y1waarde
+                # de waarde van de eerste gate is het
+                # minimum van de x1- en y1waarde
                 waarde1 = min(x1waarde, y1waarde)
 
                 if (gate[listelement2].x <= helftbreedte):
@@ -151,7 +166,8 @@ class wire(object):
                 else:
                     y2waarde = hoogte - gate[listelement2].y
 
-                # de waarde van de tweede gate is het minimum van de x2- en y2waarde
+                # de waarde van de tweede gate is het
+                # minimum van de x2- en y2waarde
                 waarde2 = min(x2waarde, y2waarde)
 
                 som = waarde1 + waarde2
@@ -186,6 +202,3 @@ class wire(object):
         routeBook[index2] = tmp
 
         return routeBook
-
-
-
