@@ -66,7 +66,7 @@ def makeObjects(netlist, gates):
 
     return emptyRouteBook
 
-def gridMat(gates, chip = "klein"):
+def gridMat(gates, chip = "groot"):
     if chip == "groot":
         # make matrix of grid
         matGrid = np.zeros([18, 17, 10]) + 99
@@ -419,62 +419,100 @@ def matrix_store_direction(chip):
         matgrid = np.zeros([18, 13, 10])
         return matgrid
 
-def astarRouteFinder (routeBook, grid):
+def aStarRouteFinder (routeBook, grid):
+    """ Functie zoekt naar valide oplossing met gewogen Astar """
+    
+    # maak benodige variabelen aan
     tic = time()
+    
+    # lege grid
     gridEmpty = deepcopy(grid)
-    routeBookAstarEmpty = deepcopy(routeBook)
-    routeBookAstarDone = []
+    
+    # lijst met routes die nog gelegd moeten worden
+    routeBookEmpty = deepcopy(routeBook)
+    
+    # nog lege lijst te vullen met gelegde routes
+    routeBookDone = []
+    
+    # lijst om geslaagde netlist op te slaan
+    routeBookSolved = deepcopy(routeBook)
+    
+    # counter voor het aantal iteraties
     loops = 0
 
-    while routeBookAstarEmpty != []:
-        print('hier')
-        for netPoint in routeBookAstarEmpty:
-            
+    # loop totdat de routeboek leeg is
+    while routeBookEmpty != []:
+        # loop over alle elementen in de routeboek
+        for netPoint in routeBookEmpty:
+    
+            # houd aantal loops bij
             loops += 1
 
+            # controleert of de begingate van de lijn is ingesloten
             count = 0
             for loc in netPoint.fromSurround:
                 if grid[loc[0], loc[1], loc[2]] != 99:
                     count += 1
+            
+            # verwijdert onnodige lijnen indien ingesloten
             if count == 5:
-                routeBookAstarEmpty, routeBookAstarDone, grid = searchLocFrom(netPoint, routeBookAstarEmpty, routeBookAstarDone, grid)[0:3]   
+                routeBookEmpty, routeBookDone, grid = searchLocFrom(netPoint, routeBookEmpty, routeBookDone, grid)[0:3]   
 
+            # controleert of de begingate van de lijn is ingesloten
             count = 0
             for loc in netPoint.toSurround:
                 if grid[loc[0], loc[1], loc[2]] != 99:
                     count += 1
+            
+            # verwijdert onnodige lijnen indien ingesloten
             if count == 5:
-                routeBookAstarEmpty, routeBookAstarDone, grid = searchLocTo(netPoint, routeBookAstarEmpty, routeBookAstarDone, grid)[0:3]         
+                routeBookEmpty, routeBookDone, grid = searchLocTo(netPoint, routeBookEmpty, routeBookDone, grid)[0:3]         
 
+            # leg de route met Astar
+            route = Astar(netPoint, grid, 2, 'groot')
 
-            print(len(routeBookAstarEmpty))
-            print(len(routeBookAstarDone))
-
-            route = Astar(netPoint, grid, 2, 'klein')
-
+            # voeg nieuwe route toe aan netPoins als Astar succesvol is
             if route != []:
                 netPoint.route = route
+                
+                # update grid
                 grid = changeMat(route, grid)
 
-                doneWire = routeBookAstarEmpty.pop(routeBookAstarEmpty.index(netPoint))
-                routeBookAstarDone.append(doneWire)
+                # verplaats van 'emtpy-' naar 'done-' lijst
+                doneWire = routeBookEmpty.pop(routeBookEmpty.index(netPoint))
+                routeBookDone.append(doneWire)
             
+            # begin opnieuw als maximaal aantal loops is bereikt
             if loops == 150:
-                routeBookAstarEmpty = routeBookAstarEmpty + routeBookAstarDone
-                routeBookAstarDone = []
-                #shuffle(routeBookAstarEmpty)
-                grid = deepcopy(gridEmpty)
+                lengthEmpty = len(routeBookEmpty)
+                print(lengthEmpty)
+                routeBookEmpty = routeBookEmpty + routeBookDone
+                routeBookDone = []
                 loops = 0
                 
+                # alleen shuffelen als de er meer dan vier routes onopgelost bleven
+                if lengthEmpty > 4:
+                    print('shuffle')
+                    shuffle(routeBookEmpty)
+                    
+                # update laatste routeBook 
+                print('update')
+                routeBookSolved = deepcopy(routeBookEmpty)
+
+                # maak grid weer leeg
+                grid = deepcopy(gridEmpty)
+                
+    # bereken tijd
     toc = time()
     print(toc-tic)
-    for route in routeBookSolved:
-        print(route.netPoint)
-    for route in routeBookAstarDone:
-        print(route)
-    print(checker(routeBookAstarDone))
-    print(getScore(routeBookAstarDone))
-    return routeBookAstarDone, routeBookSolved
+    
+    # check validiteit
+    print(checker(routeBookDone))
+    
+    # krijg score
+    print(getScore(routeBookDone))
+    
+    return routeBookDone, routeBookSolved
 
 
 # Astar heeft een grid, gates en een wire nodig
@@ -482,10 +520,6 @@ def Astar(netPoint, grid, index, chip):
     locfrom = [netPoint.locFrom[0], netPoint.locFrom[1], netPoint.locFrom[2]]
     gridwithnodes = deepcopy(grid)
     locto = [netPoint.locTo[0], netPoint.locTo[1], netPoint.locTo[2]]
-    print("locfrom")
-    print(locfrom)
-    print("locto")
-    print(locto)
 
     route=[]
     if distance(locfrom, locto) == 1:
@@ -513,8 +547,6 @@ def putwire(gridwithnodes, locfrom, locto, index, chip):
         start, stop, queue = minimumnodes(gridwithnodes, queue)
 
         if i == 10000:
-
-            print("niet normaal meer")
             quit()
         i = i + 1
 
@@ -523,12 +555,6 @@ def putwire(gridwithnodes, locfrom, locto, index, chip):
     else:
 
         route=[]
-        print("mislukt:")
-        print(locfrom)
-        print(locto)
-        print("mislukt eindig")
-
-
     return route
 
 #  nodes plaatsen

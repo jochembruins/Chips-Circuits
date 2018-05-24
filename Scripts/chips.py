@@ -35,7 +35,7 @@ if sys.argv[1] == '1':
 elif sys.argv[1] == '2':
     netlist = netlists.netlist_2
 elif sys.argv[1] == '3':
-    netlist = netlists.netlist_3
+    netlist = netlists.netlist_6
 elif sys.argv[1] == "a":
     print("hoi")
 else:
@@ -45,18 +45,20 @@ else:
 
 ## PREPAREER DATA
 # giet gate locaties in goede format
-gatesLoc = genfromtxt('../Data/gates.csv', delimiter=';')
+gatesLoc = genfromtxt('../Data/gates2.csv', delimiter=';')
 gates = functions.makeLocations(gatesLoc)
 
 # maak 13 x 18 x 8 (= L x W x H) grid met gates
 grid = functions.gridMat(gates)
 
+
 # maak object van iedere netPoint
 routeBook = functions.makeObjects(netlist, gates)
 
+
 # bepaal lowerbound aka Manhattan distance van netlist
 # DIT MOET IN DE OUTPUTTABEL ERGENS NEERGEZET WORDEN
-lowerBound = functions.getLowerBound(routeBook)
+# lowerBound = functions.getLowerBound(routeBook)
 
 # maak kopie van routeboek
 routeBookEmpty = deepcopy(routeBook)
@@ -130,18 +132,26 @@ routeBookEmpty = deepcopy(routeBook)
 
 # A-star
 
-newRoutes = functions.astarRouteFinder(routeBookEmpty, grid)
+newRoutes = functions.aStarRouteFinder(routeBookEmpty, grid)
 
-print(len(newRoutes))
+print(len(newRoutes[0]))
 
 print(functions.checker(newRoutes[0]))
 
 print(functions.getScore(newRoutes[0]))
 
-for route in newRoutes[1]:
-	print(route)
+# for route in newRoutes[0]:
+# 	print(route)
 
-statistics.plotChip(gates, newRoutes[0])
+print('Leeg')
+for route in newRoutes[1]:
+	print(route.netPoint, end=', ')
+
+print('Opgelost')
+for route in newRoutes[0]:
+	print(route.netPoint, end=', ')
+
+# statistics.plotChip(gates, newRoutes[0])
 
 # NIET VERWIJDEREN
 # routes die werken voor test

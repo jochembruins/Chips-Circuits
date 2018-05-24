@@ -16,7 +16,6 @@ def plotLine(data, name):
 	plt.xlabel('Iteraties')
 	plt.ylabel('Score: Totale lengte wires')
 	plt.show(lines) 
-	
 
 def plotChip(gates, routeBook):
     # maak een nieuwe plot
