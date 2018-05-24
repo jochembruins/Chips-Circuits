@@ -58,18 +58,18 @@ def makeObjects(netlist, gates):
         fromSurround = [[gates[netPoint[0]].x,
                          gates[netPoint[0]].y + 1,
                          gates[netPoint[0]].z],
-                      [gates[netPoint[0]].x,
-                       gates[netPoint[0]].y - 1,
-                       gates[netPoint[0]].z],
-                      [gates[netPoint[0]].x + 1,
-                       gates[netPoint[0]].y,
-                       gates[netPoint[0]].z],
-                      [gates[netPoint[0]].x - 1,
-                       gates[netPoint[0]].y,
-                       gates[netPoint[0]].z ],
-                      [gates[netPoint[0]].x,
-                       gates[netPoint[0]].y,
-                       gates[netPoint[0]].z + 1]]
+                        [gates[netPoint[0]].x,
+                        gates[netPoint[0]].y - 1,
+                        gates[netPoint[0]].z],
+                        [gates[netPoint[0]].x + 1,
+                        gates[netPoint[0]].y,
+                        gates[netPoint[0]].z],
+                        [gates[netPoint[0]].x - 1,
+                        gates[netPoint[0]].y,
+                        gates[netPoint[0]].z],
+                        [gates[netPoint[0]].x,
+                        gates[netPoint[0]].y,
+                        gates[netPoint[0]].z + 1]]
         toSurround = [[gates[netPoint[1]].x,
                        gates[netPoint[1]].y + 1,
                        gates[netPoint[1]].z],
@@ -84,7 +84,7 @@ def makeObjects(netlist, gates):
                        gates[netPoint[1]].z],
                       [gates[netPoint[1]].x,
                        gates[netPoint[1]].y,
-                       gates[netPoint[1]].z +1]]
+                       gates[netPoint[1]].z + 1]]
         route = []
         emptyRoute = classes.wire(netPoint, locFrom,
                                   locTo, fromSurround,
@@ -279,7 +279,10 @@ def breakThroughFinder(routeBook, grid):
                     if grid[cursor[0], cursor[1], cursor[2]] != 99:
                         for netPointToDelete in routeBookDone:
                             for routePoint in netPointToDelete.route:
-                                if [cursor[0], cursor[1], cursor[2]] == [routePoint[0], routePoint[1], routePoint[2]]:
+                                if [cursor[0], cursor[1], cursor[2]] \
+                                        == [routePoint[0],
+                                            routePoint[1],
+                                            routePoint[2]]:
 
                                     # verwijder lijn in grid
                                     grid = delRoute(netPointToDelete.route, grid)
@@ -827,6 +830,7 @@ def gCost(start, destination, grid, node, index):
             gCost = 1
         return gCost
 
+
 def checkClosedNode(direction, start):
     """ kijk waar element vandaag wijst """
 
@@ -895,11 +899,11 @@ def searchLocTo(netPoint, routeBookEmpty, routeBookDone, grid):
                 if nextLocTo == [routePoint[0], routePoint[1], routePoint[2]]:
                     if grid[routePoint[0], routePoint[1], routePoint[2]] == 50 \
                             and netPointToDelete.locTo != [netPoint.locTo[0],
-                                                       netPoint.locTo[1],
-                                                       netPoint.locTo[2]] and \
-                            netPointToDelete.locFrom != [netPoint.locTo[0],
-                                                         netPoint.locTo[1],
-                                                         netPoint.locTo[2]]:
+                                                           netPoint.locTo[1],
+                                                           netPoint.locTo[2]] \
+                            and netPointToDelete.locFrom != [netPoint.locTo[0],
+                                                             netPoint.locTo[1],
+                                                             netPoint.locTo[2]]:
                         # verwijder lijn van de grid
                         grid = delRoute(netPointToDelete.route, grid)
                         netPointToDelete.route = []
@@ -942,6 +946,7 @@ def searchLocFrom(netPoint, routeBookEmpty, routeBookDone, grid):
 
                         return routeBookEmpty, routeBookDone, grid, nextLocFrom
 
+
 def GcostForGates(gates):
     """ maakt voor element in grid een gcostwaarde afhankelijk
         van de afstand tot de gates"""
@@ -955,6 +960,7 @@ def GcostForGates(gates):
                     distancee = distancee + distanceee
                 grid[x][y][z] = 600 - distancee
     return grid
+
 
 def replaceLine(routeBook, grid, order, steps = 2000):
     """ Hillclimber algoritme,
