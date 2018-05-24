@@ -41,21 +41,19 @@ else:
     print("Gebruik: chips.py N \nN = 1, 2, 3; waar '1' staat voor netlist 1")
     exit()
 
-## PREPAREER DATA
-# giet gate locaties in goede format
-gatesLoc = genfromtxt('../Data/gates2.csv', delimiter=';')
-gates = functions.makeLocations(gatesLoc)
-
-# maak 13 x 18 x 8 (= L x W x H) grid met gates
-grid = functions.gridMat(gates)
-
-
-# maak object van iedere netPoint
-routeBook = functions.makeObjects(netlist, gates)
-
-
-# bepaal lowerbound aka Manhattan distance van netlist
-# DIT MOET IN DE OUTPUTTABEL ERGENS NEERGEZET WORDEN
+# ## PREPAREER DATA
+# # giet gate locaties in goede format
+# gatesLoc = genfromtxt('../Data/gates.csv', delimiter=';')
+# gates = functions.makeLocations(gatesLoc)
+#
+# # maak 13 x 18 x 8 (= L x W x H) grid met gates
+# grid = functions.gridMat(gates)
+#
+# # maak object van iedere netPoint
+# routeBook = functions.makeObjects(netlist, gates)
+#
+# # bepaal lowerbound aka Manhattan distance van netlist
+# # DIT MOET IN DE OUTPUTTABEL ERGENS NEERGEZET WORDEN
 # lowerBound = functions.getLowerBound(routeBook)
 
 # maak kopie van routeboek
@@ -130,28 +128,30 @@ routeBookEmpty = deepcopy(routeBook)
 # # plot gates en lijnen
 # statistics.plotChip(gates, routeBookBest)
 
-# A-star
-newRoutes = functions.aStarRouteFinder(routeBookEmpty, grid)
+print("yeaahhh")
+gatesLoc = genfromtxt('../Data/gates.csv', delimiter=';')
+gates = functions.makeLocations(gatesLoc)
 
-print(len(newRoutes[0]))
+# maak 13 x 18 x 8 (= L x W x H) grid met gates
+grid = functions.gridMat(gates)
+
+# maak object van iedere netPoint
+routeBook = functions.makeObjects(netlist, gates)
+# maak kopie van routeboek
+routeBookEmpty = deepcopy(routeBook)
+newRoutes = functions.astarRouteFinder(routeBookEmpty, grid)
+
+print(len(newRoutes))
 
 print(functions.checker(newRoutes[0]))
 
 print(functions.getScore(newRoutes[0]))
 
-# for route in newRoutes[0]:
-# 	print(route)
-
-print('Leeg')
 for route in newRoutes[1]:
-	print(route.netPoint, end=', ')
+	print(route)
 
-print('Opgelost')
-for route in newRoutes[0]:
-	print(route.netPoint, end=', ')
-
-# statistics.plotChip(gates, newRoutes[0])
-
+statistics.plotChip(gates, newRoutes[0])
+quit()
 # NIET VERWIJDEREN
 # routes die werken voor test
 # dalton = [(2, 20), (3, 15), (15, 5), (3, 23), (5, 7), (15, 21), (13, 18), (1, 2), (3, 5), (10, 4), (7, 13), (3, 2), (22, 16), (22, 13), (15, 17), (20, 10), (22, 11), (11, 24), (6, 14), (16, 9), (19, 5), (15, 8), (10, 7), (23, 4
@@ -164,10 +164,10 @@ for route in newRoutes[0]:
 # dalton = [(20, 10), (3, 15), (15, 5), (3, 23), (5, 7), (15, 21), (13, 18), (1, 2), (3, 5), (10, 4), (7, 13), (3, 2), (22, 16), (22, 13), (15, 17), (22, 11), (11, 24), (6, 14), (16, 9), (19, 5), (15, 8), (10, 7), (23, 4
 # ), (19, 2), (3, 4), (7, 9), (23, 8), (9, 13), (20, 19)]
 
-netlist = netlists.netlist_4
-gatesLoc = genfromtxt('../Data/gates2.csv', delimiter=';')
-gates = functions.makeLocations(gatesLoc)
-routeBookAstar = functions.makeObjects(netlist, gates)
-grid2 = functions.gridMat(gates, "groot")
-routeBookAstar = functions.Astarroutemelle2(routeBookAstar, grid2, gates)
-quit()
+# netlist = netlists.netlist_4
+# gatesLoc = genfromtxt('../Data/gates2.csv', delimiter=';')
+# gates = functions.makeLocations(gatesLoc)
+# routeBookAstar = functions.makeObjects(netlist, gates)
+# grid2 = functions.gridMat(gates, "groot")
+# routeBookAstar = functions.Astarroutemelle2(routeBookAstar, grid2, gates)
+# quit()

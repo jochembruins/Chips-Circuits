@@ -185,6 +185,7 @@ def breakThroughFinder(routeBook, grid):
     # run algoritme totdat alle lijnen gelegd zijn
     while routeBookEmpty != []:
         for netPoint in routeBookEmpty:
+
             # maak nodige variabelen aan
             route = []
             cursor = [netPoint.locFrom[0],
@@ -278,10 +279,7 @@ def breakThroughFinder(routeBook, grid):
                     if grid[cursor[0], cursor[1], cursor[2]] != 99:
                         for netPointToDelete in routeBookDone:
                             for routePoint in netPointToDelete.route:
-                                if [cursor[0], cursor[1], cursor[2]] \
-                                    == [routePoint[0],
-                                        routePoint[1],
-                                        routePoint[2]]:
+                                if [cursor[0], cursor[1], cursor[2]] == [routePoint[0], routePoint[1], routePoint[2]]:
 
                                     # verwijder lijn in grid
                                     grid = delRoute(netPointToDelete.route, grid)
@@ -461,14 +459,16 @@ def checker (routeBook):
         return False
 
 
-
 def aStarRouteFinder (routeBook, grid):
     """ Functie zoekt naar valide oplossing met gewogen Astar """
+    
     # maak benodige variabelen aan
     tic = time()
     
     # lege grid
     gridEmpty = deepcopy(grid)
+    routeBookAstarEmpty = deepcopy(routeBook)
+    routeBookAstarDone = []
     
     # lijst met routes die nog gelegd moeten worden
     routeBookEmpty = deepcopy(routeBook)
@@ -482,7 +482,7 @@ def aStarRouteFinder (routeBook, grid):
     # counter voor het aantal iteraties
     loops = 0
 
-    # loop totdat de routeboek leeg is
+ # loop totdat de routeboek leeg is
     while routeBookEmpty != []:
         # loop over alle elementen in de routeboek
         for netPoint in routeBookEmpty:
@@ -500,7 +500,6 @@ def aStarRouteFinder (routeBook, grid):
             if count == 5:
                 routeBookEmpty, routeBookDone, grid = searchLocFrom(netPoint, routeBookEmpty, routeBookDone, grid)[0:3]   
 
-
             # controleert of de begingate van de lijn is ingesloten
             count = 0
             for loc in netPoint.toSurround:
@@ -509,10 +508,10 @@ def aStarRouteFinder (routeBook, grid):
             
             # verwijdert onnodige lijnen indien ingesloten
             if count == 5:
-                routeBookEmpty, routeBookDone, grid = searchLocTo(netPoint, routeBookEmpty, routeBookDone, grid)[0:3]         
+                routeBookEmpty, routeBookDone, grid = searchLocTo(netPoint, routeBookEmpty, routeBookDone, grid)[0:3] 
 
             # leg de route met Astar
-            route = aStar(netPoint, grid, 2, 'groot')
+            route = Astar(netPoint, grid, 2, 'groot')
 
             # voeg nieuwe route toe aan netPoins als Astar succesvol is
             if route != []:
@@ -524,7 +523,6 @@ def aStarRouteFinder (routeBook, grid):
                 # verplaats van 'emtpy-' naar 'done-' lijst
                 doneWire = routeBookEmpty.pop(routeBookEmpty.index(netPoint))
                 routeBookDone.append(doneWire)
-
             
             # begin opnieuw als maximaal aantal loops is bereikt
             if loops == 150:
@@ -549,8 +547,8 @@ def aStarRouteFinder (routeBook, grid):
     # bereken tijd
     toc = time()
     print(toc-tic)
-    
-    # check validiteit
+                
+     # check validiteit
     print(checker(routeBookDone))
     
     # krijg score
