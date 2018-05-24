@@ -94,6 +94,7 @@ def makeObjects(netlist, gates):
 
     return emptyRouteBook
 
+
 def gridMat(gates, chip = "small"):
     """" Maakt matrix van de grid met gateslocatie-info"""
     if chip == "big":
@@ -108,6 +109,7 @@ def gridMat(gates, chip = "small"):
             matGrid[gate.x, gate.y, gate.z] = gate.gate
         return matGrid
 
+
 def getLowerBound(routeBook):
     """ Bereken de lowerbound (manhattan distance) van gekozen netlist"""
     lowerBound = 0
@@ -117,6 +119,7 @@ def getLowerBound(routeBook):
         z_dist = abs(netPoint.locFrom[2] - netPoint.locTo[2])
         lowerBound += z_dist + y_dist + x_dist
     return lowerBound
+
 
 def randomRouteBook(routeBook, gates, steps=1000):
     """ Probeert willekeurige volgordes van de netlist met het breaktrough
@@ -161,7 +164,7 @@ def randomRouteBook(routeBook, gates, steps=1000):
                                            ignore_index=True)
             check = checker(newRouteFound)
 
-            if check == True:
+            if check is True:
                 # sla score en route op als betere oplossing is gevonden
                 if newScore < score:
                     bestRouteBookIn = deepcopy(newRouteBook)
@@ -196,7 +199,8 @@ def breakThroughFinder(routeBook, grid):
             # voeg beginpunt toe aan route
             route.append([cursor[0], cursor[1], cursor[2]])
 
-            # als begin en eindpunt niet naast elkaar zitten, bepaal eerste en laatste stap
+            # als begin en eindpunt niet naast elkaar zitten,
+            # bepaal eerste en laatste stap
             if stepsDifference(locTo, cursor) != 1:
                 # zoek vrij punt om eindpunt heen
                 for nextLocTo in netPoint.toSurround:
@@ -204,21 +208,34 @@ def breakThroughFinder(routeBook, grid):
                         locTo = [nextLocTo[0], nextLocTo[1], nextLocTo[2]]
                         break
 
-                # als eindpunt niet bereikt kan worden, verwijder geschikte omliggende lijn
-                if locTo == [netPoint.locTo[0], netPoint.locTo[1], netPoint.locTo[2]]:
-                    routeBookEmpty, routeBookDone, grid, locTo = \
-                        searchLocTo(netPoint, routeBookEmpty, routeBookDone, grid)
+                # als eindpunt niet bereikt kan worden,
+                # verwijder geschikte omliggende lijn
+                if locTo == [netPoint.locTo[0],
+                             netPoint.locTo[1],
+                             netPoint.locTo[2]]:
+                    routeBookEmpty, routeBookDone, grid, locTo \
+                        = searchLocTo(netPoint, routeBookEmpty,
+                                      routeBookDone, grid)
 
                 # make first step in available direction
                 for nextLocFrom in netPoint.fromSurround:
-                    if grid[nextLocFrom[0], nextLocFrom[1], nextLocFrom[2]] == 99:
-                        cursor = [nextLocFrom[0], nextLocFrom[1], nextLocFrom[2]]
+                    if grid[nextLocFrom[0],
+                            nextLocFrom[1],
+                            nextLocFrom[2]] == 99:
+                        cursor = [nextLocFrom[0],
+                                  nextLocFrom[1],
+                                  nextLocFrom[2]]
                         route.append([cursor[0], cursor[1], cursor[2]])
                         break
 
-                # if there is no valid first step possible, delete one of lines on surrounding gridpoints
-                if cursor == [netPoint.locFrom[0], netPoint.locFrom[1], netPoint.locFrom[2]]:
-                    routeBookEmpty, routeBookDone, grid, [cursor[0], cursor[1], cursor[2]] = searchLocFrom(netPoint, routeBookEmpty, routeBookDone, grid)
+                # if there is no valid first step possible,
+                # delete one of lines on surrounding gridpoints
+                if cursor == [netPoint.locFrom[0],
+                              netPoint.locFrom[1],
+                              netPoint.locFrom[2]]:
+                    routeBookEmpty, routeBookDone, grid, \
+                    [cursor[0], cursor[1], cursor[2]] \
+                        = searchLocFrom(netPoint, routeBookEmpty, routeBookDone, grid)
                     route.append([cursor[0], cursor[1], cursor[2]])
 
 
