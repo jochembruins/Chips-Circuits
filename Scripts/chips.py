@@ -27,7 +27,7 @@ import pandas as pd
 import sys
 
 if len(sys.argv) == 1:
-    print("Usage: chips.py N \nN = 1, 2, 3, a; where '1' stands for netlist 1 and 'a' for all three netlists")
+    print("Gebruik: chips.py N \nN = 1, 2, 3; waar '1' staat voor netlist 1")
     exit()
 
 if sys.argv[1] == '1':
@@ -36,12 +36,9 @@ elif sys.argv[1] == '2':
     netlist = netlists.netlist_2
 elif sys.argv[1] == '3':
     netlist = netlists.netlist_3
-####################################!!############!!!!!!!!!!!#######!!!!!!!!!!!!####!!!KIJKHIERmoet de a ook???!######!!!!!!!###################@!#####
-elif sys.argv[1] == "a":
-    print("hoi")
 else:
-    print("usage not correct")
-    print("Usage: chips.py N \nN = 1, 2, 3, a; where '1' stands for netlist 1 and 'a' for all three netlists")
+    print("Gebruik niet correct")
+    print("Gebruik: chips.py N \nN = 1, 2, 3; waar '1' staat voor netlist 1")
     exit()
 
 ## PREPAREER DATA

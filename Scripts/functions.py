@@ -13,17 +13,13 @@
 #
 # Chips & Circuits
 #
-# Contains all functions used in chips.py
+# Bevat alle functies die worden gebruikt in chips.py
 ###########################################################
 from time import time
-from typing import List
-
+import progressbar
 import csv
 import numpy as np
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d.axes3d import Axes3D
 import classes
-from random import randint
 import random
 from random import shuffle
 from copy import deepcopy
@@ -36,54 +32,84 @@ np.set_printoptions(linewidth=180)
 
 
 def makeLocations(data):
+    """ Giet locaties van gates uit file in objecten met x, y, z waarden"""
     gates = []
     for line in data:
-        line = classes.Location(line[0], int(line[1]), int(line[2]), int(line[3]))
+        line = classes.Location(line[0],
+                                int(line[1]),
+                                int(line[2]),
+                                int(line[3]))
         gates.append(line)
     return gates
 
 
 def makeObjects(netlist, gates):
+    """" Zet nodige info in de netPoint objecten"""
     emptyRouteBook = []
 
-    for point in netlist:
-        locFrom = [gates[point[0]].x, gates[point[0]].y, gates[point[0]].z]
-        locTo = [gates[point[1]].x, gates[point[1]].y, gates[point[1]].z]
+    for netPoint in netlist:
+        locFrom = [gates[netPoint[0]].x,
+                   gates[netPoint[0]].y,
+                   gates[netPoint[0]].z]
+
+        locTo = [gates[netPoint[1]].x,
+                 gates[netPoint[1]].y,
+                 gates[netPoint[1]].z]
         # omliggende punten van begin/eindpunt
-        fromSurround = [[gates[point[0]].x, gates[point[0]].y + 1, gates[point[0]].z],
-                      [gates[point[0]].x, gates[point[0]].y - 1, gates[point[0]].z],
-                      [gates[point[0]].x + 1, gates[point[0]].y, gates[point[0]].z],
-                      [gates[point[0]].x - 1, gates[point[0]].y, gates[point[0]].z ],
-                      [gates[point[0]].x, gates[point[0]].y, gates[point[0]].z + 1]]
-        toSurround = [[gates[point[1]].x, gates[point[1]].y + 1, gates[point[1]].z],
-                      [gates[point[1]].x, gates[point[1]].y - 1, gates[point[1]].z],
-                      [gates[point[1]].x + 1, gates[point[1]].y, gates[point[1]].z],
-                      [gates[point[1]].x - 1, gates[point[1]].y, gates[point[1]].z],
-                      [gates[point[1]].x, gates[point[1]].y, gates[point[1]].z +1]]
+        fromSurround = [[gates[netPoint[0]].x,
+                         gates[netPoint[0]].y + 1,
+                         gates[netPoint[0]].z],
+                      [gates[netPoint[0]].x,
+                       gates[netPoint[0]].y - 1,
+                       gates[netPoint[0]].z],
+                      [gates[netPoint[0]].x + 1,
+                       gates[netPoint[0]].y,
+                       gates[netPoint[0]].z],
+                      [gates[netPoint[0]].x - 1,
+                       gates[netPoint[0]].y,
+                       gates[netPoint[0]].z ],
+                      [gates[netPoint[0]].x,
+                       gates[netPoint[0]].y,
+                       gates[netPoint[0]].z + 1]]
+        toSurround = [[gates[netPoint[1]].x,
+                       gates[netPoint[1]].y + 1,
+                       gates[netPoint[1]].z],
+                      [gates[netPoint[1]].x,
+                       gates[netPoint[1]].y - 1,
+                       gates[netPoint[1]].z],
+                      [gates[netPoint[1]].x + 1,
+                       gates[netPoint[1]].y,
+                       gates[netPoint[1]].z],
+                      [gates[netPoint[1]].x - 1,
+                       gates[netPoint[1]].y,
+                       gates[netPoint[1]].z],
+                      [gates[netPoint[1]].x,
+                       gates[netPoint[1]].y,
+                       gates[netPoint[1]].z +1]]
         route = []
-        emptyRoute = classes.wire(point, locFrom, locTo, fromSurround, toSurround, route)
+        emptyRoute = classes.wire(netPoint, locFrom,
+                                  locTo, fromSurround,
+                                  toSurround, route)
         emptyRouteBook.append(emptyRoute)
 
     return emptyRouteBook
 
-def gridMat(gates, chip = "klein"):
-    if chip == "groot":
-        # make matrix of grid
-        matGrid = np.zeros([18, 17, 10]) + 99
-
+def gridMat(gates, chip = "small"):
+    """" Maakt matrix van de grid met gateslocatie-info"""
+    if chip == "big":
+        matGrid = np.zeros([18, 17, 30]) + 99
         for gate in gates:
             matGrid[gate.x, gate.y, gate.z] = gate.gate
         return matGrid
 
     else:
-        # make matrix of grid
-        matGrid = np.zeros([18, 13, 10]) + 99
-
+        matGrid = np.zeros([18, 13, 30]) + 99
         for gate in gates:
             matGrid[gate.x, gate.y, gate.z] = gate.gate
         return matGrid
 
 def getLowerBound(routeBook):
+    """ Bereken de lowerbound (manhattan distance) van gekozen netlist"""
     lowerBound = 0
     for netPoint in routeBook:
         x_dist = abs(netPoint.locFrom[0] - netPoint.locTo[0])
@@ -93,88 +119,95 @@ def getLowerBound(routeBook):
     return lowerBound
 
 def randomRouteBook(routeBook, gates, steps=1000):
+    """ Probeert willekeurige volgordes van de netlist met het breaktrough
+    algoritme op te lossen, onthoudt de beste uitkomst """
 
+    # zet seed voor shufflefunctie
     random.seed(2)
+
+    # maak nodige variabelen aan
     bestRouteBookIn = []
-
     score = 2000
-    file  = open('../csv/random.csv', "w")
-    writer = csv.writer(file, delimiter=',')
 
-    randomData = pd.DataFrame(columns=['I','Score'])
+    # maak pandas bestand aan voor score-opslag
+    randomData = pd.DataFrame(columns=['I', 'Score'])
 
+    # loop voor aantal iteraties willekeurig algoritme
     for i in range(0, steps):
-        print(i)
+
+        # sla beginstand routebook op en shuffle
         newRouteBook = routeBook
         shuffle(newRouteBook)
 
+        # maak nieuw lege grid aan
         grid = gridMat(gates)
 
+        # maak nieuwe routebook aan waarin gewerkt kan worden
         tmp_newRouteBook = deepcopy(newRouteBook)
 
-        # checkt of het route vinden is gelukt
         finished = False
-
-        newScore = score
-
-        # probeer nieuwe route te vinden
+        # probeer nieuwe route te vinden met breaktrough algoritme
         try:
             newRouteFound = breakThroughFinder(tmp_newRouteBook, grid)[1]
             finished = True
         except:
             finished = False
 
-        # bereken nieuwe score
+        # bereken nieuwe score als resultaat gevonden is
         if finished:
             newScore = getScore(newRouteFound)
-            print("oude score random: ", score)
-            print("nieuwe score random: ", newScore)
-            writer.writerow([i, newScore])
-            # newRow = pd.DataFrame({'I': i, 'Score': newScore}, ignore_index=True)
-            randomData = randomData.append({'I': i, 'Score': newScore}, ignore_index=True)
+
+            randomData = randomData.append({'I': i, 'Score': newScore},
+                                           ignore_index=True)
             check = checker(newRouteFound)
 
             if check == True:
-                # sla score en route op als beste is
+                # sla score en route op als betere oplossing is gevonden
                 if newScore < score:
                     bestRouteBookIn = deepcopy(newRouteBook)
                     bestRouteFound = deepcopy(newRouteFound)
                     score = newScore
-                    print('betere oplossing')
-                else:
-                    print('slechtere oplossing')
-            else:
-                for ding in newRouteFound:
-                    print(ding)
-
+    # plot histogram van randomscores
     statistics.plotRandom(randomData)
-    file.close()
     return bestRouteBookIn, score, bestRouteFound, grid
 
 
 def breakThroughFinder(routeBook, grid):
+    """ algoritme om lijnen in netlist te leggen """
+
+    # maak nodige variabelen aan
     routeBookEmpty = routeBook
     routeBookDone = []
     count = 0
+
+    # run algoritme totdat alle lijnen gelegd zijn
     while routeBookEmpty != []:
         for netPoint in routeBookEmpty:
-            route = []
-            cursor = [netPoint.locFrom[0], netPoint.locFrom[1], netPoint.locFrom[2]]
-            locTo = [netPoint.locTo[0], netPoint.locTo[1], netPoint.locTo[2]]
 
-            # add begin point to route
+            # maak nodige variabelen aan
+            route = []
+            cursor = [netPoint.locFrom[0],
+                      netPoint.locFrom[1],
+                      netPoint.locFrom[2]]
+            locTo = [netPoint.locTo[0],
+                     netPoint.locTo[1],
+                     netPoint.locTo[2]]
+
+            # voeg beginpunt toe aan route
             route.append([cursor[0], cursor[1], cursor[2]])
 
+            # als begin en eindpunt niet naast elkaar zitten, bepaal eerste en laatste stap
             if stepsDifference(locTo, cursor) != 1:
-                # select which gridpoint next to end location is free
+                # zoek vrij punt om eindpunt heen
                 for nextLocTo in netPoint.toSurround:
                     if grid[nextLocTo[0], nextLocTo[1], nextLocTo[2]] == 99:
                         locTo = [nextLocTo[0], nextLocTo[1], nextLocTo[2]]
                         break
 
-                # if end location cant be reached, delete one of lines on surrounding gridpoints
+                # als eindpunt niet bereikt kan worden, verwijder geschikte omliggende lijn
                 if locTo == [netPoint.locTo[0], netPoint.locTo[1], netPoint.locTo[2]]:
-                    routeBookEmpty, routeBookDone, grid, locTo = searchLocTo(netPoint, routeBookEmpty, routeBookDone, grid)
+                    routeBookEmpty, routeBookDone, grid, locTo = \
+                        searchLocTo(netPoint, routeBookEmpty, routeBookDone, grid)
 
                 # make first step in available direction
                 for nextLocFrom in netPoint.fromSurround:
