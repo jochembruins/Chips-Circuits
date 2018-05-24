@@ -467,8 +467,6 @@ def aStarRouteFinder (routeBook, grid):
     
     # lege grid
     gridEmpty = deepcopy(grid)
-    routeBookAstarEmpty = deepcopy(routeBook)
-    routeBookAstarDone = []
     
     # lijst met routes die nog gelegd moeten worden
     routeBookEmpty = deepcopy(routeBook)
@@ -482,7 +480,7 @@ def aStarRouteFinder (routeBook, grid):
     # counter voor het aantal iteraties
     loops = 0
 
- # loop totdat de routeboek leeg is
+    # loop totdat de routeboek leeg is
     while routeBookEmpty != []:
         # loop over alle elementen in de routeboek
         for netPoint in routeBookEmpty:
