@@ -89,7 +89,7 @@ routeBookEmpty = deepcopy(routeBook)
 # score = functions.getScore(randomRoute[2])
 # print("Beste score van random:", score)
 # check = functions.checker(randomRoute[2])
-# statistics.plotChip(gates, randomRoute[2])
+# statistics.plotChip(gates, randomRoute[2], size)
 
 ## DALTON METHODE
 # netlistDalton = classes.wire.daltonMethod(netlist, gates)
@@ -147,17 +147,17 @@ routeBookEmpty = deepcopy(routeBook)
 # print(HillClimber[1])
 
 # # plot gates en lijnen
-# statistics.plotChip(gates, routeBookBest)
+# statistics.plotChip(gates, routeBookBest, size)
 
 # A-star
 #
-newRoutes = functions.aStarRouteFinder(routeBookEmpty, grid)
+newRoutes = functions.aStarRouteFinder(routeBookEmpty, grid, size)
 print(functions.checker(newRoutes[0]))
 print(functions.getScore(newRoutes[0]))
 
 for route in newRoutes[1]:
 	print(route.netPoint, end = ", ")
-statistics.plotChip(gates, newRoutes[0])
+statistics.plotChip(gates, newRoutes[0], size)
 
 # maak nieuw grid adhv het beste gevonden routebook
 for route in newRoutes[0]:
@@ -171,4 +171,4 @@ NewRoute = functions.replaceLine(newRoutes[0], grid, 1, size, 500)
 print(functions.getScore(NewRoute[0]))
 print(functions.checker(NewRoute[0]))
 print(len(NewRoute[0]))
-statistics.plotChip(gates, NewRoute[0])
+statistics.plotChip(gates, NewRoute[0], size)

@@ -20,19 +20,25 @@ def plotLine(data, name):
     plt.show(lines)
 
 
-def plotChip(gates, routeBook):
+def plotChip(gates, routeBook, grid):
     # maak een nieuwe plot
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 
     # definieer assen
     ax.set_xlim([0, 18])
-    ax.set_ylim([0, 13])
+    if grid == "small":
+        ax.set_ylim([0, 13])
+    else:
+        ax.set_ylim([0, 18])
     ax.set_zlim([0, 10])
 
     # zet ticks op de assem
     ax.set_xticks(np.arange(0, 18, 1))
-    ax.set_yticks(np.arange(0, 13, 1))
+    if grid == "small":
+        ax.set_yticks(np.arange(0, 13, 1))
+    else:
+        ax.set_yticks(np.arange(0, 18, 1))
     ax.set_zticks(np.arange(0, 10, 1))
 
     # voeg labels toe
@@ -43,10 +49,13 @@ def plotChip(gates, routeBook):
     # voeg alle gates met labels toe
     for gate in gates:
         ax.scatter(gate.x, gate.y, 0)
-        ax.text(gate.x, gate.y, 0, '%s' % (int(gate.gate)), size=10, zorder=1, color='k')
+        ax.text(gate.x, gate.y, 0,
+                '%s' % (int(gate.gate)), size=10, zorder=1, color='k')
 
         # leg wires in plot zoals in het routebook
     for netPoint in routeBook:
-        ax.plot([step[0] for step in netPoint.route], [step[1] for step in netPoint.route], [step[2] for step in netPoint.route])
+        ax.plot([step[0] for step in netPoint.route],
+                [step[1] for step in netPoint.route],
+                [step[2] for step in netPoint.route])
 
     plt.show()

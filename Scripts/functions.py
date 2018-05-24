@@ -479,7 +479,7 @@ def checker(routeBook):
         return False
 
 
-def aStarRouteFinder(routeBook, grid):
+def aStarRouteFinder(routeBook, grid, size):
     """ Functie zoekt naar valide oplossing met gewogen Astar """
 
     # maak benodige variabelen aan
@@ -534,7 +534,7 @@ def aStarRouteFinder(routeBook, grid):
                                                                   grid)[0:3]
 
                 # leg de route met Astar
-            route = aStar(netPoint, grid, 2, 'large')
+            route = aStar(netPoint, grid, 2, size)
 
             # voeg nieuwe route toe aan netPoins als Astar succesvol is
             if route != []:
