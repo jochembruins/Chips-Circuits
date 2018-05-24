@@ -35,7 +35,7 @@ if sys.argv[1] == '1':
 elif sys.argv[1] == '2':
     netlist = netlists.netlist_2
 elif sys.argv[1] == '3':
-    netlist = netlists.netlist_3
+    netlist = netlists.netlist_6
 else:
     print("Gebruik niet correct")
     print("Gebruik: chips.py N \nN = 1, 2, 3; waar '1' staat voor netlist 1")
@@ -64,13 +64,13 @@ routeBookEmpty = deepcopy(routeBook)
 ## RANDOM ROUTEFINDER
 # leg wires van netlist adhv random netlist volgordes met breakthrough algoritme
 # 3e argument = aantal verschillende netlists
-randomRoute = functions.randomRouteBook(routeBookEmpty, gates, 100)
+# randomRoute = functions.randomRouteBook(routeBookEmpty, gates, 100)
 
-# print info over uitkomst
-score = functions.getScore(randomRoute[2])
-print("Beste score van random:", score)
-check = functions.checker(randomRoute[2])
-statistics.plotChip(gates, randomRoute[2])
+# # print info over uitkomst
+# score = functions.getScore(randomRoute[2])
+# print("Beste score van random:", score)
+# check = functions.checker(randomRoute[2])
+# statistics.plotChip(gates, randomRoute[2])
 
 ## DALTON METHODE
 # netlistDalton = classes.wire.daltonMethod(netlist, gates)

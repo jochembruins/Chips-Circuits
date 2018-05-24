@@ -16,7 +16,6 @@
 # Bevat alle functies die worden gebruikt in chips.py
 ###########################################################
 from time import time
-import progressbar
 import csv
 import numpy as np
 import classes
@@ -95,7 +94,7 @@ def makeObjects(netlist, gates):
     return emptyRouteBook
 
 
-def gridMat(gates, chip = "small"):
+def gridMat(gates, chip = "big"):
     """" Maakt matrix van de grid met gateslocatie-info"""
     if chip == "big":
         matGrid = np.zeros([18, 17, 30]) + 99
