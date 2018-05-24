@@ -16,7 +16,6 @@
 # Bevat alle functies die worden gebruikt in chips.py
 ###########################################################
 from time import time
-import progressbar
 import csv
 import numpy as np
 import classes
@@ -187,6 +186,7 @@ def breakThroughFinder(routeBook, grid):
     # run algoritme totdat alle lijnen gelegd zijn
     while routeBookEmpty != []:
         for netPoint in routeBookEmpty:
+
             # maak nodige variabelen aan
             route = []
             cursor = [netPoint.locFrom[0],
@@ -279,10 +279,7 @@ def breakThroughFinder(routeBook, grid):
                     if grid[cursor[0], cursor[1], cursor[2]] != 99:
                         for netPointToDelete in routeBookDone:
                             for routePoint in netPointToDelete.route:
-                                if [cursor[0], cursor[1], cursor[2]] \
-                                    == [routePoint[0],
-                                        routePoint[1],
-                                        routePoint[2]]:
+                                if [cursor[0], cursor[1], cursor[2]] == [routePoint[0], routePoint[1], routePoint[2]]:
 
                                     # verwijder lijn in grid
                                     grid = delRoute(netPointToDelete.route, grid)
@@ -481,6 +478,7 @@ def checker (routeBook):
 
 def astarRouteFinder(routeBook, grid):
 
+    tic = time()
     # hier begint het Astar algoritme met bijbehorende functies
     # Astar returned uiteindelijk de wire/route van A*
     gridEmpty = deepcopy(grid)
@@ -534,7 +532,7 @@ def astarRouteFinder(routeBook, grid):
                 
     toc = time()
     print(toc-tic)
-    for route in routeBookSolved:
+    for route in routeBookAstarDone:
         print(route.netPoint)
     for route in routeBookAstarDone:
         print(route)
