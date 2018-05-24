@@ -16,7 +16,6 @@
 from time import time
 
 from numpy import genfromtxt
-import functions
 import matplotlib.pyplot as plt
 import netlists
 import classes
@@ -25,6 +24,7 @@ from random import shuffle
 import statistics
 import pandas as pd
 import sys
+import functions
 
 if len(sys.argv) == 1:
     print("Gebruik: chips.py N \nN = 1, 2, 3; waar '1' staat voor netlist 1")
@@ -62,13 +62,13 @@ routeBookEmpty = deepcopy(routeBook)
 ## RANDOM ROUTEFINDER
 # leg wires van netlist adhv random netlist volgordes met breakthrough algoritme
 # 3e argument = aantal verschillende netlists
-randomRoute = functions.randomRouteBook(routeBookEmpty, gates, 100)
+# randomRoute = functions.randomRouteBook(routeBookEmpty, gates, 100)
 
 # print info over uitkomst
-score = functions.getScore(randomRoute[2])
-print("Beste score van random:", score)
-check = functions.checker(randomRoute[2])
-statistics.plotChip(gates, randomRoute[2])
+# score = functions.getScore(randomRoute[2])
+# print("Beste score van random:", score)
+# check = functions.checker(randomRoute[2])
+# statistics.plotChip(gates, randomRoute[2])
 
 ## DALTON METHODE
 # netlistDalton = classes.wire.daltonMethod(netlist, gates)
@@ -129,9 +129,18 @@ statistics.plotChip(gates, randomRoute[2])
 # statistics.plotChip(gates, routeBookBest)
 
 # A-star
-#
-# newRoutes = functions.astarRouteFinder(routeBookEmpty, grid)
-#
+
+# dit is debug MELLE
+print("debug")
+newRoutes = functions.aStarRouteFinder(routeBookEmpty, grid)
+
+# Hier begint de aanpassing van de grid
+for route in newRoutes[0]:
+    grid = functions.changeMat(route.route, grid)
+
+hoi = functions.replaceLine(newRoutes[0], grid, 1, "klein" , steps = 2000)
+
+
 # print(len(newRoutes))
 #
 # print(functions.checker(newRoutes[0]))
@@ -140,5 +149,6 @@ statistics.plotChip(gates, randomRoute[2])
 #
 # for route in newRoutes[1]:
 # 	print(route)
-#
-# statistics.plotChip(gates, newRoutes[0])
+
+print("hoi")
+statistics.plotChip(gates, newRoutes[0])

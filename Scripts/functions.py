@@ -96,7 +96,7 @@ def makeObjects(netlist, gates):
 
 def gridMat(gates, chip = "small"):
     """" Maakt matrix van de grid met gateslocatie-info"""
-    if chip == "big":
+    if chip == "large":
         matGrid = np.zeros([18, 17, 30]) + 99
         for gate in gates:
             matGrid[gate.x, gate.y, gate.z] = gate.gate
@@ -535,7 +535,7 @@ def aStarRouteFinder(routeBook, grid):
                                                                   grid)[0:3]
 
                 # leg de route met Astar
-            route = aStar(netPoint, grid, 2, 'groot')
+            route = aStar(netPoint, grid, 2, 'small')
 
             # voeg nieuwe route toe aan netPoins als Astar succesvol is
             if route != []:
@@ -710,7 +710,7 @@ def putNodes(start, grid, destination, direction, index, priorityQueue, chip):
 def matrixStoreDirection(chip):
     """ matrix met richtingen van nodes """
 
-    if chip == "groot":
+    if chip == "large":
         matgrid = np.zeros([18, 17, 10])
         return matgrid
     else:
@@ -731,14 +731,14 @@ def distance(location, destination):
 def checkExistance(node, chip):
     """ kijken of de te plaatsen node zich wel in het veld bevindt """
 
-    if chip == "klein":
+    if chip == "small":
         if (node[0] >= 0 and node[0] < 18 and node[1] < 13 and node[1] >= 0 and
                 node[2] < 8 and node[2] >= 0):
             return True
         else:
             return False
 
-    if chip == "groot":
+    if chip == "large":
         if (node[0] >= 0 and node[0] < 18 and node[1] < 17 and node[1] >= 0
                 and node[2] < 8 and node[2] >= 0):
             return True
@@ -1000,7 +1000,7 @@ def GcostForGates(gates):
     return grid
 
 
-def replaceLine(routeBook, grid, order, steps = 2000):
+def replaceLine(routeBook, grid, order, chip, steps = 2000):
     """ Hillclimber algoritme,
         neemt een bestaande oplossing, verwijderd vervolgens achter elkaar
         1 en zet deze terug met pure Astar algoritme
@@ -1014,6 +1014,8 @@ def replaceLine(routeBook, grid, order, steps = 2000):
     bestGrid = grid
 
     for i in range(0, steps):
+        print("melle")
+        print(i)
         newRouteBook = bestRouteBook
         newGrid = bestGrid
 
@@ -1026,7 +1028,7 @@ def replaceLine(routeBook, grid, order, steps = 2000):
         
         print(newRouteBook[index].route)
         delRoute(newRouteBook[index].route, newGrid)
-        newRouteBook[index].route = aStar(newRouteBook[index], newGrid, 0)
+        newRouteBook[index].route = aStar(newRouteBook[index], newGrid, 0, chip)
         print(newRouteBook[index].route)
         changeMat(newRouteBook[index].route, newGrid)
         print(checker(newRouteBook))
