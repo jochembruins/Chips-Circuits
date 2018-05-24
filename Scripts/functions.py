@@ -217,7 +217,7 @@ def breakThroughFinder(routeBook, grid):
                         = searchLocTo(netPoint, routeBookEmpty,
                                       routeBookDone, grid)
 
-                # make first step in available direction
+                # maak eerste stap in beschikbare richting
                 for nextLocFrom in netPoint.fromSurround:
                     if grid[nextLocFrom[0],
                             nextLocFrom[1],
@@ -228,20 +228,21 @@ def breakThroughFinder(routeBook, grid):
                         route.append([cursor[0], cursor[1], cursor[2]])
                         break
 
-                # if there is no valid first step possible,
-                # delete one of lines on surrounding gridpoints
+                # als geen valide oplossing mogelijk, delete één van de
+                # lijnen van omringende netpoints
                 if cursor == [netPoint.locFrom[0],
                               netPoint.locFrom[1],
                               netPoint.locFrom[2]]:
                     routeBookEmpty, routeBookDone, grid, \
                     [cursor[0], cursor[1], cursor[2]] \
-                        = searchLocFrom(netPoint, routeBookEmpty, routeBookDone, grid)
+                        = searchLocFrom(netPoint, routeBookEmpty,
+                                        routeBookDone, grid)
                     route.append([cursor[0], cursor[1], cursor[2]])
 
-
-            # look for best step until 1 step away from endpoint
+            # kijk voor de vest stap totdat 1 stap af van bestemming
             while stepsDifference(locTo, cursor) > 1:
-                # check if steps in y direction is bigger than x direction
+
+                # kijken of stapjes in y richting groter dan x richting
                 if abs(locTo[1] - cursor[1]) > abs(locTo[0] - cursor[0]):
                     # step along y axis
                     if locTo[1] > cursor[1]:
@@ -249,66 +250,73 @@ def breakThroughFinder(routeBook, grid):
                     else:
                         cursor[1] -= 1
                 else:
-                    # step along x axis
+                    # stap over x-as
                     if locTo[0] > cursor[0]:
                         cursor[0] += 1
                     else:
                         cursor[0] -= 1
-                # save step in route
+                # save stapje in route
                 route.append([cursor[0], cursor[1], cursor[2]])
 
-                # delete steps if route has already been there
+                # delete stapjes als er al een route is gelegd
                 if len(route) > 3 and route[-1] == route[-3]:
                     del route[-2:]
                 if len(route) > 4 and route[-1] == route[-5]:
                     del route[-4:]
 
-                # check if previous step is possible else delete step and go up z-axis
+                # kijken of vorige stap mogelijk is verwijder stap en ga
+                # omhoog in z-as
                 if grid[cursor[0], cursor[1], cursor[2]] != 99:
                     del route[-1]
                     cursor = [route[-1][0], route[-1][1], route[-1][2]]
                     cursor[2] += 1
                     route.append([cursor[0], cursor[1], cursor[2]])
 
-                    # check if route has already been there when cursor up in previous step
+                    # check voor of route niet heen en weer gaat
                     if len(route) > 3 and route[-1] == route[-3]:
                         del route[-2:]
 
-                    # if up not possible, cut wire above
+                    # als omhoog gaan niet mogelijk is, wire erboven snijden
                     if grid[cursor[0], cursor[1], cursor[2]] != 99:
                         for netPointToDelete in routeBookDone:
                             for routePoint in netPointToDelete.route:
                                 if [cursor[0], cursor[1], cursor[2]] == [routePoint[0], routePoint[1], routePoint[2]]:
-                                    # remove line on grid
+
+                                    # verwijder lijn in grid
                                     grid = delRoute(netPointToDelete.route, grid)
                                     netPointToDelete.route = []
 
-                                    # append deleted like back to the routebookempty list
+                                    # voeg verwijderde lijn terug aan
+                                    # routebookempty list
                                     routeBookEmpty.append(netPointToDelete)
                                     del routeBookDone[routeBookDone.index(netPointToDelete)]
                                     break
 
-                # if step down is possible, go down
+                # als een stap naar beneden mogelijk is doe dat
                 elif grid[cursor[0], cursor[1], cursor[2] - 1] == 99.0 and cursor[2] > locTo[2]:
                     while grid[cursor[0], cursor[1], cursor[2] - 1] == 99.0 and cursor[2] > locTo[2]:
                         cursor[2] -= 1
                         route.append([cursor[0], cursor[1], cursor[2]])
 
-                        # check if route has already been there when cursor up in previous step
+                        # kijken of route daar al is geweest
                         if len(route) > 3 and route[-1] == route[-3]:
                             del route[-2:]
 
-                # if above endpoint, go down and delete all blocking lines
+                # als boven eindpunt ga naar beneden en delete blokkerende
+                # lijnen
                 if [cursor[0], cursor[1]] == [locTo[0], locTo[1]] and cursor[2] != locTo[2]:
-                    # find lines that are beneath cursor
+
+                    # vind lijnen onder de cursor
                     for netPointToDelete in routeBookDone:
                         for routePoint in netPointToDelete.route:
                             if [cursor[0], cursor[1], cursor[2] - 1] == [routePoint[0], routePoint[1], routePoint[2]]:
-                                # remove line on grid
+
+                                # verwijder lijn in grid
                                 grid = delRoute(netPointToDelete.route, grid)
                                 netPointToDelete.route = []
 
-                                # append deleted like back to the routebookempty list
+                                # voeg verwijderde lijn terug in routebookempty
+                                # list
                                 routeBookEmpty.append(netPointToDelete)
                                 del routeBookDone[routeBookDone.index(netPointToDelete)]
                                 cursor[2] -= 1
@@ -316,14 +324,15 @@ def breakThroughFinder(routeBook, grid):
                                 route.append([cursor[0], cursor[1], cursor[2]])
                                 break
 
-                # delete first steps that are not useful
+                # verwijder eerste stappen die niet nuttig waren
                 if len(route) > 2 and stepsDifference(netPoint.locFrom, cursor) == 1:
                     del route[1:len(route) - 1]
-                # if only one step away from original endpoint, stop
+
+                # als 1 stap weg van eindbestemming stop
                 if stepsDifference(netPoint.locTo, cursor) == 1:
                     break
 
-            # add end point to route
+            # voeg eindpunt aan route toe
             if stepsDifference(netPoint.locTo, cursor) != 1:
                 route.append(locTo)
             route.append(netPoint.locTo)
@@ -341,7 +350,7 @@ def breakThroughFinder(routeBook, grid):
             # save route in netPoint object
             netPoint.route = route
 
-            # delete netPoint from to empty list, append to done list
+            # delete netPoint van  empty list, voeg toe aan done list
             doneWire = routeBookEmpty.pop(routeBookEmpty.index(netPoint))
             routeBookDone.append(doneWire)
 
@@ -452,8 +461,6 @@ def checker (routeBook):
 
 # hier begint het Astar algoritme met bijbehorende functies
 # Astar returned uiteindelijk de wire/route van A*
-
-
 def astarRouteFinder (routeBook, grid):
     tic = time()
     gridEmpty = deepcopy(grid)
@@ -845,9 +852,9 @@ def getlistsurroundings(gates):
     return list
 
 def searchLocTo(netPoint, routeBookEmpty, routeBookDone, grid):
-    # if end location cant be reached, delete one of lines
-    # on surrounding gridpoints
-    # check every surrounding gridpoint, delete most appropriate line
+    # als eindlocatie bereikt kan worden, verwijder 1 van de lijnen
+    # van omringende gridpoints
+    # check alle omringende gridpoint, verwijder meest waarschijnlijke lijn
     for nextLocTo in netPoint.toSurround:
         for netPointToDelete in routeBookDone:
             for routePoint in netPointToDelete.route:
@@ -859,19 +866,22 @@ def searchLocTo(netPoint, routeBookEmpty, routeBookDone, grid):
                             netPointToDelete.locFrom != [netPoint.locTo[0],
                                                          netPoint.locTo[1],
                                                          netPoint.locTo[2]]:
-                        # remove line on grid
+                        # verwijder lijn van de grid
                         grid = delRoute(netPointToDelete.route, grid)
                         netPointToDelete.route = []
 
-                        # append deleted line back to the routebookempty list
+                        # avoeg verwijderde lijn terug aan
+                        # routebookempty list
+
                         routeBookEmpty.append(netPointToDelete)
-                        # delete line from routebookdone list
+                        # verwijder lijn vanuit routebookdone list
                         del routeBookDone[routeBookDone.index(netPointToDelete)]
 
                         return routeBookEmpty, routeBookDone, grid, nextLocTo
 
 def searchLocFrom(netPoint, routeBookEmpty, routeBookDone, grid):
-    # check every surrounding gridpoint, delete most appropriate blocking line
+
+    # check alle omringende gridpoint, delete blokkerende lijn
     for nextLocFrom in netPoint.fromSurround:
         for netPointToDelete in routeBookDone:
             for routePoint in netPointToDelete.route:
@@ -884,13 +894,13 @@ def searchLocFrom(netPoint, routeBookEmpty, routeBookDone, grid):
                                                         netPoint.locFrom[0],
                                                          netPoint.locFrom[1],
                                                          netPoint.locFrom[2]]:
-                        # remove line on grid
+                        # haal lijn van grid weg
                         grid = delRoute(netPointToDelete.route, grid)
                         netPointToDelete.route = []
 
-                        # append deleted line back to the routebookempty list
+                        # voeg lijn toe in routebookempty list
                         routeBookEmpty.append(netPointToDelete)
-                        # delete line from routebookdone list
+                        # delete lijn van routebookdone list
                         del routeBookDone[routeBookDone.index(netPointToDelete)]
 
                         return routeBookEmpty, routeBookDone, grid, nextLocFrom
@@ -942,121 +952,121 @@ def replaceLine(routeBook, grid, order, steps = 2000):
     print(replaceData)
     return bestRouteBook, replaceData
 
-def Astarroutemelle(routeBookAstar, grid, gates):
-    # maak route met A-star
-    # MOET IN FUNCTIE
-    tic = time()
-    print("beginbeginbegin")
-    j = 0
-    for netPoint in routeBookAstar:
-        j = j + 1
-
-        print(j)
-
-        routee = aStar(netPoint, grid, 2, "klein")
-
-        netPoint.route = routee
-        grid = changeMat(routee, grid)
-    toc = time()
-
-    print("time")
-    print(toc - tic)
-    score = getScore(routeBookAstar)
-    print("score")
-    print(getScore(routeBookAstar))
-    for route in routeBookAstar:
-        print(route)
-
-    quit()
-
-def Astarroutemelle2(routeBookAstar, grid, gates):
-    # maak route met A-star
-    # MOET IN FUNCTIE
-    tic = time()
-    print("beginbeginbegin")
-    j = 0
-    for netPoint in routeBookAstar:
-        j = j + 1
-
-        print(j)
-
-        routee = aStar(netPoint, grid, 2, "groot")
-
-        netPoint.route = routee
-        grid = changeMat(routee, grid)
-    toc = time()
-
-    print("time")
-    print(toc - tic)
-    score = getScore(routeBookAstar)
-    print("score")
-    print(getScore(routeBookAstar))
-    for route in routeBookAstar:
-        print(route)
-    statistics.plotChip(gates, routeBookAstar)
-    quit()
-
-def Astar_firstmap_firstnetlist(grid, gates):
-    netlist = [(2, 20), (20, 10), (3, 15), (15, 5), (3, 23), (5, 7), (15, 21),
-               (13, 18), (1, 2), (3, 5), (10, 4), (7, 13), (3, 0),
-              (22, 16), (22, 13), (15, 17), (22, 11), (11, 24), (6, 14),
-               (16, 9), (19, 5), (15, 8), (10, 7), (23, 4),
-              (19, 2), (3, 4), (7, 9), (23, 8), (9, 13), (20, 19)]
-
-    # dalton = [(2, 20), (3, 15), (15, 5), (3, 23), (5, 7), (15, 21), (13, 18),
-    # (1, 2), (3, 5), (10, 4), (7, 13), (3, 2), (22, 16), (22, 13),
-    # (15, 17), (20, 10), (22, 11), (11, 24), (6, 14), (16, 9),
-    # (19, 5), (15, 8), (10, 7), (23, 4
-    # ), (19, 2), (3, 4), (7, 9), (23, 8), (9, 13), (20, 19)]
-
-    routeBookAstar = makeObjects(netlist, gates)
-    tic = time()
-    print("beginbeginbegin")
-    j = 0
-    for netPoint in routeBookAstar:
-        j = j + 1
-        print(j)
-
-        routee = aStar(netPoint, grid, 2)
-
-        netPoint.route = routee
-        grid = changeMat(routee, grid)
-    toc = time()
-
-    print("aantal netlist elementen")
-    i = 0
-    for j in routeBookAstar:
-        if j.route != []:
-            i = i + 1
-        else:
-            print("fout")
-    print(i)
-
-    quit()
-    routeBookAstar = replaceLines(routeBookAstar, grid)[0]
-    routeBookAstar = replaceLines(routeBookAstar, grid)[0]
-    routeBookAstar = replaceLines(routeBookAstar, grid)[0]
-    for route in routeBookAstar:
-
-        print(route)
-
-    print("time")
-    print(toc - tic)
-    score = getScore(routeBookAstar)
-    print("score")
-    print(score)
-    print(checker(routeBookAstar))
-    print("yes!!!")
-    print(len(routeBookAstar))
-
-    print("aantal netlist elementen")
-    i = 0
-    for j in routeBookAstar:
-        if j.route != []:
-            i = i + 1
-        else:
-            print("fout")
-    print(i)
-
-    plotLines(gates, routeBookAstar)
-    quit()
+# def Astarroutemelle(routeBookAstar, grid, gates):
+#     # maak route met A-star
+#     # MOET IN FUNCTIE
+#     tic = time()
+#     print("beginbeginbegin")
+#     j = 0
+#     for netPoint in routeBookAstar:
+#         j = j + 1
+#
+#         print(j)
+#
+#         routee = aStar(netPoint, grid, 2, "klein")
+#
+#         netPoint.route = routee
+#         grid = changeMat(routee, grid)
+#     toc = time()
+#
+#     print("time")
+#     print(toc - tic)
+#     score = getScore(routeBookAstar)
+#     print("score")
+#     print(getScore(routeBookAstar))
+#     for route in routeBookAstar:
+#         print(route)
+#
+#     quit()
+#
+# def Astarroutemelle2(routeBookAstar, grid, gates):
+#     # maak route met A-star
+#     # MOET IN FUNCTIE
+#     tic = time()
+#     print("beginbeginbegin")
+#     j = 0
+#     for netPoint in routeBookAstar:
+#         j = j + 1
+#
+#         print(j)
+#
+#         routee = aStar(netPoint, grid, 2, "groot")
+#
+#         netPoint.route = routee
+#         grid = changeMat(routee, grid)
+#     toc = time()
+#
+#     print("time")
+#     print(toc - tic)
+#     score = getScore(routeBookAstar)
+#     print("score")
+#     print(getScore(routeBookAstar))
+#     for route in routeBookAstar:
+#         print(route)
+#     statistics.plotChip(gates, routeBookAstar)
+#     quit()
+#
+# def Astar_firstmap_firstnetlist(grid, gates):
+#     netlist = [(2, 20), (20, 10), (3, 15), (15, 5), (3, 23), (5, 7), (15, 21),
+#                (13, 18), (1, 2), (3, 5), (10, 4), (7, 13), (3, 0),
+#               (22, 16), (22, 13), (15, 17), (22, 11), (11, 24), (6, 14),
+#                (16, 9), (19, 5), (15, 8), (10, 7), (23, 4),
+#               (19, 2), (3, 4), (7, 9), (23, 8), (9, 13), (20, 19)]
+#
+#     # dalton = [(2, 20), (3, 15), (15, 5), (3, 23), (5, 7), (15, 21), (13, 18),
+#     # (1, 2), (3, 5), (10, 4), (7, 13), (3, 2), (22, 16), (22, 13),
+#     # (15, 17), (20, 10), (22, 11), (11, 24), (6, 14), (16, 9),
+#     # (19, 5), (15, 8), (10, 7), (23, 4
+#     # ), (19, 2), (3, 4), (7, 9), (23, 8), (9, 13), (20, 19)]
+#
+#     routeBookAstar = makeObjects(netlist, gates)
+#     tic = time()
+#     print("beginbeginbegin")
+#     j = 0
+#     for netPoint in routeBookAstar:
+#         j = j + 1
+#         print(j)
+#
+#         routee = aStar(netPoint, grid, 2)
+#
+#         netPoint.route = routee
+#         grid = changeMat(routee, grid)
+#     toc = time()
+#
+#     print("aantal netlist elementen")
+#     i = 0
+#     for j in routeBookAstar:
+#         if j.route != []:
+#             i = i + 1
+#         else:
+#             print("fout")
+#     print(i)
+#
+#     quit()
+#     routeBookAstar = replaceLines(routeBookAstar, grid)[0]
+#     routeBookAstar = replaceLines(routeBookAstar, grid)[0]
+#     routeBookAstar = replaceLines(routeBookAstar, grid)[0]
+#     for route in routeBookAstar:
+#
+#         print(route)
+#
+#     print("time")
+#     print(toc - tic)
+#     score = getScore(routeBookAstar)
+#     print("score")
+#     print(score)
+#     print(checker(routeBookAstar))
+#     print("yes!!!")
+#     print(len(routeBookAstar))
+#
+#     print("aantal netlist elementen")
+#     i = 0
+#     for j in routeBookAstar:
+#         if j.route != []:
+#             i = i + 1
+#         else:
+#             print("fout")
+#     print(i)
+#
+#     plotLines(gates, routeBookAstar)
+#     quit()
