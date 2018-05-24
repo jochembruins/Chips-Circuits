@@ -3,19 +3,22 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.axes3d import Axes3D
 import pandas as pd
 
+
 def plotRandom(data, bins = 20):
-	hist = data['Score'].plot.hist(bins=20)
-	plt.title('Histogram Random Algoritme')
-	plt.xlabel('Score: Totale lengte wires')
-	plt.ylabel('Frequentie')
-	plt.show(hist)
+    hist = data['Score'].plot.hist(bins=20)
+    plt.title('Histogram Random Algoritme')
+    plt.xlabel('Score: Totale lengte wires')
+    plt.ylabel('Frequentie')
+    plt.show(hist)
+
 
 def plotLine(data, name):
-	lines = data.plot.line()
-	plt.title('Ontwikkeling ' + name)
-	plt.xlabel('Iteraties')
-	plt.ylabel('Score: Totale lengte wires')
-	plt.show(lines) 
+    lines = data.plot.line()
+    plt.title('Ontwikkeling ' + name)
+    plt.xlabel('Iteraties')
+    plt.ylabel('Score: Totale lengte wires')
+    plt.show(lines)
+
 
 def plotChip(gates, routeBook):
     # maak een nieuwe plot

@@ -27,7 +27,7 @@ import pandas as pd
 import sys
 
 if len(sys.argv) == 1:
-    print("Usage: chips.py N \nN = 1, 2, 3, a; where '1' stands for netlist 1 and 'a' for all three netlists")
+    print("Gebruik: chips.py N \nN = 1, 2, 3; waar '1' staat voor netlist 1")
     exit()
 
 if sys.argv[1] == '1':
@@ -35,12 +35,10 @@ if sys.argv[1] == '1':
 elif sys.argv[1] == '2':
     netlist = netlists.netlist_2
 elif sys.argv[1] == '3':
-    netlist = netlists.netlist_6
-elif sys.argv[1] == "a":
-    print("hoi")
+    netlist = netlists.netlist_3
 else:
-    print("usage not correct")
-    print("Usage: chips.py N \nN = 1, 2, 3, a; where '1' stands for netlist 1 and 'a' for all three netlists")
+    print("Gebruik niet correct")
+    print("Gebruik: chips.py N \nN = 1, 2, 3; waar '1' staat voor netlist 1")
     exit()
 
 ## PREPAREER DATA
@@ -63,27 +61,29 @@ routeBook = functions.makeObjects(netlist, gates)
 # maak kopie van routeboek
 routeBookEmpty = deepcopy(routeBook)
 
-# ## RANDOM ROUTEFINDER
-# # leg wires van netlist adhv random netlist volgordes met breakthrough algoritme
-# # 3e argument = aantal verschillende netlists
-# randomRoute = functions.randomRouteBook(routeBookEmpty, gates, 3000)
-#
+## RANDOM ROUTEFINDER
+# leg wires van netlist adhv random netlist volgordes met breakthrough algoritme
+# 3e argument = aantal verschillende netlists
+randomRoute = functions.randomRouteBook(routeBookEmpty, gates, 100)
+
 # print info over uitkomst
-# score = functions.getScore(randomRoute[2])
-# print("Beste score van random:", score)
-# check = functions.checker(randomRoute[2])
-# statistics.plotChip(gates, randomRoute[2])
+score = functions.getScore(randomRoute[2])
+print("Beste score van random:", score)
+check = functions.checker(randomRoute[2])
+statistics.plotChip(gates, randomRoute[2])
 
 ## DALTON METHODE
 # netlistDalton = classes.wire.daltonMethod(netlist, gates)
 # # maak object van iedere netPoint
 # daltonRouteBook = functions.makeObjects(netlistDalton, gates)
+#
 # HIER ASTAR GEWOGEN EN HILLCLIMBER OP DALTONLIST
 
 ## UI METHODE
 # netlistUi = classes.wire.UIMethod_forprint1(netlist, gates)
 # # maak object van iedere netPoint
 # uiRouteBook = functions.makeObjects(netlistUi, gates)
+#
 # HIER ASTAR GEWOGEN EN HILLCLIMBER OP UILIST
 
 ## HILLCLIMBER: VERWIJDER ÉÉN LIJN, LEG TERUG MET A*
@@ -131,7 +131,6 @@ routeBookEmpty = deepcopy(routeBook)
 # statistics.plotChip(gates, routeBookBest)
 
 # A-star
-
 newRoutes = functions.aStarRouteFinder(routeBookEmpty, grid)
 
 print(len(newRoutes[0]))
@@ -165,10 +164,10 @@ for route in newRoutes[0]:
 # dalton = [(20, 10), (3, 15), (15, 5), (3, 23), (5, 7), (15, 21), (13, 18), (1, 2), (3, 5), (10, 4), (7, 13), (3, 2), (22, 16), (22, 13), (15, 17), (22, 11), (11, 24), (6, 14), (16, 9), (19, 5), (15, 8), (10, 7), (23, 4
 # ), (19, 2), (3, 4), (7, 9), (23, 8), (9, 13), (20, 19)]
 
-# netlist = netlists.netlist_4
-# gatesLoc = genfromtxt('../Data/gates2.csv', delimiter=';')
-# gates = functions.makeLocations(gatesLoc)
-# routeBookAstar = functions.makeObjects(netlist, gates)
-# grid2 = functions.gridMat(gates, "groot")
-# routeBookAstar = functions.Astarroutemelle2(routeBookAstar, grid2, gates)
-# quit()
+netlist = netlists.netlist_4
+gatesLoc = genfromtxt('../Data/gates2.csv', delimiter=';')
+gates = functions.makeLocations(gatesLoc)
+routeBookAstar = functions.makeObjects(netlist, gates)
+grid2 = functions.gridMat(gates, "groot")
+routeBookAstar = functions.Astarroutemelle2(routeBookAstar, grid2, gates)
+quit()
