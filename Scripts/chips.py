@@ -16,6 +16,7 @@
 from time import time
 
 from numpy import genfromtxt
+import numpy as np
 import functions
 import matplotlib.pyplot as plt
 import netlists
@@ -27,27 +28,48 @@ import pandas as pd
 import sys
 
 if len(sys.argv) == 1:
-    print("Gebruik: chips.py N \nN = 1, 2, 3; waar '1' staat voor netlist 1")
+    print("Gebruik: chips.py N \nN = 1, 2, 3, 4, 5, 6; waar '1' "
+          "staat voor netlist 1")
     exit()
 
-if sys.argv[1] == '1':
+commArg = int(sys.argv[1])
+
+if commArg == 1:
     netlist = netlists.netlist_1
-elif sys.argv[1] == '2':
+elif commArg == 2:
     netlist = netlists.netlist_2
-elif sys.argv[1] == '3':
+elif commArg == 3:
     netlist = netlists.netlist_3
+elif commArg == 4:
+    netlist = netlists.netlist_4
+elif commArg == 5:
+    netlist = netlists.netlist_5
+elif commArg == 6:
+    netlist = netlists.netlist_6
 else:
     print("Gebruik niet correct")
-    print("Gebruik: chips.py N \nN = 1, 2, 3; waar '1' staat voor netlist 1")
+    print("Gebruik: chips.py N \nN = 1, 2, 3, 4, 5, 6; waar '1' staat voor netlist 1")
     exit()
+
+# gebruik kleine of grote grid
+if commArg < 4:
+    size = "small"
+    # laadt gates voor kleine grid
+    gatesLoc = genfromtxt('../Data/gates.csv', delimiter=';')
+else:
+    size = "big"
+    # laadt gates voor grote grid
+    gatesLoc = genfromtxt('../Data/gates2.csv', delimiter=';')
 
 ## PREPAREER DATA
 # giet gate locaties in goede format
-gatesLoc = genfromtxt('../Data/gates.csv', delimiter=';')
+
 gates = functions.makeLocations(gatesLoc)
 
-# maak 13 x 18 x 8 (= L x W x H) grid met gates
-grid = functions.gridMat(gates)
+# maak grid met gates
+grid = functions.gridMat(gates, size)
+
+print(np.shape(grid))
 
 # maak object van iedere netPoint
 routeBook = functions.makeObjects(netlist, gates)
@@ -59,16 +81,17 @@ lowerBound = functions.getLowerBound(routeBook)
 # maak kopie van routeboek
 routeBookEmpty = deepcopy(routeBook)
 
-## RANDOM ROUTEFINDER
-# leg wires van netlist adhv random netlist volgordes met breakthrough algoritme
-# 3e argument = aantal verschillende netlists
-randomRoute = functions.randomRouteBook(routeBookEmpty, gates, 100)
-
-# print info over uitkomst
-score = functions.getScore(randomRoute[2])
-print("Beste score van random:", score)
-check = functions.checker(randomRoute[2])
-statistics.plotChip(gates, randomRoute[2])
+# ## RANDOM ROUTEFINDER
+# # leg wires van netlist adhv random netlist volgordes
+# # met breakthrough algoritme
+# # 3e argument = aantal verschillende netlists
+# randomRoute = functions.randomRouteBook(routeBookEmpty, gates, 100)
+#
+# # print info over uitkomst
+# score = functions.getScore(randomRoute[2])
+# print("Beste score van random:", score)
+# check = functions.checker(randomRoute[2])
+# statistics.plotChip(gates, randomRoute[2])
 
 ## DALTON METHODE
 # netlistDalton = classes.wire.daltonMethod(netlist, gates)
