@@ -601,7 +601,7 @@ def putWire(gridWithNodes, locFrom, locTo, index, chip):
         route = findRoute(locFrom, locTo, start, direction)
     else:
 
-        route=[]
+        route = []
 
     return route
 
@@ -880,7 +880,7 @@ def getlistsurroundings(gates):
             list.append(nodevoor)
         if checkExistance(nodeachter):
             list.append(nodeachter)
-    list=sorted(list)
+    list = sorted(list)
     return list
 
 def searchLocTo(netPoint, routeBookEmpty, routeBookDone, grid):
