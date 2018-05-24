@@ -36,6 +36,7 @@ elif sys.argv[1] == '2':
     netlist = netlists.netlist_2
 elif sys.argv[1] == '3':
     netlist = netlists.netlist_3
+####################################!!############!!!!!!!!!!!#######!!!!!!!!!!!!####!!!KIJKHIERmoet de a ook???!######!!!!!!!###################@!#####
 elif sys.argv[1] == "a":
     print("hoi")
 else:
@@ -74,14 +75,16 @@ statistics.plotChip(gates, randomRoute[2])
 
 ## DALTON METHODE
 # netlistDalton = classes.wire.daltonMethod(netlist, gates)
-# maak object van iedere netPoint
+# # maak object van iedere netPoint
 # daltonRouteBook = functions.makeObjects(netlistDalton, gates)
+#
 # HIER ASTAR GEWOGEN EN HILLCLIMBER OP DALTONLIST
 
 ## UI METHODE
 # netlistUi = classes.wire.UIMethod_forprint1(netlist, gates)
 # # maak object van iedere netPoint
 # uiRouteBook = functions.makeObjects(netlistUi, gates)
+#
 # HIER ASTAR GEWOGEN EN HILLCLIMBER OP UILIST
 
 ## HILLCLIMBER: VERWIJDER ÉÉN LIJN, LEG TERUG MET A*

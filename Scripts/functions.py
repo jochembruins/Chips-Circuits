@@ -450,7 +450,7 @@ def astarRouteFinder (routeBook, grid):
             print(len(routeBookAstarEmpty))
             print(len(routeBookAstarDone))
 
-            route = Astar(netPoint, grid, 2, 'groot')
+            route = Astar(netPoint, grid, 2, 'klein')
 
             if route != []:
                 netPoint.route = route
