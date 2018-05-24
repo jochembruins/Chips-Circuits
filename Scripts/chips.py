@@ -17,7 +17,6 @@ from time import time
 
 from numpy import genfromtxt
 import numpy as np
-import functions
 import matplotlib.pyplot as plt
 import netlists
 import classes
@@ -26,6 +25,7 @@ from random import shuffle
 import statistics
 import pandas as pd
 import sys
+import functions
 
 if len(sys.argv) == 1:
     print("Gebruik: chips.py N \nN = 1, 2, 3, 4, 5, 6; waar '1' "
@@ -84,8 +84,10 @@ routeBookEmpty = deepcopy(routeBook)
 # met breakthrough algoritme
 # 3e argument = aantal verschillende netlists
 # randomRoute = functions.randomRouteBook(routeBookEmpty, gates, 100)
-#
-# # print info over uitkomst
+
+
+# print info over uitkomst
+
 # score = functions.getScore(randomRoute[2])
 # print("Beste score van random:", score)
 # check = functions.checker(randomRoute[2])
@@ -149,7 +151,31 @@ routeBookEmpty = deepcopy(routeBook)
 # # plot gates en lijnen
 # statistics.plotChip(gates, routeBookBest, size)
 
-# A-star
+# # A-star
+#
+# # dit is debug MELLE
+# print("debug")
+# newRoutes = functions.aStarRouteFinder(routeBookEmpty, grid)
+#
+# # Hier begint de aanpassing van de grid
+# for route in newRoutes[0]:
+#     grid = functions.changeMat(route.route, grid)
+#
+# hoi = functions.replaceLine(newRoutes[0], grid, 1, "klein" , steps = 2000)
+#
+#
+# # print(len(newRoutes))
+# #
+# # print(functions.checker(newRoutes[0]))
+# #
+# # print(functions.getScore(newRoutes[0]))
+# #
+# # for route in newRoutes[1]:
+# # 	print(route)
+#
+# print("hoi")
+# statistics.plotChip(gates, newRoutes[0])
+
 #
 newRoutes = functions.aStarRouteFinder(routeBookEmpty, grid, size)
 print(functions.checker(newRoutes[0]))

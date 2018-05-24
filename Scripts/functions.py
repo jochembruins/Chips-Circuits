@@ -536,6 +536,7 @@ def aStarRouteFinder(routeBook, grid, size):
                 # leg de route met Astar
             route = aStar(netPoint, grid, 2, size)
 
+
             # voeg nieuwe route toe aan netPoins als Astar succesvol is
             if route != []:
                 netPoint.route = route
@@ -998,7 +999,8 @@ def GcostForGates(gates):
     return grid
 
 
-def replaceLine(routeBook, grid, order, chip, steps=2000):
+
+def replaceLine(routeBook, grid, order, chip, steps = 2000):
     """ Hillclimber algoritme,
         neemt een bestaande oplossing, verwijderd vervolgens achter elkaar
         1 en zet deze terug met pure Astar algoritme
@@ -1012,6 +1014,8 @@ def replaceLine(routeBook, grid, order, chip, steps=2000):
     bestGrid = grid
 
     for i in range(0, steps):
+        print("melle")
+        print(i)
         newRouteBook = bestRouteBook
         newGrid = bestGrid
 
