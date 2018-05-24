@@ -57,7 +57,7 @@ if commArg < 4:
     # laadt gates voor kleine grid
     gatesLoc = genfromtxt('../Data/gates.csv', delimiter=';')
 else:
-    size = "big"
+    size = "large"
     # laadt gates voor grote grid
     gatesLoc = genfromtxt('../Data/gates2.csv', delimiter=';')
 
@@ -69,8 +69,6 @@ gates = functions.makeLocations(gatesLoc)
 # maak grid met gates
 grid = functions.gridMat(gates, size)
 
-print(np.shape(grid))
-
 # maak object van iedere netPoint
 routeBook = functions.makeObjects(netlist, gates)
 
@@ -81,10 +79,10 @@ lowerBound = functions.getLowerBound(routeBook)
 # maak kopie van routeboek
 routeBookEmpty = deepcopy(routeBook)
 
-# ## RANDOM ROUTEFINDER
-# # leg wires van netlist adhv random netlist volgordes
-# # met breakthrough algoritme
-# # 3e argument = aantal verschillende netlists
+## RANDOM ROUTEFINDER
+# leg wires van netlist adhv random netlist volgordes
+# met breakthrough algoritme
+# 3e argument = aantal verschillende netlists
 # randomRoute = functions.randomRouteBook(routeBookEmpty, gates, 100)
 #
 # # print info over uitkomst
@@ -113,13 +111,13 @@ routeBookEmpty = deepcopy(routeBook)
 #     grid = functions.changeMat(route.route, grid)
 
 # DIT MOET NOG AANGEPAST WORDEN OP NIEUWE INDEX IN FUNCTIE
-# verbeter route door met pure A* lijnen opnieuw te leggen
-# NewRoute = functions.replaceLine(randomRoute[2], grid, 1, 1000)
-
-# print info over uitkomsten
+# # verbeter route door met pure A* lijnen opnieuw te leggen
+# NewRoute = functions.replaceLine(randomRoute[2], grid, 1, size, 1000)
+#
+# # print info over uitkomsten
 # print(functions.getScore(NewRoute[0]))
 # print(functions.checker(NewRoute[0]))
-# print(len(NewRoute))
+# print(len(NewRoute[0]))
 # for route in NewRoute:
 #     print(route.route)
 # functions.plotLines(gates, NewRoute)
@@ -153,15 +151,24 @@ routeBookEmpty = deepcopy(routeBook)
 
 # A-star
 #
-# newRoutes = functions.astarRouteFinder(routeBookEmpty, grid)
-#
-# print(len(newRoutes))
-#
-# print(functions.checker(newRoutes[0]))
-#
-# print(functions.getScore(newRoutes[0]))
-#
-# for route in newRoutes[1]:
-# 	print(route)
-#
-# statistics.plotChip(gates, newRoutes[0])
+newRoutes = functions.aStarRouteFinder(routeBookEmpty, grid)
+print(functions.checker(newRoutes[0]))
+print(functions.getScore(newRoutes[0]))
+
+for route in newRoutes[1]:
+	print(route.netPoint, end = ", ")
+statistics.plotChip(gates, newRoutes[0])
+
+# maak nieuw grid adhv het beste gevonden routebook
+for route in newRoutes[0]:
+    grid = functions.changeMat(route.route, grid)
+
+# DIT MOET NOG AANGEPAST WORDEN OP NIEUWE INDEX IN FUNCTIE
+# verbeter route door met pure A* lijnen opnieuw te leggen
+NewRoute = functions.replaceLine(newRoutes[0], grid, 1, size, 500)
+
+# print info over uitkomsten
+print(functions.getScore(NewRoute[0]))
+print(functions.checker(NewRoute[0]))
+print(len(NewRoute[0]))
+statistics.plotChip(gates, NewRoute[0])
