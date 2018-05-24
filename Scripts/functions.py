@@ -186,7 +186,6 @@ def breakThroughFinder(routeBook, grid):
     # run algoritme totdat alle lijnen gelegd zijn
     while routeBookEmpty != []:
         for netPoint in routeBookEmpty:
-
             # maak nodige variabelen aan
             route = []
             cursor = [netPoint.locFrom[0],
@@ -280,7 +279,10 @@ def breakThroughFinder(routeBook, grid):
                     if grid[cursor[0], cursor[1], cursor[2]] != 99:
                         for netPointToDelete in routeBookDone:
                             for routePoint in netPointToDelete.route:
-                                if [cursor[0], cursor[1], cursor[2]] == [routePoint[0], routePoint[1], routePoint[2]]:
+                                if [cursor[0], cursor[1], cursor[2]] \
+                                    == [routePoint[0],
+                                        routePoint[1],
+                                        routePoint[2]]:
 
                                     # verwijder lijn in grid
                                     grid = delRoute(netPointToDelete.route, grid)
