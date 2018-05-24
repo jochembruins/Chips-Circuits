@@ -155,10 +155,10 @@ statistics.plotChip(gates, randomRoute[2])
 # dalton = [(20, 10), (3, 15), (15, 5), (3, 23), (5, 7), (15, 21), (13, 18), (1, 2), (3, 5), (10, 4), (7, 13), (3, 2), (22, 16), (22, 13), (15, 17), (22, 11), (11, 24), (6, 14), (16, 9), (19, 5), (15, 8), (10, 7), (23, 4
 # ), (19, 2), (3, 4), (7, 9), (23, 8), (9, 13), (20, 19)]
 
-# netlist = netlists.netlist_4
-# gatesLoc = genfromtxt('../Data/gates2.csv', delimiter=';')
-# gates = functions.makeLocations(gatesLoc)
-# routeBookAstar = functions.makeObjects(netlist, gates)
-# grid2 = functions.gridMat(gates, "groot")
-# routeBookAstar = functions.Astarroutemelle2(routeBookAstar, grid2, gates)
-# quit()
+netlist = netlists.netlist_4
+gatesLoc = genfromtxt('../Data/gates2.csv', delimiter=';')
+gates = functions.makeLocations(gatesLoc)
+routeBookAstar = functions.makeObjects(netlist, gates)
+grid2 = functions.gridMat(gates, "groot")
+routeBookAstar = functions.Astarroutemelle2(routeBookAstar, grid2, gates)
+quit()
