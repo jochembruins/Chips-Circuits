@@ -166,5 +166,19 @@ def compareHillClimbers(routeBook, gates, size, grid):
 	# plot lijngrafiek
 	statistics.plotLine(compare, 'Hillclimber en Replacelines')
 
+def breakThrough(routeBook, gates, chip): 
+	"""Vind een route voor met behulp van het breakThrough algoritme. 
+	Om verzekerd een route te geven, maken we gebruik van de functie 
+	randomRouteBook."""
+	bestRoute = randomRouteBook(routeBook, gates, chip, steps=1000)
+	statistics.plotChip(gates, bestRoute[2], chip)
+
+def weightedAStar(routeBook, grid, chip):
+	"""vind een route met de gewogen A-star. Dit is dus een valide, 
+	maar geen geoptimaliseerde route"""
+	route = aStarRouteFinder(routeBook, grid, chip)
+	statistics.plotChip(gates, bestRoute[0], chip)
+
+
 
 >>>>>>> 58ca4916aee91342b6f3ece2983e46c28acdf2b7

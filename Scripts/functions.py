@@ -182,8 +182,7 @@ def randomRouteBook(routeBook, gates, chip, steps=100):
                     bestRouteBookIn = deepcopy(newRouteBook)
                     bestRouteFound = deepcopy(newRouteFound)
                     score = newScore
-    # plot histogram van randomscores
-    # statistics.plotRandom(randomData)
+
     return bestRouteBookIn, score, bestRouteFound, grid
 
 
