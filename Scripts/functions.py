@@ -909,30 +909,30 @@ def checkClosedNode(direction, start):
     return start
 
 
-def getlistsurroundings(gates, chip):
+def getListSurroundings(gates, chip):
     list = []
     for i in range(len(gates)):
         start = [gates[i].x, gates[i].y, gates[i].z]
 
-        nodelinks = [start[0] - 1, start[1], start[2]]
-        noderechts = [start[0] + 1, start[1], start[2]]
-        nodeboven = [start[0], start[1], start[2] + 1]
-        nodebeneden = [start[0], start[1], start[2] - 1]
-        nodevoor = [start[0], start[1] + 1, start[2]]
-        nodeachter = [start[0], start[1] - 1, start[2]]
+        nodeLinks = [start[0] - 1, start[1], start[2]]
+        nodeRechts = [start[0] + 1, start[1], start[2]]
+        nodeBoven = [start[0], start[1], start[2] + 1]
+        nodeBeneden = [start[0], start[1], start[2] - 1]
+        nodeVoor = [start[0], start[1] + 1, start[2]]
+        nodeAchter = [start[0], start[1] - 1, start[2]]
 
-        if checkExistance(nodelinks, chip):
-            list.append(nodelinks)
-        if checkExistance(noderechts, chip):
-            list.append(noderechts)
-        if checkExistance(nodeboven, chip):
-            list.append(nodeboven)
-        if checkExistance(nodebeneden, chip):
-            list.append(nodebeneden)
-        if checkExistance(nodevoor, chip):
-            list.append(nodevoor)
-        if checkExistance(nodeachter, chip):
-            list.append(nodeachter)
+        if checkExistance(nodeLinks, chip):
+            list.append(nodeLinks)
+        if checkExistance(nodeRechts, chip):
+            list.append(nodeRechts)
+        if checkExistance(nodeBoven, chip):
+            list.append(nodeBoven)
+        if checkExistance(nodeBeneden, chip):
+            list.append(nodeBeneden)
+        if checkExistance(nodeVoor, chip):
+            list.append(nodeVoor)
+        if checkExistance(nodeAchter, chip):
+            list.append(nodeAchter)
     list = sorted(list)
     return list
 
