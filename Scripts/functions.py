@@ -15,6 +15,9 @@
 #
 # Bevat alle functies die worden gebruikt in chips.py
 ###########################################################
+import sys
+sys.path.append('../Data')
+
 from time import time
 import csv
 import numpy as np

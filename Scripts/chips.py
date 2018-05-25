@@ -12,6 +12,8 @@
 #
 # Chips & Circuits
 ############################################################
+import sys
+sys.path.append('../Data')
 
 from time import time
 from numpy import genfromtxt
@@ -23,7 +25,6 @@ from copy import deepcopy
 from random import shuffle
 import statistics
 import pandas as pd
-import sys
 import functions
 
 if len(sys.argv) == 1:
