@@ -48,23 +48,23 @@ De manier waarop een chipcircuit wordt aangelegd is gestructureerd zoals in de a
 
 ![structuur algoritmen](https://user-images.githubusercontent.com/36193067/40545743-2f2886fa-602d-11e8-9d22-aab7bc35f6dc.png)
 
-### netlist volgorde
+### Netlistvolgorde
 
 De netlist volgorde bepaalt in welke volgorde de wires worden aangelegd. Om de netlist volgorde te bepalen worden de Dalton-methode, Ui-methode en de willekeurige netlist volgorde gebruikt. 
 Bij de Dalton-methode wordt de netlist geordend op basis van Manhattan-distance tussen de gates. De bedoeling is dat de wires met kleine Manhattan-distance tussen gates eerder worden gelegd dan wires met een grote Manhattan-distance. 
-De Ui-methode ordent de netlist volgorde op gates-positie. Als een wire wordt gelegd tussen gates die relatief veel aan de buitenkant liggen wordt deze wire eerder gelegd dan een wire met gates in het midden van de chip.
+De Ui-methode ordent de netlist volgorde op gates-positie. Als een wire wordt gelegd tussen gates die relatief dichtbij de buitenkant van de grid liggen wordt deze wire eerder gelegd dan een wire met gates in het midden van de chip.
 
-### gewogen A*
+### Gewogen A*
 
 De gewogen A* gaat in de netlist één voor één gates neerleggen. Dit algoritme houdt er rekening mee dat een wire niet door gates, eerder gelegde routes of buiten de grid geplaatst wordt. In de gewogen A* zijn de G-costs zodanig aangepast dat een wire zo min mogelijk grenst aan andere gates waarbij de wire niet hoeft te grenzen. Verder zijn de kosten voor het lopen in een hogere z-dimensie relatief hoger. De gewogen A* geeft dus niet de kortste route tussen twee gates. 
 
 Indien het niet mogelijk blijkt dat de netlistvolgorde een valide oplossing geeft in combinatie met A* dan zijn er twee mogelijkheden. Als er geen wire meer gelegd kan worden met meer dan 3 wires te leggen dan wordt de netlistvolgorde willekeurig in zijn geheel geshuffled en wordt de methode opnieuw toegepast. Als er minder dan 4 wires te leggen zijn wordt de netlist volgorde aangepast door de nog te leggen wires als eerste te plaatsen.
 
-### breakthrough method
+### Breakthrough method
 
 
 
-### pure A* in combinatie met hillclimber
+### Pure A* in combinatie met hillclimber
 
 Nu er een valide oplossing is gevonden, kan deze oplossing verbeterd worden. Als de wires één voor één opnieuw geplaatst worden met pure A* (de A* met een admissable heuristic en gcost van 1 per stapje die wel de gegarandeerd de kortste route geeft) wordt de oplossing verbeterd. Dit wordt gedaan net zo lang totdat er geen verbetering meer nodig is. Er is dan een lokaal maximum bereikt. 
 

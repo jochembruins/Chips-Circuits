@@ -90,12 +90,12 @@ routeBookEmpty = deepcopy(routeBook)
 
 
 # bepaal lowerbound aka Manhattan distance van netlist
-# DIT MOET IN DE OUTPUTTABEL ERGENS NEERGEZET WORDEN
 lowerBound, netlistDist = functions.manhattanDist(routeBook)
 print("Lowerbound score voor netlist", response2, ":", lowerBound)
 
 options.compareNetlists(netlist, gates, routeBookEmpty, size, grid)
 
+options.compareHillClimbers(routeBook, gates, size, grid)
 
 
 # ## RANDOM ROUTEFINDER --------------------------------------------------
