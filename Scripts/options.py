@@ -30,6 +30,7 @@ from progressbar import ProgressBar
 def solveNetlist(routeBook, grid, size, gates):
 	"""Algoritme dat met behulp van A-star elke netlist kan oplossen"""
 
+	tic = time()
 	# Leg met gewogen A-star
 	routes = functions.aStarRouteFinder(routeBook, grid, size)
 
@@ -51,6 +52,9 @@ def solveNetlist(routeBook, grid, size, gates):
 	# print info over uitkomsten
 	print('Score na replaceLine: ', functions.getScore(NewRoutes[0]))
 	print('Check op correctheid: ', functions.checker(NewRoutes[0]))
+
+	toc = time()
+	print('\ntijd: ', toc - tic)
 
 	# plot grafiek
 	statistics.plotChip(gates, NewRoutes[0], size)
@@ -132,6 +136,7 @@ def compareNetlists(netlist, gates, routeBook, size, grid):
 
 
 def compareHillClimbers(routeBook, gates, size, grid):
+	tic = time()
 	""" Functie vergelijkt de Swap-2-Breaktrough-hillclimber met
 	de hillclimber ReplaceLine (zowel willekeurig als op volgorde)"""
 
@@ -171,12 +176,16 @@ def compareHillClimbers(routeBook, gates, size, grid):
 	# verander namen columns
 	compare.columns = ['Hillclimber met Breakthrough', 'Replacelines op volgorde',
 						   'Replacelines willekeurig']
+	toc = time()
+	print('\ntijd: ', toc - tic)
 
 	# plot lijngrafiek
 	statistics.plotLine(compare, 'Hillclimber en Replacelines')
 
 
 def breakThrough(routeBook, gates, chip, response):
+
+	tic=time()
 	"""Vind een route voor met behulp van het breakThrough algoritme. 
 	Om verzekerd een route te geven, maken we gebruik van de functie 
 	randomRouteBook."""
@@ -184,14 +193,22 @@ def breakThrough(routeBook, gates, chip, response):
 	bestRoute = functions.randomRouteBook(routeBook, gates, chip, response, steps=1000)
 
 	print("Score voor netlist =", bestRoute[1])
+	toc = time()
+	print('\ntijd: ', toc - tic)
+
 	statistics.plotChip(gates, bestRoute[2], chip)
 
 
 def weightedAStar(routeBook, gates, grid, chip):
+
+	tic = time()
 	"""vind een route met de gewogen A-star. Dit is dus een valide, 
 	maar geen geoptimaliseerde route"""
 
 	route = functions.aStarRouteFinder(routeBook, grid, chip)
 
 	print("score voor netlist =", functions.getScore(route[0]))
+	toc = time()
+	print('\ntijd: ', toc - tic)
+
 	statistics.plotChip(gates, route[0], chip)
