@@ -41,10 +41,11 @@ def plotChip(gates, routeBook, grid):
         ax.set_yticks(np.arange(0, 17, 1))
     ax.set_zticks(np.arange(0, 10, 1))
 
-    # voeg labels toe
-    ax.set_xlabel('x-axis')
-    ax.set_ylabel('y-axis')
-    ax.set_zlabel('z-axis')
+    # voeg labels en titel toe
+    ax.set_xlabel('x-as')
+    ax.set_ylabel('y-as')
+    ax.set_zlabel('z-as')
+    plt.title('Oplossing Chip')
 
     # voeg alle gates met labels toe
     for gate in gates:

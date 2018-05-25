@@ -120,7 +120,6 @@ for netlist in netlistCompare:
     print("runtime:", runtime)
 
 
-
 # ## RANDOM ROUTEFINDER --------------------------------------------------
 # # leg wires van netlist adhv random netlist volgordes
 # # met breakthrough algoritme
@@ -184,24 +183,23 @@ for netlist in netlistCompare:
 # # plot gates en lijnen
 # statistics.plotChip(gates, routeBookBest, size)
 
-# ## LEG MET Astar GEWOGEN EN VERBETER MET PURE
-# newRoutes = functions.aStarRouteFinder(routeBookEmpty, grid, size)
-# print(functions.checker(newRoutes[0]))
-# print(functions.getScore(newRoutes[0]))
-#
-# for route in newRoutes[1]:
-# 	print(route.netPoint, end = ", ")
-# statistics.plotChip(gates, newRoutes[0], size)
-#
-# # maak nieuw grid adhv het beste gevonden routebook
-# for route in newRoutes[0]:
-#     grid = functions.changeMat(route.route, grid)
-#
-# # verbeter route door met pure A* lijnen opnieuw te leggen
-# NewRoute = functions.replaceLine(newRoutes[0], grid, 1, size, 500)
-#
-# # print info over uitkomsten
-# print(functions.getScore(NewRoute[0]))
-# print(functions.checker(NewRoute[0]))
-# print(len(NewRoute[0]))
-# statistics.plotChip(gates, NewRoute[0], size)
+## LEG MET Astar GEWOGEN EN VERBETER MET PURE
+newRoutes = functions.aStarRouteFinder(routeBookEmpty, grid, size)
+print(functions.checker(newRoutes[0]))
+print(functions.getScore(newRoutes[0]))
+
+
+# maak nieuw grid adhv het beste gevonden routebook
+for route in newRoutes[0]:
+    grid = functions.changeMat(route.route, grid)
+
+# DIT MOET NOG AANGEPAST WORDEN OP NIEUWE INDEX IN FUNCTIE
+# verbeter route door met pure A* lijnen opnieuw te leggen
+NewRoute = functions.replaceLine(newRoutes[0], grid, 1, size, 1000)
+
+# print info over uitkomsten
+print(functions.getScore(NewRoute[0]))
+print(functions.checker(NewRoute[0]))
+print(len(NewRoute[0]))
+statistics.plotChip(gates, NewRoute[0], size)
+

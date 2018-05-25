@@ -569,9 +569,11 @@ def aStarRouteFinder(routeBook, grid, size):
 
     # bereken tijd
     toc = time()
-    # print("Runningtime :", toc - tic)
+
+    print('tijd: ', toc - tic)
 
     return routeBookDone, routeBookSolved
+
 
 
 def aStar(netPoint, grid, index, chip):
@@ -997,31 +999,54 @@ def replaceLine(routeBook, grid, order, chip, steps = 2000):
         order index "1" neemt telkens een random lijn, bij andere waarden
         wordt de volgorde van de routebook aangehouden """
 
+    # zet seed voor shufflefunctie
     random.seed(2)
+    
+    # maak nieuw pandabestand
     replaceData = pd.DataFrame(columns=['Score ReplaceLine'])
+    
+    # bepaal beginscore
     score = getScore(routeBook)
+    
+    # maak variabelen om beste versies op te slaan
     bestRouteBook = routeBook
     bestGrid = grid
 
+    # loop voor aantal steps
     for i in range(0, steps):
+        if i % 100 == 0:
+            print('Vordering: ', i, ' van de ', steps)
+        
+        # varianbelen voor deze interatie
         newRouteBook = bestRouteBook
         newGrid = bestGrid
 
+        # keuze tussen willeurige lijn en op volgorde
         if order == 1:
             index = random.randrange(0, len(newRouteBook))
         else:
             index = i % len(newRouteBook)
 
+
+        # verwijder route uit grid
         delRoute(newRouteBook[index].route, newGrid)
+        
+        # herleg route met pure Astar
         newRouteBook[index].route = aStar(newRouteBook[index], newGrid, 0, chip)
+
+        # vervang beste grid, score en routeboek als score lager is
         changeMat(newRouteBook[index].route, newGrid)
         newScore = getScore(newRouteBook)
+
         if newScore < score:
             bestGrid = newGrid
             score = newScore
             # print(score)
             bestRouteBook = newRouteBook
+        # voeg nieuwe rij toe aan pandabestand
         replaceData = \
             replaceData.append({'Score ReplaceLine': score}, ignore_index=True)
-    # print(replaceData)
+    
+    print(replaceData)
+    statistics.plotLine(replaceData, 'Replace Line met pure A*')
     return bestRouteBook, replaceData
