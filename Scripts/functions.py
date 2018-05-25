@@ -593,7 +593,7 @@ def aStarRouteFinder(routeBook, grid, size):
     # bereken tijd
     toc = time()
 
-    # print('tijd: ', toc - tic)
+    print('\ntijd: ', toc - tic)
 
     print("\nGevonden!")
 
