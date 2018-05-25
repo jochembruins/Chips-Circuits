@@ -27,6 +27,7 @@ from random import shuffle
 import statistics
 import pandas as pd
 import functions
+import options
 
 print("\n\nCHIPS & CIRCUITS\n"
       "Welkom bij de programmeertheoriecase van de Veganboys\n"
@@ -95,7 +96,7 @@ routeBookEmpty = deepcopy(routeBook)
 lowerBound, netlistDist = functions.manhattanDist(routeBook)
 print("Lowerbound score voor netlist", response2, ":", lowerBound)
 
-
+options.compareNetlists(netlist, gates, routeBookEmpty, size, grid)
 # ## VERGELIJK VERSCHILLENDE NETLISTS ---------------------------------------
 # # maak netlists met Ui/Dalton methode
 # netlistDalton = classes.wire.daltonMethod(netlist, gates)
@@ -184,41 +185,41 @@ print("Lowerbound score voor netlist", response2, ":", lowerBound)
 
 # Vergelijk HillClimbers A* --------------------------
 
-randomRouteBook = functions.randomRouteBook(routeBookEmpty, gates, size, 100)
-#maak nieuw grid adhv het beste gevonden routebook
+# randomRouteBook = functions.randomRouteBook(routeBookEmpty, gates, size, 100)
+# #maak nieuw grid adhv het beste gevonden routebook
 
-# HILLCLIMBER: WISSEL TWEE NETPOINTS, LEG HELE NETLIST OPNIEUW ----------
-# laat hilclimber werken
-HillClimber = functions.hillClimb(randomRouteBook[2], randomRouteBook[1] , gates, size, 1000)
+# # HILLCLIMBER: WISSEL TWEE NETPOINTS, LEG HELE NETLIST OPNIEUW ----------
+# # laat hilclimber werken
+# HillClimber = functions.hillClimb(randomRouteBook[2], randomRouteBook[1] , gates, size, 1000)
 
-# sla data op om HillClimbers te vergelijken
-compare = HillClimber[2]
+# # sla data op om HillClimbers te vergelijken
+# compare = HillClimber[2]
 
-# verkrijg kloppende grid
-for route in randomRouteBook[2]:
-    grid = functions.changeMat(route.route, grid)
+# # verkrijg kloppende grid
+# for route in randomRouteBook[2]:
+#     grid = functions.changeMat(route.route, grid)
 
-# verbeter route door met pure A* lijnen opnieuw te leggen
-# eerst in volgorde van de routeboek, daarna op willekeurige volgorde
-for i in range(0, 2):
-    # maak deepcopy zodat we de routeboek twee keer kunnen gebruiken
-    routeBook = deepcopy(randomRouteBook[2])
+# # verbeter route door met pure A* lijnen opnieuw te leggen
+# # eerst in volgorde van de routeboek, daarna op willekeurige volgorde
+# for i in range(0, 2):
+#     # maak deepcopy zodat we de routeboek twee keer kunnen gebruiken
+#     routeBook = deepcopy(randomRouteBook[2])
     
-    # verkrijg kloppende grid
-    for route in randomRouteBook[2]:
-        grid = functions.changeMat(route.route, grid)
+#     # verkrijg kloppende grid
+#     for route in randomRouteBook[2]:
+#         grid = functions.changeMat(route.route, grid)
     
-    # verbeter met replaceLine
-    NewRoute = functions.replaceLine(routeBook, grid, i, size, 1000)
+#     # verbeter met replaceLine
+#     NewRoute = functions.replaceLine(routeBook, grid, i, size, 1000)
     
-    # voeg de data bij elkaar
-    compare = pd.concat([compare, NewRoute[1]], axis=1, join='inner')
+#     # voeg de data bij elkaar
+#     compare = pd.concat([compare, NewRoute[1]], axis=1, join='inner')
 
-# verander namen columns
-compare.columns = ['Hillclimber met Breakthrough', 'Replacelines op volgorde', 'Replacelines willekeurig']
+# # verander namen columns
+# compare.columns = ['Hillclimber met Breakthrough', 'Replacelines op volgorde', 'Replacelines willekeurig']
 
-# plot lijngrafiek
-statistics.plotLine(compare, 'Hillclimber en Replacelines')
+# # plot lijngrafiek
+# statistics.plotLine(compare, 'Hillclimber en Replacelines')
 
 # # krijg beste routeboek
 # routeBookBest = HillClimber[0]
@@ -230,26 +231,6 @@ statistics.plotLine(compare, 'Hillclimber en Replacelines')
 
 # # plot gates en lijnen
 # statistics.plotChip(gates, routeBookBest, size)
-
-# ## LEG MET Astar GEWOGEN EN VERBETER MET PURE
-# newRoutes = functions.aStarRouteFinder(routeBookEmpty, grid, size)
-# print(functions.checker(newRoutes[0]))
-# print(functions.getScore(newRoutes[0]))
-#
-#
-# # maak nieuw grid adhv het beste gevonden routebook
-# for route in newRoutes[0]:
-#     grid = functions.changeMat(route.route, grid)
-#
-# # DIT MOET NOG AANGEPAST WORDEN OP NIEUWE INDEX IN FUNCTIE
-# # verbeter route door met pure A* lijnen opnieuw te leggen
-# NewRoute = functions.replaceLine(newRoutes[0],
-#                                  grid, 1,
-#                                  size, 1000)
-#
-# # print info over uitkomsten
-# print(functions.getScore(NewRoute[0]))
-# print(functions.checker(NewRoute[0]))
-# print(len(NewRoute[0]))
-# statistics.plotChip(gates, NewRoute[0], size)
+if response1 == '1':
+    options.solveNetlist(routeBookEmpty, grid, size, gates)
 
