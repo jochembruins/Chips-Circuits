@@ -194,14 +194,3 @@ class wire(object):
         routeBook[index2] = tmp
 
         return routeBook
-
-class netlist(object):
-    """ maak objecten voor de uitkomsten van opgeloste netlist """
-
-    def __init__(self, name, netlist, constructive, iterative, score, runningtime ):
-        self.name = name
-        self.netlist = netlist
-        self.constructive = cons
-        self.iterative = iter
-        self.score = score
-        self.runningtime = runningtime

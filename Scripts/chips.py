@@ -16,6 +16,7 @@ import sys
 sys.path.insert(0, '../Data')
 
 from time import time
+from progressbar import ProgressBar
 from numpy import genfromtxt
 import numpy as np
 import matplotlib.pyplot as plt
@@ -77,59 +78,75 @@ routeBookEmpty = deepcopy(routeBook)
 
 # bepaal lowerbound aka Manhattan distance van netlist
 # DIT MOET IN DE OUTPUTTABEL ERGENS NEERGEZET WORDEN
-lowerBound = functions.getLowerBound(routeBook)[0]
-print("Lowerbound netlist", commArg, ":", lowerBound)
+lowerBound, netlistDist = functions.manhattanDist(routeBook)
+print("Lowerbound score voor netlist", commArg, ":", lowerBound)
 
 
 ## VERGELIJK VERSCHILLENDE NETLISTS ---------------------------------------
 # maak netlists met Ui/Dalton methode
-# netlistDalton = classes.wire.daltonMethod(netlist, gates)
-# netlistUi = classes.wire.uiMethod(netlist, gates)
+netlistDalton = classes.wire.daltonMethod(netlist, gates)
+netlistUi = classes.wire.uiMethod(netlist, gates)
 
-# # sla ingaande routebook van beste oplossing randomroute op
-# randomRouteBookIn = functions.randomRouteBook(routeBookEmpty, gates, size, 300)[0]
-# randomRouteNetlist = []
-# for object in randomRouteBookIn:
-#     randomRouteNetlist.append(object.netPoint)
+# sla ingaande routebook van beste oplossing randomroute op
+randomRouteBookIn = functions.randomRouteBook(routeBookEmpty, gates, size, 100)[0]
+randomRouteNetlist = []
+for object in randomRouteBookIn:
+    randomRouteNetlist.append(object.netPoint)
 
-# netlistCompare = [netlistDalton, netlistUi, randomRouteNetlist]
-# for netlist in netlistCompare:
-#     tic = time()
-#     # maak object van iedere netPoint, maak lijst van alle netPoints
-#     routeBook = functions.makeObjects(netlist, gates)
-#     routeBookEmpty = deepcopy(routeBook)
+netlistCompare = [netlistDalton, netlistUi, randomRouteNetlist]
 
-#     # leg routes met gewogen Astar algoritme
-#     routesFound = functions.aStarRouteFinder(routeBookEmpty, grid, size)
+# bereid voortgangsbar voor
+pbar = ProgressBar()
+print("Hillclimber - replaceline algoritme")
 
-#     # maak nieuw grid adhv het beste gevonden routebook
-#     for route in routesFound[0]:
-#         grid = functions.changeMat(route.route, grid)
+for netlist in pbar(netlistCompare):
+    tic = time()
 
-#     # verbeter route door met pure A* lijnen opnieuw te leggen
+    # maar variabel aan
+    eindstandNetlist = []
 
-#     routesBetter = functions.replaceLine(routesFound[0], grid, 0, size, 500)
-    
-#     if netlistCompare.index(netlist) == 0:
-#         compare = routesBetter[1]
-#     else:
-#         compare = pd.concat([compare, routesBetter[1]], axis=1, join='inner')
-    
-#     # print info over uitkomsten
-#     print("score voor netlist =", functions.getScore(routesBetter[0]))
-#     statistics.plotChip(gates, routesBetter[0], size)
+    # maak object van iedere netPoint, maak lijst van alle netPoints
+    routeBook = functions.makeObjects(netlist, gates)
+    routeBookEmpty = deepcopy(routeBook)
 
-#     # reset grid
-#     grid = functions.gridMat(gates, size)
+    # leg routes met gewogen Astar algoritme
+    routesFound = functions.aStarRouteFinder(routeBookEmpty, grid, size)
 
+    # maak nieuw grid adhv het beste gevonden routebook
+    for route in routesFound[0]:
+        grid = functions.changeMat(route.route, grid)
 
-#     toc = time()
-#     runtime = toc - tic
-#     print("runtime:", runtime)
+    # verbeter route door met pure A* lijnen opnieuw te leggen
+    routesBetter = functions.replaceLine(routesFound[0], grid, 0, size, 500)
 
-# compare.columns = ['Dalton', 'Ui', 'Random']
-# print(compare)
-# statistics.plotLine(compare, 'Vergelijking sorteermethodes')
+    if netlistCompare.index(netlist) == 0:
+        compare = routesBetter[1]
+    else:
+        compare = pd.concat([compare, routesBetter[1]], axis=1, join='inner')
+
+    # info ingaande routeBook
+    print("\nBeginstand netlist: ", netlist)
+    netlistDist = functions.manhattanDist(routeBook)[1]
+    print("Manhattan distance van netPoints: ", netlistDist)
+
+    for object in routesBetter[0]:
+        eindstandNetlist.append(object.netPoint)
+    # print info over resultaten
+    print("Eindstand netlist: ", eindstandNetlist)
+    print("Manhattan distance van netPoints: ", functions.manhattanDist(routesBetter[0])[1])
+
+    print("score voor netlist =", functions.getScore(routesBetter[0]))
+    # statistics.plotChip(gates, routesBetter[0], size)
+
+    # reset grid
+    grid = functions.gridMat(gates, size)
+
+    toc = time()
+    runtime = toc - tic
+    print("runtime:", runtime)
+
+compare.columns = ['Dalton', 'Ui', 'Random']
+statistics.plotLine(compare, 'Vergelijking sorteermethodes')
 
 
 # ## RANDOM ROUTEFINDER --------------------------------------------------
