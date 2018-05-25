@@ -40,7 +40,9 @@ print("Wat zou je willen zien?\n"
       "5: Vergelijking van 3 verschillende hillclimbers")
 response1 = input("Maak een keuze: ")
 
-if not int(response1) > 0 and int(response1) < 6:
+print(str.isnumeric(response1))
+
+if str.isnumeric(response1) == False and int(response1) > 0 and int(response1) < 6:
     print("Dit is geen geldige input")
     exit()
 
@@ -66,7 +68,6 @@ else:
           "waar '1' staat voor netlist 1")
     exit()
 
-print(netlist)
 # gebruik kleine of grote grid
 if int(response2) < 4:
     size = "small"
@@ -85,7 +86,7 @@ gates = functions.makeLocations(gatesLoc)
 grid = functions.gridMat(gates, size)
 
 # # maak object van iedere netPoint in netlist DIT MOET NAAR BENEDEN ZOMETEENEEE
-routeBook = functions.makeObjects(netlists.netlist_4, gates)
+routeBook = functions.makeObjects(netlist, gates)
 # # maak kopie van routeboek
 routeBookEmpty = deepcopy(routeBook)
 
@@ -95,7 +96,7 @@ routeBookEmpty = deepcopy(routeBook)
 lowerBound, netlistDist = functions.manhattanDist(routeBook)
 print("Lowerbound score voor netlist", response2, ":", lowerBound)
 
-
+options.compareNetlists(netlist, gates, routeBookEmpty, size, grid)
 # ## VERGELIJK VERSCHILLENDE NETLISTS ---------------------------------------
 # # maak netlists met Ui/Dalton methode
 # netlistDalton = classes.wire.daltonMethod(netlist, gates)
@@ -230,6 +231,6 @@ print("Lowerbound score voor netlist", response2, ":", lowerBound)
 
 # # plot gates en lijnen
 # statistics.plotChip(gates, routeBookBest, size)
-
-options.solveNetlist(routeBookEmpty, grid, size)
+if response1 == '1':
+    options.solveNetlist(routeBookEmpty, grid, size, gates)
 
