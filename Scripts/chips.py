@@ -30,7 +30,7 @@ import functions
 import options
 
 print("\n\nCHIPS & CIRCUITS\n"
-      "Welkom bij de programmeertheoriecase van de Veganboys\n"
+      "Welkom bij de programmeertheoriecase van de Veganboyz\n"
       "(aka Melle Gelok, Jochem Bruins, Noah van Grinsven)\n")
 print("Wat zou je willen zien?\n"
       "1: Los één van de 6 netlists op\n"
@@ -40,9 +40,7 @@ print("Wat zou je willen zien?\n"
       "5: Vergelijking van 3 verschillende hillclimbers")
 response1 = input("Maak een keuze: ")
 
-print(str.isnumeric(response1))
-
-if str.isnumeric(response1) == False and int(response1) > 0 and int(response1) < 6:
+if str.isnumeric(response1) is False or int(response1) < 1 or int(response1) > 5:
     print("Dit is geen geldige input")
     exit()
 
@@ -50,23 +48,23 @@ if response1 == '1':
     print("Kies uit netlist 1 - 6")
     response2 = input("Maak een keuze: ")
 
-if response2 == '1':
-    netlist = netlists.netlist_1
-elif response2 == '2':
-    netlist = netlists.netlist_2
-elif response2 == '3':
-    netlist = netlists.netlist_3
-elif response2 == '4':
-    netlist = netlists.netlist_4
-elif response2 == '5':
-    netlist = netlists.netlist_5
-elif response2 == '6':
-    netlist = netlists.netlist_6
-else:
-    print("Gebruik niet correct")
-    print("Gebruik: chips.py N \nN = 1, 2, 3, 4, 5, 6; "
-          "waar '1' staat voor netlist 1")
-    exit()
+    if response2 == '1':
+        netlist = netlists.netlist_1
+    elif response2 == '2':
+        netlist = netlists.netlist_2
+    elif response2 == '3':
+        netlist = netlists.netlist_3
+    elif response2 == '4':
+        netlist = netlists.netlist_4
+    elif response2 == '5':
+        netlist = netlists.netlist_5
+    elif response2 == '6':
+        netlist = netlists.netlist_6
+    else:
+        print("Gebruik niet correct")
+        print("Gebruik: chips.py N \nN = 1, 2, 3, 4, 5, 6; "
+              "waar '1' staat voor netlist 1")
+        exit()
 
 # gebruik kleine of grote grid
 if int(response2) < 4:
@@ -97,72 +95,7 @@ lowerBound, netlistDist = functions.manhattanDist(routeBook)
 print("Lowerbound score voor netlist", response2, ":", lowerBound)
 
 options.compareNetlists(netlist, gates, routeBookEmpty, size, grid)
-# ## VERGELIJK VERSCHILLENDE NETLISTS ---------------------------------------
-# # maak netlists met Ui/Dalton methode
-# netlistDalton = classes.wire.daltonMethod(netlist, gates)
-# netlistUi = classes.wire.uiMethod(netlist, gates)
 
-
-# # sla ingaande routebook van beste oplossing randomroute op
-# randomRouteBookIn = functions.randomRouteBook(routeBookEmpty, gates, size, 100)[0]
-# randomRouteNetlistIn = []
-# for object in randomRouteBookIn:
-#     randomRouteNetlistIn.append(object.netPoint)
-
-# netlistCompare = [netlistDalton, netlistUi, randomRouteNetlistIn]
-
-# # bereid voortgangsbar voor
-# pbar = ProgressBar()
-# print("Hillclimber - replaceline algoritme")
-
-# for netlist in pbar(netlistCompare):
-#     tic = time()
-
-#     # maar variabel aan
-#     eindstandNetlist = []
-
-#     # maak object van iedere netPoint, maak lijst van alle netPoints
-#     routeBook = functions.makeObjects(netlist, gates)
-#     routeBookEmpty = deepcopy(routeBook)
-
-#     # leg routes met gewogen Astar algoritme
-#     routesFound = functions.aStarRouteFinder(routeBookEmpty, grid, size)
-
-#     # maak nieuw grid adhv het beste gevonden routebook
-#     for route in routesFound[0]:
-#         grid = functions.changeMat(route.route, grid)
-
-#     # verbeter route door met pure A* lijnen opnieuw te leggen
-#     routesBetter = functions.replaceLine(routesFound[0], grid, 0, size, 500)
-
-#     if netlistCompare.index(netlist) == 0:
-#         compare = routesBetter[1]
-#     else:
-#         compare = pd.concat([compare, routesBetter[1]], axis=1, join='inner')
-
-#     # info ingaande routeBook
-#     print("\nBeginstand netlist: ", netlist)
-#     netlistDist = functions.manhattanDist(routeBook)[1]
-#     print("Manhattan distance van netPoints: ", netlistDist)
-
-#     for object in routesBetter[0]:
-#         eindstandNetlist.append(object.netPoint)
-#     # print info over resultaten
-#     print("Eindstand netlist: ", eindstandNetlist)
-#     print("Manhattan distance van netPoints: ", functions.manhattanDist(routesBetter[0])[1])
-
-#     print("score voor netlist =", functions.getScore(routesBetter[0]))
-#     # statistics.plotChip(gates, routesBetter[0], size)
-
-#     # reset grid
-#     grid = functions.gridMat(gates, size)
-
-#     toc = time()
-#     runtime = toc - tic
-#     print("runtime:", runtime)
-
-# compare.columns = ['Dalton', 'Ui', 'Random']
-# statistics.plotLine(compare, 'Vergelijking sorteermethodes')
 
 
 # ## RANDOM ROUTEFINDER --------------------------------------------------
