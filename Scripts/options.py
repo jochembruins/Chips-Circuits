@@ -54,7 +54,7 @@ def solveNetlist(routeBook, grid, size, gates):
 	print('Check op correctheid: ', functions.checker(NewRoutes[0]))
 
 	toc = time()
-	print('\ntijd: ', toc - tic)
+	print('tijd: ', toc - tic)
 
 	# plot grafiek
 	statistics.plotChip(gates, NewRoutes[0], size)
@@ -177,7 +177,7 @@ def compareHillClimbers(routeBook, gates, size, grid):
 	compare.columns = ['Hillclimber met Breakthrough', 'Replacelines op volgorde',
 						   'Replacelines willekeurig']
 	toc = time()
-	print('\ntijd: ', toc - tic)
+	print('tijd: ', toc - tic)
 
 	# plot lijngrafiek
 	statistics.plotLine(compare, 'Hillclimber en Replacelines')
@@ -194,7 +194,7 @@ def breakThrough(routeBook, gates, chip, response):
 
 	print("Score voor netlist =", bestRoute[1])
 	toc = time()
-	print('\ntijd: ', toc - tic)
+	print('tijd: ', toc - tic)
 
 	statistics.plotChip(gates, bestRoute[2], chip)
 
@@ -209,6 +209,6 @@ def weightedAStar(routeBook, gates, grid, chip):
 
 	print("score voor netlist =", functions.getScore(route[0]))
 	toc = time()
-	print('\ntijd: ', toc - tic)
+	print('tijd: ', toc - tic)
 
 	statistics.plotChip(gates, route[0], chip)
