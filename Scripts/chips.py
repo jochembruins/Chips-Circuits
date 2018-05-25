@@ -85,7 +85,7 @@ gates = functions.makeLocations(gatesLoc)
 grid = functions.gridMat(gates, size)
 
 # # maak object van iedere netPoint in netlist DIT MOET NAAR BENEDEN ZOMETEENEEE
-routeBook = functions.makeObjects(netlists.netlist_4, gates)
+routeBook = functions.makeObjects(netlist, gates)
 # # maak kopie van routeboek
 routeBookEmpty = deepcopy(routeBook)
 
@@ -95,7 +95,7 @@ routeBookEmpty = deepcopy(routeBook)
 lowerBound, netlistDist = functions.manhattanDist(routeBook)
 print("Lowerbound score voor netlist", response2, ":", lowerBound)
 
-
+options.compareNetlists(netlist, gates, routeBookEmpty, size, grid)
 # ## VERGELIJK VERSCHILLENDE NETLISTS ---------------------------------------
 # # maak netlists met Ui/Dalton methode
 # netlistDalton = classes.wire.daltonMethod(netlist, gates)
@@ -230,6 +230,6 @@ print("Lowerbound score voor netlist", response2, ":", lowerBound)
 
 # # plot gates en lijnen
 # statistics.plotChip(gates, routeBookBest, size)
-
-options.solveNetlist(routeBookEmpty, grid, size)
+if response1 == '1':
+    options.solveNetlist(routeBookEmpty, grid, size, gates)
 
