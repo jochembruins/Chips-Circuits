@@ -207,7 +207,9 @@ for route in newRoutes[0]:
 
 # DIT MOET NOG AANGEPAST WORDEN OP NIEUWE INDEX IN FUNCTIE
 # verbeter route door met pure A* lijnen opnieuw te leggen
-NewRoute = functions.replaceLine(newRoutes[0], grid, 1, size, 1000)
+NewRoute = functions.replaceLine(newRoutes[0],
+                                 grid, 1,
+                                 size, 1000)
 
 # print info over uitkomsten
 print(functions.getScore(NewRoute[0]))

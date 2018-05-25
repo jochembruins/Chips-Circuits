@@ -23,8 +23,8 @@ import classes
 import random
 from random import shuffle
 from copy import deepcopy
-from Data.surroundings_gates import surroundListLarge
-from Data.surroundings_gates import surroundList
+from surroundings_gates import surroundListLarge
+from surroundings_gates import surroundList
 import pandas as pd
 import statistics
 
@@ -1002,7 +1002,8 @@ def GcostForGates(gates):
     return grid
 
 
-def replaceLine(routeBook, grid, order, chip, steps = 2000):
+def replaceLine(routeBook, grid, order, chip, \
+                               steps = 2000):
     """ Hillclimber algoritme,
         neemt een bestaande oplossing, verwijderd vervolgens achter elkaar
         1 en zet deze terug met pure Astar algoritme
@@ -1021,7 +1022,6 @@ def replaceLine(routeBook, grid, order, chip, steps = 2000):
     # maak variabelen om beste versies op te slaan
     bestRouteBook = routeBook
     bestGrid = grid
-
     # loop voor aantal steps
     for i in range(0, steps):
         if i % 100 == 0:
