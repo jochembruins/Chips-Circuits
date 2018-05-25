@@ -74,6 +74,7 @@ routeBook = functions.makeObjects(netlist, gates)
 # # maak kopie van routeboek
 routeBookEmpty = deepcopy(routeBook)
 
+
 # bepaal lowerbound aka Manhattan distance van netlist
 # DIT MOET IN DE OUTPUTTABEL ERGENS NEERGEZET WORDEN
 lowerBound = functions.getLowerBound(routeBook)[0]

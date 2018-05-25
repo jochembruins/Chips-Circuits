@@ -23,7 +23,8 @@ import classes
 import random
 from random import shuffle
 from copy import deepcopy
-from surroundings_gates import surroundList
+from Data.surroundings_gates import surroundListLarge
+from Data.surroundings_gates import surroundList
 import pandas as pd
 import statistics
 
@@ -668,7 +669,8 @@ def putNodes(start, grid, destination, direction, index, priorityQueue, chip):
                 and checkIsEmpty(nodeList[i], grid):
             # potentiële nodewaarde
             nodePotentieel[i] = \
-                100 + gCost(start, destination, grid, nodeList[i], index) \
+                100 + gCost(start, destination, grid, nodeList[i], index,
+                            chip) \
                 + distance(nodeList[i], destination)
 
         # als node bestaat en potentiële waarde lager dan waarde
@@ -801,17 +803,20 @@ def findRoute(locFrom, locTo, start, direction):
     return route
 
 
-def gCost(start, destination, grid, node, index):
+def gCost(start, destination, grid, node, index, chip):
     clodesNodeValue = 10000
-
+    if chip == "small":
+        surround  = surroundList
+    else:
+        surround = surroundListLarge
     #  komt niet in de buurt van surrounded nodes
     if index == 1:
 
         # als de node naast een gate ligt
-        if node in surroundList:
+        if node in surround:
 
             # hoeveelheid gates die naast node liggen
-            countSurrounded = surroundList.count(node)
+            countSurrounded = surround.count(node)
 
             # als startpunt gesloten node
             if grid[start[0]][start[1]][start[2]] > clodesNodeValue:
@@ -836,8 +841,8 @@ def gCost(start, destination, grid, node, index):
     elif index == 2:
         maximumHeightGrid = 7
 
-        if node in surroundList:
-            countSurrounded = surroundList.count(node)
+        if node in surround:
+            countSurrounded = surround.count(node)
             if grid[start[0]][start[1]][start[2]] > clodesNodeValue:
 
                 # gcost += 1  + 10 tot macht gates + 14 - 2*Z-dimensie node
@@ -897,7 +902,7 @@ def checkClosedNode(direction, start):
     return start
 
 
-def getlistsurroundings(gates):
+def getlistsurroundings(gates, chip):
     list = []
     for i in range(len(gates)):
         start = [gates[i].x, gates[i].y, gates[i].z]
@@ -909,17 +914,17 @@ def getlistsurroundings(gates):
         nodevoor = [start[0], start[1] + 1, start[2]]
         nodeachter = [start[0], start[1] - 1, start[2]]
 
-        if checkExistance(nodelinks):
+        if checkExistance(nodelinks, chip):
             list.append(nodelinks)
-        if checkExistance(noderechts):
+        if checkExistance(noderechts, chip):
             list.append(noderechts)
-        if checkExistance(nodeboven):
+        if checkExistance(nodeboven, chip):
             list.append(nodeboven)
-        if checkExistance(nodebeneden):
+        if checkExistance(nodebeneden, chip):
             list.append(nodebeneden)
-        if checkExistance(nodevoor):
+        if checkExistance(nodevoor, chip):
             list.append(nodevoor)
-        if checkExistance(nodeachter):
+        if checkExistance(nodeachter, chip):
             list.append(nodeachter)
     list = sorted(list)
     return list
