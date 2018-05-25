@@ -17,6 +17,7 @@
 ###########################################################
 
 from time import time
+from progressbar import ProgressBar
 import csv
 import numpy as np
 import classes
@@ -111,16 +112,18 @@ def gridMat(gates, chip):
         return matGrid
 
 
-def getLowerBound(routeBook):
-    """ Bereken de lowerbound (manhattan distance) van gekozen netlist"""
+def manhattanDist(routeBook):
+    """ Bereken de manhattan distance van de iedere netPoint in gekozen netlist"""
     lowerBound = 0
     netPointDist = ''
     for netPoint in routeBook:
         x_dist = abs(netPoint.locFrom[0] - netPoint.locTo[0])
         y_dist = abs(netPoint.locFrom[1] - netPoint.locTo[1])
         z_dist = abs(netPoint.locFrom[2] - netPoint.locTo[2])
-        lowerBound += z_dist + y_dist + x_dist
-        netPointDist += str(lowerBound) + ';'
+        totDist = z_dist + y_dist + x_dist
+        lowerBound += totDist
+
+        netPointDist += str(totDist) + '; '
 
     return lowerBound, netPointDist
 
@@ -139,11 +142,12 @@ def randomRouteBook(routeBook, gates, chip, steps=100):
     # maak pandas bestand aan voor score-opslag
     randomData = pd.DataFrame(columns=['I', 'Score'])
 
-    # loop voor aantal iteraties willekeurig algoritme
-    for i in range(0, steps):
+    # bereid voortgangsbar voor
+    pbar = ProgressBar()
+    print("Randomroute algoritme")
 
-        if i % 20 == 0:
-            print('Vordering: ', i, ' van de ', steps)
+    # loop voor aantal iteraties willekeurig algoritme
+    for i in pbar(range(0, steps)):
 
         # sla beginstand routebook op en shuffle
         newRouteBook = routeBook
@@ -179,7 +183,7 @@ def randomRouteBook(routeBook, gates, chip, steps=100):
                     bestRouteFound = deepcopy(newRouteFound)
                     score = newScore
     # plot histogram van randomscores
-    statistics.plotRandom(randomData)
+    # statistics.plotRandom(randomData)
     return bestRouteBookIn, score, bestRouteFound, grid
 
 
@@ -577,7 +581,7 @@ def aStarRouteFinder(routeBook, grid, size):
     # bereken tijd
     toc = time()
 
-    print('tijd: ', toc - tic)
+    # print('tijd: ', toc - tic)
 
     for route in routeBookSolved:
         print(route.netPoint, end=', ')
@@ -877,7 +881,7 @@ def gCost(start, destination, grid, node, index, chip):
 
 
 def checkClosedNode(direction, start):
-    """ kijk waar element vandaag wijst """
+    """ kijk waar element vandaan wijst """
 
     value = direction[start[0]][start[1]][start[2]]
 
@@ -1006,7 +1010,7 @@ def GcostForGates(gates):
     return grid
 
 
-def replaceLine(routeBook, grid, order, chip, steps = 2000):
+def replaceLine(routeBook, grid, order, chip, steps=2000):
     """ Hillclimber algoritme,
         neemt een bestaande oplossing, verwijderd vervolgens achter elkaar
         1 en zet deze terug met pure Astar algoritme
@@ -1028,9 +1032,7 @@ def replaceLine(routeBook, grid, order, chip, steps = 2000):
 
     # loop voor aantal steps
     for i in range(0, steps):
-        if i % 100 == 0:
-            print('Vordering: ', i, ' van de ', steps)
-        
+
         # varianbelen voor deze interatie
         newRouteBook = bestRouteBook
         newGrid = bestGrid
@@ -1061,6 +1063,6 @@ def replaceLine(routeBook, grid, order, chip, steps = 2000):
         replaceData = \
             replaceData.append({'Score ReplaceLine': score}, ignore_index=True)
     
-    print(replaceData)
-    statistics.plotLine(replaceData, 'Replace Line met pure A*')
+    # print(replaceData)
+    # statistics.plotLine(replaceData, 'Replace Line met pure A*')
     return bestRouteBook, replaceData
