@@ -80,33 +80,44 @@ routeBookEmpty = deepcopy(routeBook)
 # print("Lowerbound netlist", commArg, ":", lowerBound)
 
 
-# ## VERGELIJK VERSCHILLENDE NETLISTS ---------------------------------------
-# # maak netlists met Ui/Dalton methode
-# netlistDalton = classes.wire.daltonMethod(netlist, gates)
-# netlistUi = classes.wire.uiMethod(netlist, gates)
-# netlistCompare = [netlistDalton, netlistUi]
+## VERGELIJK VERSCHILLENDE NETLISTS ---------------------------------------
+# maak netlists met Ui/Dalton methode
+netlistDalton = classes.wire.daltonMethod(netlist, gates)
+netlistUi = classes.wire.uiMethod(netlist, gates)
+netlistCompare = [netlistDalton, netlistUi]
+compare = []
 
-# for netlist in netlistCompare:
-#     # maak object van iedere netPoint, maak lijst van alle netPoints
-#     routeBook = functions.makeObjects(netlist, gates)
-#     routeBookEmpty = deepcopy(routeBook)
+for netlist in netlistCompare:
+    # maak object van iedere netPoint, maak lijst van alle netPoints
+    routeBook = functions.makeObjects(netlist, gates)
+    routeBookEmpty = deepcopy(routeBook)
 
-#     # leg routes met gewogen Astar algoritme
-#     routesFound = functions.aStarRouteFinder(routeBookEmpty, grid, size)
+    # leg routes met gewogen Astar algoritme
+    routesFound = functions.aStarRouteFinder(routeBookEmpty, grid, size)
 
-#     # maak nieuw grid adhv het beste gevonden routebook
-#     for route in routesFound[0]:
-#         grid = functions.changeMat(route.route, grid)
+    # maak nieuw grid adhv het beste gevonden routebook
+    for route in routesFound[0]:
+        grid = functions.changeMat(route.route, grid)
 
-#     # verbeter route door met pure A* lijnen opnieuw te leggen
-#     routesBetter = functions.replaceLine(routesFound[0], grid, 1, size, 500)
+    # verbeter route door met pure A* lijnen opnieuw te leggen
+    routesBetter = functions.replaceLine(routesFound[0], grid, 1, size, 500)
+    
+    if netlistCompare.index(netlist) == 0:
+        compare = routesBetter[1]
+    else:
+        compare = pd.concat([compare, routesBetter[1]], axis=1, join='inner')
+    
 
-#     # print info over uitkomsten
-#     print("score voor netlist =", functions.getScore(routesBetter[0]))
-#     statistics.plotChip(gates, routesBetter[0], size)
+    # print info over uitkomsten
+    print("score voor netlist =", functions.getScore(routesBetter[0]))
+    statistics.plotChip(gates, routesBetter[0], size)
 
-#     # reset grid
-#     grid = functions.gridMat(gates, size)
+    # reset grid
+    grid = functions.gridMat(gates, size)
+
+compare.columns = ['Dalton', 'Ui']
+print(compare)
+statistics.plotLine(compare, 'Vergelijking sorteermethodes')
 
 
 # ## RANDOM ROUTEFINDER --------------------------------------------------
@@ -172,23 +183,23 @@ routeBookEmpty = deepcopy(routeBook)
 # # plot gates en lijnen
 # statistics.plotChip(gates, routeBookBest, size)
 
-## LEG MET Astar GEWOGEN EN VERBETER MET PURE
-newRoutes = functions.aStarRouteFinder(routeBookEmpty, grid, size)
-print(functions.checker(newRoutes[0]))
-print(functions.getScore(newRoutes[0]))
+# ## LEG MET Astar GEWOGEN EN VERBETER MET PURE
+# newRoutes = functions.aStarRouteFinder(routeBookEmpty, grid, size)
+# print(functions.checker(newRoutes[0]))
+# print(functions.getScore(newRoutes[0]))
 
 
-# maak nieuw grid adhv het beste gevonden routebook
-for route in newRoutes[0]:
-    grid = functions.changeMat(route.route, grid)
+# # maak nieuw grid adhv het beste gevonden routebook
+# for route in newRoutes[0]:
+#     grid = functions.changeMat(route.route, grid)
 
-# DIT MOET NOG AANGEPAST WORDEN OP NIEUWE INDEX IN FUNCTIE
-# verbeter route door met pure A* lijnen opnieuw te leggen
-NewRoute = functions.replaceLine(newRoutes[0], grid, 1, size, 1000)
+# # DIT MOET NOG AANGEPAST WORDEN OP NIEUWE INDEX IN FUNCTIE
+# # verbeter route door met pure A* lijnen opnieuw te leggen
+# NewRoute = functions.replaceLine(newRoutes[0], grid, 1, size, 1000)
 
-# print info over uitkomsten
-print(functions.getScore(NewRoute[0]))
-print(functions.checker(NewRoute[0]))
-print(len(NewRoute[0]))
-statistics.plotChip(gates, NewRoute[0], size)
+# # print info over uitkomsten
+# print(functions.getScore(NewRoute[0]))
+# print(functions.checker(NewRoute[0]))
+# print(len(NewRoute[0]))
+# statistics.plotChip(gates, NewRoute[0], size)
 
