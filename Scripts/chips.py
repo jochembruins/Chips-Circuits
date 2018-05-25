@@ -41,7 +41,8 @@ print("Wat zou je willen zien?\n"
 response1 = input("Maak een keuze: ")
 
 if str.isnumeric(response1) is False or int(response1) < 1 or int(response1) > 5:
-    print("Dit is geen geldige input")
+    print("Dit is geen geldige input\n"
+            "Voorbeeld van geldige input is: 1, 2, 3, 4 of 5")
     exit()
 
 if response1 == '1':
@@ -61,10 +62,22 @@ if response1 == '1':
     elif response2 == '6':
         netlist = netlists.netlist_6
     else:
-        print("Gebruik niet correct")
-        print("Gebruik: chips.py N \nN = 1, 2, 3, 4, 5, 6; "
-              "waar '1' staat voor netlist 1")
+        print("Dit is geen geldige input\n"
+              "Voorbeeld van geldige input is: 1, 2, 3, 4, 5 of 6")
         exit()
+else:
+    if response2 == '1':
+        netlist = netlists.netlist_1
+    elif response2 == '2':
+        netlist = netlists.netlist_2
+    elif response2 == '3':
+        netlist = netlists.netlist_3
+    else:
+        print("Dit is geen geldige input\n"
+              "Voorbeeld van geldige input is: 1, 2 of 3")
+        exit()
+
+print(netlist)
 
 # gebruik kleine of grote grid
 if int(response2) < 4:

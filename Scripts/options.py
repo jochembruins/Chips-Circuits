@@ -32,7 +32,7 @@ def solveNetlist(routeBook, grid, size, gates):
 	# Leg met gewogen A-star
 	routes = functions.aStarRouteFinder(routeBook, grid, size)
 
-    # print info over uitkomsten
+	# print info over uitkomsten
     print('Score na gewogen aStarRouteFinder: ', functions.getScore(routes[0]))
     print('Check op correctheid: ', functions.checker(routes[0]))
 
