@@ -14,7 +14,6 @@
 ############################################################
 
 from time import time
-
 from numpy import genfromtxt
 import numpy as np
 import matplotlib.pyplot as plt
@@ -76,18 +75,24 @@ routeBookEmpty = deepcopy(routeBook)
 
 # bepaal lowerbound aka Manhattan distance van netlist
 # DIT MOET IN DE OUTPUTTABEL ERGENS NEERGEZET WORDEN
-# lowerBound = functions.getLowerBound(routeBook)
-# print("Lowerbound netlist", commArg, ":", lowerBound)
+lowerBound = functions.getLowerBound(routeBook)[0]
+print("Lowerbound netlist", commArg, ":", lowerBound)
 
 
 ## VERGELIJK VERSCHILLENDE NETLISTS ---------------------------------------
 # maak netlists met Ui/Dalton methode
 netlistDalton = classes.wire.daltonMethod(netlist, gates)
 netlistUi = classes.wire.uiMethod(netlist, gates)
-netlistCompare = [netlistDalton, netlistUi]
-compare = []
 
+# sla ingaande routebook van beste oplossing randomroute op
+randomRouteBookIn = functions.randomRouteBook(routeBookEmpty, gates, size, 100)[0]
+randomRouteNetlist = []
+for object in randomRouteBookIn:
+    randomRouteNetlist.append(object.netPoint)
+
+netlistCompare = [netlistDalton, netlistUi, randomRouteNetlist]
 for netlist in netlistCompare:
+    tic = time()
     # maak object van iedere netPoint, maak lijst van alle netPoints
     routeBook = functions.makeObjects(netlist, gates)
     routeBookEmpty = deepcopy(routeBook)
@@ -100,14 +105,14 @@ for netlist in netlistCompare:
         grid = functions.changeMat(route.route, grid)
 
     # verbeter route door met pure A* lijnen opnieuw te leggen
-    routesBetter = functions.replaceLine(routesFound[0], grid, 1, size, 500)
+
+    routesBetter = functions.replaceLine(routesFound[0], grid, 0, size, 500)
     
     if netlistCompare.index(netlist) == 0:
         compare = routesBetter[1]
     else:
         compare = pd.concat([compare, routesBetter[1]], axis=1, join='inner')
     
-
     # print info over uitkomsten
     print("score voor netlist =", functions.getScore(routesBetter[0]))
     statistics.plotChip(gates, routesBetter[0], size)
@@ -115,7 +120,12 @@ for netlist in netlistCompare:
     # reset grid
     grid = functions.gridMat(gates, size)
 
-compare.columns = ['Dalton', 'Ui']
+
+    toc = time()
+    runtime = toc - tic
+    print("runtime:", runtime)
+
+compare.columns = ['Dalton', 'Ui', 'Random']
 print(compare)
 statistics.plotLine(compare, 'Vergelijking sorteermethodes')
 
