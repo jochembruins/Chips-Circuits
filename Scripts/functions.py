@@ -18,7 +18,6 @@
 
 from time import time
 from progressbar import ProgressBar
-import csv
 import numpy as np
 import classes
 import random
@@ -27,7 +26,6 @@ from copy import deepcopy
 from surroundings_gates import surroundListLarge
 from surroundings_gates import surroundList
 import pandas as pd
-import statistics
 
 np.set_printoptions(threshold=np.nan)
 np.set_printoptions(linewidth=180)
@@ -35,6 +33,7 @@ np.set_printoptions(linewidth=180)
 
 def makeLocations(data):
     """ Giet locaties van gates uit file in objecten met x, y, z waarden"""
+
     gates = []
     for line in data:
         line = classes.Location(line[0],
@@ -47,6 +46,7 @@ def makeLocations(data):
 
 def makeObjects(netlist, gates):
     """" Zet nodige info in de netPoint objecten"""
+
     emptyRouteBook = []
 
     for netPoint in netlist:
@@ -99,6 +99,7 @@ def makeObjects(netlist, gates):
 
 def gridMat(gates, chip):
     """" Maakt matrix van de grid met gateslocatie-info"""
+
     if chip == "large":
         matGrid = np.zeros([18, 17, 30]) + 99
         for gate in gates:
@@ -113,7 +114,9 @@ def gridMat(gates, chip):
 
 
 def manhattanDist(routeBook):
-    """ Bereken de manhattan distance van de iedere netPoint in gekozen netlist"""
+    """ Bereken de manhattan distance van de iedere
+    netPoint in gekozen netlist"""
+
     lowerBound = 0
     netPointDist = ''
     for netPoint in routeBook:
@@ -132,7 +135,6 @@ def randomRouteBook(routeBook, gates, chip, response, steps=100):
     """ Probeert willekeurige volgordes van de netlist met het breaktrough
     algoritme op te lossen, onthoudt de beste uitkomst """
 
-    # zet seed voor shufflefunctie
     random.seed(2)
 
     # maak nodige variabelen aan
@@ -191,7 +193,7 @@ def randomRouteBook(routeBook, gates, chip, response, steps=100):
 
 
 def breakThroughFinder(routeBook, grid, response=0):
-    """ algoritme om lijnen in netlist te leggen
+    """ Algoritme om lijnen in netlist te leggen
         heuristiek: weg belemmerd, ga omhoog!"""
 
     # maak nodige variabelen aan
@@ -394,28 +396,31 @@ def breakThroughFinder(routeBook, grid, response=0):
 
 
 def changeMat(route, grid):
-    """ verander waarden in matrix bij gelukte route"""
+    """ Verander waarden in matrix bij gelukte route"""
+
     for step in route[1:-1]:
         grid[step[0], step[1], step[2]] = 50
     return grid
 
 
 def delRoute(route, grid):
-    """ verander waarden in matrix als route verwijderd moet worden"""
+    """ Verander waarden in matrix als route verwijderd moet worden"""
+
     for step in route[1:-1]:
         grid[step[0], step[1], step[2]] = 99
     return grid
 
 
 def stepsDifference(vector1, vector2):
-    """ reken afstand tussen twee punten uit """
+    """ Reken afstand tussen twee punten uit """
     difference = abs(vector1[0] - vector2[0]) + abs(vector1[1] - vector2[1]) \
                  + abs(vector1[2] - vector2[2])
     return difference
 
 
 def getScore(routeBook):
-    """ bereken score van routebook"""
+    """ Bereken score van routebook"""
+
     score = 0
     for route in routeBook:
         score += (len(route.route) - 1)
@@ -423,7 +428,9 @@ def getScore(routeBook):
 
 
 def hillClimb(routeBook, score, gates, chip, response, steps=1000):
-    # maak variabele om beste route book op te slaan
+    """ Ookwel Swap-2-Breakthrough hillclimber alrogitme,
+    draait twee netPoints in netlist om en legt hele netlist opnieuw.
+    Alleen verbeteringen worden gehouden"""
 
     print("\nHillclimber - Swap-2-Breakthrough algoritme")
 
@@ -431,7 +438,7 @@ def hillClimb(routeBook, score, gates, chip, response, steps=1000):
     bestRouteFound = bestRouteBook
     hillData = pd.DataFrame(columns=['Score Hillclimber'])
 
-    # # bereid voortgangsbar voor
+    # bereid voortgangsbar voor
     pbar = ProgressBar()
 
     # loop voor het aantal stappen
@@ -443,14 +450,12 @@ def hillClimb(routeBook, score, gates, chip, response, steps=1000):
             # verwissel willekeurig twee punten van de netlist
             newRouteBook = classes.wire.changeRouteBook(bestRouteBook)
         else:
-            # print('same')
             newRouteBook = bestRouteBook
 
         tmp_newRouteBook = deepcopy(newRouteBook)
 
         # checkt of het route vinden is gelukt
         finished = False
-        # newScore = score
 
         # probeer nieuwe route te vinden
         try:
@@ -474,12 +479,13 @@ def hillClimb(routeBook, score, gates, chip, response, steps=1000):
 
         hillData = hillData.append({'Score Hillclimber': score},
                                    ignore_index=True)
-    # print(hillData)
+
     return bestRouteFound, score, hillData
 
 
 def checker(routeBook):
     """ Checkt voor duplicaten in gevonden oplossing"""
+
     seen = []
     repeated = []
 
@@ -491,23 +497,22 @@ def checker(routeBook):
                 seen.append(step)
 
     if len(repeated) == 0:
-        # print('check: goed')
         return True
     else:
-        # print('check: fout')
         print(repeated)
         return False
 
 
 def aStarRouteFinder(routeBook, grid, size):
     """ Functie zoekt naar valide oplossing met gewogen Astar """
+
     print("\nGewogen A* algoritme")
 
-    # maak benodige variabelen aan
     tic = time()
 
-    # lege grid
+    # sla lege grid op
     gridEmpty = deepcopy(grid)
+
     # lijst met routes die nog gelegd moeten worden
     routeBookEmpty = deepcopy(routeBook)
 
@@ -525,8 +530,6 @@ def aStarRouteFinder(routeBook, grid, size):
     while routeBookEmpty != []:
         # loop over alle elementen in de routeboek
         for netPoint in routeBookEmpty:
-
-            # houd aantal loops bij
             loops += 1
 
             # controleert of de begingate van de lijn is ingesloten
@@ -590,15 +593,10 @@ def aStarRouteFinder(routeBook, grid, size):
                 # maak grid weer leeg
                 grid = deepcopy(gridEmpty)
 
-    # bereken tijd
     toc = time()
 
-    print('\ntijd: ', toc - tic)
-    print("Gevonden!")
-
-    # print("ROUTEBOOKSOLVED")
-    # for route in routeBookSolved:
-    #     print(route.netPoint, end=', ')
+    print("\nGevonden!")
+    print('Runtime: ', toc - tic)
 
     return routeBookDone, routeBookSolved
 
@@ -729,7 +727,7 @@ def putNodes(start, grid, destination, direction, index, priorityQueue, chip):
 
 
 def matrixStoreDirection(chip):
-    """ matrix met richtingen van nodes """
+    """ Matrix met richtingen van nodes """
 
     if chip == "large":
         matgrid = np.zeros([18, 17, 10])
@@ -740,7 +738,7 @@ def matrixStoreDirection(chip):
 
 
 def distance(location, destination):
-    """ distance berekenen tussen twee punten: HEURISTIEK """
+    """ Distance berekenen tussen twee punten: HEURISTIEK """
 
     xDist = abs(destination[0] - location[0])
     yDist = abs(destination[1] - location[1])
@@ -750,29 +748,30 @@ def distance(location, destination):
 
 
 def checkExistance(node, chip):
-    """ kijken of de te plaatsen node zich wel in het veld bevindt """
+    """ Kijken of de te plaatsen node zich wel in het veld bevindt """
 
     if chip == "small":
         if (node[0] >= 0 and node[0] < 18 and node[1] < 13 and node[1] >= 0 and
-                node[2] < 8 and node[2] >= 0):
+            node[2] < 8 and node[2] >= 0):
             return True
         else:
             return False
 
     if chip == "large":
         if (node[0] >= 0 and node[0] < 18 and node[1] < 17 and node[1] >= 0
-                and node[2] < 8 and node[2] >= 0):
+            and node[2] < 8 and node[2] >= 0):
             return True
         else:
             return False
 
 
 def checkIsEmpty(node, grid):
-    """ er kan een node op gridelement geplaatst
+    """ Er kan een node op gridelement geplaatst
         worden indien deze niet gesloten is: """
 
     closedNodeValue = 10000
     emptyGridValue = 99
+
     if grid[node[0]][node[1]][node[2]] >= emptyGridValue \
             and grid[node[0]][node[1]][node[2]] < closedNodeValue:
         return True
@@ -781,7 +780,7 @@ def checkIsEmpty(node, grid):
 
 
 def minimumNodes(queue):
-    """ node met laagste f-cost is het nieuwe startpunt
+    """ Node met laagste f-cost is het nieuwe startpunt
         waaruit nodes geplaatst worden """
 
     stop = 0
@@ -789,7 +788,6 @@ def minimumNodes(queue):
 
     # als de queue leeg is,  dan is elke veld bereikbaar gesloten
     if queue == []:
-        # stop commando geven
         stop = 1
     else:
         # sorteer priority queue
@@ -807,7 +805,7 @@ def minimumNodes(queue):
 
 
 def findRoute(locFrom, locTo, start, direction):
-    """ route wordt geplaatst, alle nodes zijn gegeven """
+    """ Route wordt geplaatst, alle nodes zijn gegeven """
 
     route = []
     route.append(locTo)
@@ -825,9 +823,10 @@ def findRoute(locFrom, locTo, start, direction):
 
 
 def gCost(start, destination, grid, node, index, chip):
+    """ Bepaald de Gcost methode voor Astar """
     clodesNodeValue = 10000
     if chip == "small":
-        surround  = surroundList
+        surround = surroundList
     else:
         surround = surroundListLarge
     #  komt niet in de buurt van surrounded nodes
@@ -894,7 +893,7 @@ def gCost(start, destination, grid, node, index, chip):
 
 
 def checkClosedNode(direction, start):
-    """ kijk waar element vandaan wijst """
+    """ Kijk waar element vandaan wijst """
 
     value = direction[start[0]][start[1]][start[2]]
 
@@ -924,6 +923,8 @@ def checkClosedNode(direction, start):
 
 
 def getListSurroundings(gates, chip):
+    """ Checkt alle nodes om startpunt """
+
     list = []
     for i in range(len(gates)):
         start = [gates[i].x, gates[i].y, gates[i].z]
@@ -947,12 +948,13 @@ def getListSurroundings(gates, chip):
             list.append(nodeVoor)
         if checkExistance(nodeAchter, chip):
             list.append(nodeAchter)
+
     list = sorted(list)
     return list
 
 
 def searchLocTo(netPoint, routeBookEmpty, routeBookDone, grid):
-    """ zoek in omliggende punten van eindpunt welke lijnen daar liggen,
+    """ Zoek in omliggende punten van eindpunt welke lijnen daar liggen,
         verwijder de lijn die daar niks heeft te zoeken """
 
     for nextLocTo in netPoint.toSurround:
@@ -980,7 +982,7 @@ def searchLocTo(netPoint, routeBookEmpty, routeBookDone, grid):
 
 
 def searchLocFrom(netPoint, routeBookEmpty, routeBookDone, grid):
-    """ zoek in omliggende punten van beginpunt welke lijnen daar liggen,
+    """ Zoek in omliggende punten van beginpunt welke lijnen daar liggen,
         verwijder de lijn die daar niks heeft te zoeken """
 
     # check alle omringende gridpoint, delete blokkerende lijn
@@ -993,9 +995,9 @@ def searchLocFrom(netPoint, routeBookEmpty, routeBookDone, grid):
                                                            netPoint.locFrom[1],
                                                            netPoint.locFrom[2]] \
                             and netPointToDelete.locFrom != [
-                        netPoint.locFrom[0],
-                        netPoint.locFrom[1],
-                        netPoint.locFrom[2]]:
+                                                    netPoint.locFrom[0],
+                                                    netPoint.locFrom[1],
+                                                    netPoint.locFrom[2]]:
                         # haal lijn van grid weg
                         grid = delRoute(netPointToDelete.route, grid)
                         netPointToDelete.route = []
@@ -1007,8 +1009,8 @@ def searchLocFrom(netPoint, routeBookEmpty, routeBookDone, grid):
 
                         return routeBookEmpty, routeBookDone, grid, nextLocFrom
 
-def replaceLine(routeBook, grid, order, chip, steps=2000):
 
+def replaceLine(routeBook, grid, order, chip, steps=2000):
     """ Hillclimber algoritme,
         neemt een bestaande oplossing, verwijderd vervolgens achter elkaar
         1 en zet deze terug met pure Astar algoritme
@@ -1017,6 +1019,8 @@ def replaceLine(routeBook, grid, order, chip, steps=2000):
 
     # zet seed voor shufflefunctie
     random.seed(2)
+
+    tic = time()
     
     # maak nieuw pandabestand
     replaceData = pd.DataFrame(columns=['Score ReplaceLine'])
@@ -1053,17 +1057,16 @@ def replaceLine(routeBook, grid, order, chip, steps=2000):
         # vervang beste grid, score en routeboek als score lager is
         changeMat(newRouteBook[index].route, newGrid)
         newScore = getScore(newRouteBook)
-        # print(newScore)
 
         if newScore < score:
             bestGrid = newGrid
             score = newScore
-            # print(score)
             bestRouteBook = newRouteBook
         # voeg nieuwe rij toe aan pandabestand
         replaceData = \
             replaceData.append({'Score ReplaceLine': score}, ignore_index=True)
-    
-    # print(replaceData)
-    # statistics.plotLine(replaceData, 'Replace Line met pure A*')
+
+    toc = time()
+    print('Runtime: ', toc - tic)
+
     return bestRouteBook, replaceData

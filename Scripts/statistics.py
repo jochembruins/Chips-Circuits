@@ -1,7 +1,23 @@
+# python script
+###########################################################
+# functions.py
+#
+# Jochem Bruins
+# 10578811
+#
+# Melle Gelok
+# 11017893
+#
+# Noah van Grinsven
+# 10501917
+#
+# Chips & Circuits
+#
+# Bevat alle functies voor de output grafieken
+###########################################################
+
 import numpy as np
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d.axes3d import Axes3D
-import pandas as pd
 
 
 def plotRandom(data, bins=20):
