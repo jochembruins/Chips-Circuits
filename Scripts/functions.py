@@ -419,7 +419,7 @@ def hillClimb(routeBook, score, gates, chip, steps=1000):
 
     # # bereid voortgangsbar voor
     pbar = ProgressBar()
-    print("Hillclimber - replaceline algoritme")
+    print("Hillclimber - Swap-2-Breakthrough algoritme")
 
     # loop voor het aantal stappen
     for i in pbar(range(0, steps)):

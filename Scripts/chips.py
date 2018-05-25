@@ -40,19 +40,25 @@ print("Wat zou je willen zien?\n"
       "5: Vergelijking van 3 verschillende hillclimbers")
 response1 = input("Maak een keuze: ")
 
-commArg = int(sys.argv[1])
+if not int(response1) > 0 and int(response1) < 6:
+    print("Dit is geen geldige input")
+    exit()
 
-if commArg == 1:
+if response1 == '1':
+    print("Kies uit netlist 1 - 6")
+    response2 = input("Maak een keuze: ")
+
+if response2 == '1':
     netlist = netlists.netlist_1
-elif commArg == 2:
+elif response2 == '2':
     netlist = netlists.netlist_2
-elif commArg == 3:
+elif response2 == '3':
     netlist = netlists.netlist_3
-elif commArg == 4:
+elif response2 == '4':
     netlist = netlists.netlist_4
-elif commArg == 5:
+elif response2 == '5':
     netlist = netlists.netlist_5
-elif commArg == 6:
+elif response2 == '6':
     netlist = netlists.netlist_6
 else:
     print("Gebruik niet correct")
@@ -60,8 +66,9 @@ else:
           "waar '1' staat voor netlist 1")
     exit()
 
+print(netlist)
 # gebruik kleine of grote grid
-if commArg < 4:
+if int(response2) < 4:
     size = "small"
     # laadt gates locaties voor kleine grid
     gatesLoc = genfromtxt('../Data/gates.csv', delimiter=';')
@@ -86,7 +93,7 @@ routeBookEmpty = deepcopy(routeBook)
 # bepaal lowerbound aka Manhattan distance van netlist
 # DIT MOET IN DE OUTPUTTABEL ERGENS NEERGEZET WORDEN
 lowerBound, netlistDist = functions.manhattanDist(routeBook)
-print("Lowerbound score voor netlist", commArg, ":", lowerBound)
+print("Lowerbound score voor netlist", response2, ":", lowerBound)
 
 
 # ## VERGELIJK VERSCHILLENDE NETLISTS ---------------------------------------
