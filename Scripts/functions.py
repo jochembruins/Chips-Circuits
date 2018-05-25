@@ -412,13 +412,15 @@ def getScore(routeBook):
 
 def hillClimb(routeBook, score, gates, chip, steps=1000):
     # maak variabele om beste route book op te slaan
-    print('in Hillclimber')
+
+    print("Hillclimber - Swap-2-Breakthrough algoritme")
+
+
     bestRouteBook = routeBook
     hillData = pd.DataFrame(columns=['Score Hillclimber'])
 
     # # bereid voortgangsbar voor
     pbar = ProgressBar()
-    print("Hillclimber - Swap-2-Breakthrough algoritme")
 
     # loop voor het aantal stappen
     for i in pbar(range(0, steps)):
@@ -580,7 +582,7 @@ def aStarRouteFinder(routeBook, grid, size):
 
     # print('tijd: ', toc - tic)
 
-    print("Gevonden!")
+    print("\nGevonden!")
 
     # print("ROUTEBOOKSOLVED")
     # for route in routeBookSolved:

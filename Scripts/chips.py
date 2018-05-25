@@ -12,6 +12,7 @@
 #
 # Chips & Circuits
 ############################################################
+
 import sys
 sys.path.insert(0, '../Data')
 
@@ -35,8 +36,8 @@ print("\n\nCHIPS & CIRCUITS\n"
 print("Wat zou je willen zien?\n"
       "1: Los één van de 6 netlists op\n"
       "2: Het effect van de volgorde van een netlists\n"
-      "3: De Output van 'Breaktrough' en 'gewogen Astar' algoritmes\n"
-      "4: Hetzelfde als optie 3, beide verbeterd met pure Astar\n"
+      "3: De output van 'Breaktrough algoritme'\n"
+      "4: De output van 'Gewogen Astar' algoritme\n"
       "5: Vergelijking van 3 verschillende hillclimbers")
 response1 = input("Maak een keuze: ")
 
@@ -66,6 +67,8 @@ if response1 == '1':
               "Voorbeeld van geldige input is: 1, 2, 3, 4, 5 of 6")
         exit()
 else:
+    print("Kies uit netlist 1 - 3")
+    response2 = input("Maak een keuze: ")
     if response2 == '1':
         netlist = netlists.netlist_1
     elif response2 == '2':
@@ -76,8 +79,6 @@ else:
         print("Dit is geen geldige input\n"
               "Voorbeeld van geldige input is: 1, 2 of 3")
         exit()
-
-print(netlist)
 
 # gebruik kleine of grote grid
 if int(response2) < 4:
@@ -101,14 +102,26 @@ routeBook = functions.makeObjects(netlist, gates)
 # # maak kopie van routeboek
 routeBookEmpty = deepcopy(routeBook)
 
-
 # bepaal lowerbound aka Manhattan distance van netlist
 lowerBound, netlistDist = functions.manhattanDist(routeBook)
-print("Lowerbound score voor netlist", response2, ":", lowerBound)
+print("\nLowerbound score voor netlist", response2, ":", lowerBound)
 
-options.compareNetlists(netlist, gates, routeBookEmpty, size, grid)
-options.compareHillClimbers(routeBookEmpty, gates, size, grid)
-options.breakThrough(routeBookEmpty, gates, size): 
-options.weightedAStar(routeBookEmpty, grid, size)
-options.solveNetlist(routeBookEmpty, grid, size, gates)
+# keuze 1: leg één van de 6 netlists
+if response1 == '1':
+    options.solveNetlist(routeBookEmpty, grid, size, gates)
 
+# keuze 2: vergelijk verschillende invoernetlists (Dalton, Ui, beste uit random)
+if response1 == '2':
+    options.compareNetlists(netlist, gates, routeBookEmpty, size, grid)
+
+# keuze 3: zoek de beste geldige routes met het breaktrough algoritme
+if response1 == '3':
+    options.breakThrough(routeBookEmpty, gates, size)
+
+# keuze 4: zoek de beste geldige routes het gewogen Astar algoritme
+if response1 == '4':
+    options.weightedAStar(routeBookEmpty, grid, size)
+
+# keuze 5: vergelijk 3 verschillende hillclimbers
+if response1 == '5':
+    options.compareHillClimbers(routeBookEmpty, gates, size, grid)
