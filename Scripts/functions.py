@@ -15,8 +15,6 @@
 #
 # Bevat alle functies die worden gebruikt in chips.py
 ###########################################################
-import sys
-sys.path.append('../Data')
 
 from time import time
 import csv
@@ -126,7 +124,7 @@ def getLowerBound(routeBook):
     return lowerBound, netPointDist
 
 
-def randomRouteBook(routeBook, gates, chip, steps=1000):
+def randomRouteBook(routeBook, gates, chip, steps=100):
     """ Probeert willekeurige volgordes van de netlist met het breaktrough
     algoritme op te lossen, onthoudt de beste uitkomst """
 
@@ -143,9 +141,13 @@ def randomRouteBook(routeBook, gates, chip, steps=1000):
     # loop voor aantal iteraties willekeurig algoritme
     for i in range(0, steps):
 
+        if i % 20 == 0:
+            print('Vordering: ', i, ' van de ', steps)
+
         # sla beginstand routebook op en shuffle
         newRouteBook = routeBook
-        shuffle(newRouteBook)
+        if i > 0:
+            shuffle(newRouteBook)
 
         # maak nieuw lege grid aan
         grid = gridMat(gates, chip)
