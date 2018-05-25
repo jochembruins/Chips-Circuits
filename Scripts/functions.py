@@ -510,9 +510,6 @@ def aStarRouteFinder(routeBook, grid, size):
 
     # loop totdat de routeboek leeg is
     while routeBookEmpty != []:
-        print("Aantal netlists geprobeerd: ", progress,
-              end='\r')
-        progress += 1
         # loop over alle elementen in de routeboek
         for netPoint in routeBookEmpty:
 
@@ -559,6 +556,10 @@ def aStarRouteFinder(routeBook, grid, size):
 
             # begin opnieuw als maximaal aantal loops is bereikt
             if loops == 150:
+                print("Aantal netlists geprobeerd: ", progress,
+                      end='\r')
+                progress += 1
+
                 lengthEmpty = len(routeBookEmpty)
                 routeBookEmpty = routeBookEmpty + routeBookDone
                 routeBookDone = []
@@ -909,30 +910,30 @@ def checkClosedNode(direction, start):
     return start
 
 
-def getlistsurroundings(gates, chip):
+def getListSurroundings(gates, chip):
     list = []
     for i in range(len(gates)):
         start = [gates[i].x, gates[i].y, gates[i].z]
 
-        nodelinks = [start[0] - 1, start[1], start[2]]
-        noderechts = [start[0] + 1, start[1], start[2]]
-        nodeboven = [start[0], start[1], start[2] + 1]
-        nodebeneden = [start[0], start[1], start[2] - 1]
-        nodevoor = [start[0], start[1] + 1, start[2]]
-        nodeachter = [start[0], start[1] - 1, start[2]]
+        nodeLinks = [start[0] - 1, start[1], start[2]]
+        nodeRechts = [start[0] + 1, start[1], start[2]]
+        nodeBoven = [start[0], start[1], start[2] + 1]
+        nodeBeneden = [start[0], start[1], start[2] - 1]
+        nodeVoor = [start[0], start[1] + 1, start[2]]
+        nodeAchter = [start[0], start[1] - 1, start[2]]
 
-        if checkExistance(nodelinks, chip):
-            list.append(nodelinks)
-        if checkExistance(noderechts, chip):
-            list.append(noderechts)
-        if checkExistance(nodeboven, chip):
-            list.append(nodeboven)
-        if checkExistance(nodebeneden, chip):
-            list.append(nodebeneden)
-        if checkExistance(nodevoor, chip):
-            list.append(nodevoor)
-        if checkExistance(nodeachter, chip):
-            list.append(nodeachter)
+        if checkExistance(nodeLinks, chip):
+            list.append(nodeLinks)
+        if checkExistance(nodeRechts, chip):
+            list.append(nodeRechts)
+        if checkExistance(nodeBoven, chip):
+            list.append(nodeBoven)
+        if checkExistance(nodeBeneden, chip):
+            list.append(nodeBeneden)
+        if checkExistance(nodeVoor, chip):
+            list.append(nodeVoor)
+        if checkExistance(nodeAchter, chip):
+            list.append(nodeAchter)
     list = sorted(list)
     return list
 
@@ -992,22 +993,6 @@ def searchLocFrom(netPoint, routeBookEmpty, routeBookDone, grid):
                         del routeBookDone[routeBookDone.index(netPointToDelete)]
 
                         return routeBookEmpty, routeBookDone, grid, nextLocFrom
-
-
-def GcostForGates(gates):
-    """ maakt voor element in grid een gcostwaarde afhankelijk
-        van de afstand tot de gates"""
-    grid = np.zeros([18, 13, 10])
-    for x in range(18):
-        for y in range(13):
-            for z in range(10):
-                distancee = 0
-                for i in gates:
-                    distanceee = distance([x, y, z], [i.x, i.y, i.z])
-                    distancee = distancee + distanceee
-                grid[x][y][z] = 600 - distancee
-    return grid
-
 
 def replaceLine(routeBook, grid, order, chip, steps=2000):
 

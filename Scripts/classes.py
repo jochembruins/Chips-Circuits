@@ -57,10 +57,10 @@ class wire(object):
             als argument wordt een netlist genomen en de gates data """
 
         # tweede versie van netlist opgeslagen
-        netlistversion2 = deepcopy(netlist)
+        netlistVersion2 = deepcopy(netlist)
 
         # lege derde versie van te definieren netlist opgeslagen
-        netlistversion3 = []
+        netlistVersion3 = []
         # lengte netlist berekend
         k = len(netlist)
         # itereren over lengte netlist
@@ -69,113 +69,113 @@ class wire(object):
             # het minimum wordt op een hoog getal gezet
             minimum = 1000
             # numbernetlist wordt 0
-            numbernetlist = 0
+            numbernNetlist = 0
 
             # itereren over lengte netlist min j
             for i in range(0, k - j):
                 # de eerste factor van wire opslaan in listelement1
-                listelement1 = netlistversion2[i][0]
+                listElement1 = netlistVersion2[i][0]
                 # de tweede factor van wire opslaan in listelement2
-                listelement2 = netlistversion2[i][1]
+                listElement2 = netlistVersion2[i][1]
 
                 # verschil in x-waarden netconnecties opslaan in x_verschil
-                x_verschil = abs(gate[listelement1].x - gate[listelement2].x)
+                x_difference = abs(gate[listElement1].x - gate[listElement2].x)
                 # verschil in y-waarden netconnecties opslaan in y_verschil
-                y_verschil = abs(gate[listelement1].y - gate[listelement2].y)
-                som = x_verschil + y_verschil
+                y_difference = abs(gate[listElement1].y - gate[listElement2].y)
+                sum = x_difference + y_difference
 
                 # als de som van x_verschil en y_verschil kleiner dan minimum
-                if (som < minimum):
-                    minimum = som
-                    numbernetlist = i
+                if (sum < minimum):
+                    minimum = sum
+                    numbernNetlist = i
 
             # zet zojuist bepaalde netlistelement in netlistversion3
-            netlistversion3.append(netlistversion2[numbernetlist])
+            netlistVersion3.append(netlistVersion2[numbernNetlist])
             
             # haalde aangewezen element uit netlistversion2
-            netlistversion2.pop(numbernetlist)
+            netlistVersion2.pop(numbernNetlist)
 
         # return nieuwe netlist
-        return netlistversion3
+        return netlistVersion3
 
-    def uiMethod(netlist, gate):
+    def uiMethod(netList, gate):
         """ deze functie ordent de netlist, hierbij wordt er geordend op
             hoe ver netlistelementconnecties aan de buitenkant
             van de grid liggen """
 
         # tweede versie van netlist opgeslagen
-        netlistversion2 = deepcopy(netlist)
+        netlistVersion2 = deepcopy(netList)
         # lege derde versie van te definiëren netlist opgeslagen
-        netlistversion3 = []
+        netlistVersion3 = []
         # lengte netlist berekend
-        k = len(netlist)
+        k = len(netList)
 
         # de breedte van het eerste veld is 17 (tellend vanaf 0)
-        breedte = 17
+        width = 17
         # de hoogte van het eerste veld is 12 (tellend vanaf 0)
-        hoogte = 12
+        height = 12
 
         # helftbreedte en hoogte worden berekend om het bord te scheiden
-        helftbreedte = breedte / 2
-        helfthoogte = hoogte / 2
+        halfWidth = width / 2
+        halfHeight = height / 2
 
         # itereren over lengte netlist
         for j in range(0, k):
             # het minimum worddt op een hoog getal gezet
             minimum = 1000
             # numbernetlist wordt 0
-            numbernetlist = 0
+            numberNetList = 0
 
             # itereren over lengte netlist min j
             for i in range(0, k - j):
                 # de eerste factor van wire opslaan in listelement1
-                listelement1 = netlistversion2[i][0]
+                listElement1 = netlistVersion2[i][0]
                 # de tweede factor van wire opslaan in listelement2
-                listelement2 = netlistversion2[i][1]
+                listElement2 = netlistVersion2[i][1]
 
                 # check of de x-waarde in de eerste helft valt
-                if (gate[listelement1].x <= helftbreedte):
-                    x1waarde = gate[listelement1].x
+                if (gate[listElement1].x <= halfWidth):
+                    x1Value = gate[listElement1].x
                 else:
                     # anders wordt de waarde breedte minus x-element
-                    x1waarde = breedte - gate[listelement1].x
+                    x1Value = width - gate[listElement1].x
 
-                if (gate[listelement1].y <= helfthoogte):
-                    y1waarde = gate[listelement1].y
+                if (gate[listElement1].y <= halfHeight):
+                    y1value = gate[listElement1].y
                 else:
-                    y1waarde = hoogte - gate[listelement1].y
+                    y1value = height - gate[listElement1].y
 
                 # de waarde van de eerste gate is het
                 # minimum van de x1- en y1waarde
-                waarde1 = min(x1waarde, y1waarde)
+                value1 = min(x1Value, y1value)
 
-                if (gate[listelement2].x <= helftbreedte):
-                    x2waarde = gate[listelement2].x
+                if (gate[listElement2].x <= halfWidth):
+                    x2Value = gate[listElement2].x
                 else:
-                    x2waarde = breedte - gate[listelement2].x
+                    x2Value = width - gate[listElement2].x
 
-                if (gate[listelement2].y <= helfthoogte):
-                    y2waarde = gate[listelement2].y
+                if (gate[listElement2].y <= halfHeight):
+                    y2Value = gate[listElement2].y
                 else:
-                    y2waarde = hoogte - gate[listelement2].y
+                    y2Value = height - gate[listElement2].y
 
                 # de waarde van de tweede gate is het
                 # minimum van de x2- en y2waarde
-                waarde2 = min(x2waarde, y2waarde)
+                value2 = min(x2Value, y2Value)
 
-                som = waarde1 + waarde2
+                sum = value1 + value2
 
                 # als de som kleiner is dan het minimum
-                if (som < minimum):
-                    minimum = som
-                    numbernetlist = i
+                if (sum < minimum):
+                    minimum = sum
+                    numberNetList = i
 
-            # zet zojuist bepaalde netlistelement in netlistversion3
-            netlistversion3.append(netlistversion2[numbernetlist])
-            # haalde aangewezen element uit netlistversion2
-            netlistversion2.pop(numbernetlist)
+            # zet zojuist bepaalde netlistelement in netlistVersion3
+            netlistVersion3.append(netlistVersion2[numberNetList])
+            # haalde aangewezen element uit netlistVersion2
+            netlistVersion2.pop(numberNetList)
         # return nieuwe netlist
-        return netlistversion3
+        return netlistVersion3
 
     def changeRouteBook(routeBook):
         

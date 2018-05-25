@@ -40,7 +40,9 @@ print("Wat zou je willen zien?\n"
       "5: Vergelijking van 3 verschillende hillclimbers")
 response1 = input("Maak een keuze: ")
 
-if not int(response1) > 0 and int(response1) < 6:
+print(str.isnumeric(response1))
+
+if str.isnumeric(response1) == False and int(response1) > 0 and int(response1) < 6:
     print("Dit is geen geldige input")
     exit()
 
@@ -66,7 +68,6 @@ else:
           "waar '1' staat voor netlist 1")
     exit()
 
-print(netlist)
 # gebruik kleine of grote grid
 if int(response2) < 4:
     size = "small"
