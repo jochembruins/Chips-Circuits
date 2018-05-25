@@ -994,22 +994,6 @@ def searchLocFrom(netPoint, routeBookEmpty, routeBookDone, grid):
 
                         return routeBookEmpty, routeBookDone, grid, nextLocFrom
 
-
-def GcostForGates(gates):
-    """ maakt voor element in grid een gcostwaarde afhankelijk
-        van de afstand tot de gates"""
-    grid = np.zeros([18, 13, 10])
-    for x in range(18):
-        for y in range(13):
-            for z in range(10):
-                distancee = 0
-                for i in gates:
-                    distanceee = distance([x, y, z], [i.x, i.y, i.z])
-                    distancee = distancee + distanceee
-                grid[x][y][z] = 600 - distancee
-    return grid
-
-
 def replaceLine(routeBook, grid, order, chip, steps=2000):
 
     """ Hillclimber algoritme,
