@@ -46,7 +46,7 @@ def solveNetlist(routeBook, grid, size, gates):
 	# verbeter route door met pure A* lijnen opnieuw te leggen
 	NewRoutes = functions.replaceLine(routes[0],
 									  grid, 1,
-									  size, 1000)
+									  size, 600)
 
 	# print info over uitkomsten
 	print('Score na replaceLine: ', functions.getScore(NewRoutes[0]))
@@ -142,7 +142,7 @@ def compareHillClimbers(routeBook, gates, size, grid):
 	# HILLCLIMBER: WISSEL TWEE NETPOINTS, LEG HELE NETLIST OPNIEUW ----------
 	# laat hilclimber werken
 	HillClimber = functions.hillClimb(randomRouteBook[2], randomRouteBook[1],
-									  gates, size, 1000)
+									  gates, size, 600)
 
 	# sla data op om HillClimbers te vergelijken
 	compare = HillClimber[2]
@@ -176,11 +176,13 @@ def compareHillClimbers(routeBook, gates, size, grid):
 	statistics.plotLine(compare, 'Hillclimber en Replacelines')
 
 
-def breakThrough(routeBook, gates, chip):
+def breakThrough(routeBook, gates, chip, response):
 	"""Vind een route voor met behulp van het breakThrough algoritme. 
 	Om verzekerd een route te geven, maken we gebruik van de functie 
 	randomRouteBook."""
-	bestRoute = functions.randomRouteBook(routeBook, gates, chip, steps=1000)
+
+	bestRoute = functions.randomRouteBook(routeBook, gates, chip, response, steps=1000)
+
 	print("score voor netlist =", bestRoute[1])
 	statistics.plotChip(gates, bestRoute[2], chip)
 
@@ -188,8 +190,8 @@ def breakThrough(routeBook, gates, chip):
 def weightedAStar(routeBook, gates, grid, chip):
 	"""vind een route met de gewogen A-star. Dit is dus een valide, 
 	maar geen geoptimaliseerde route"""
+
 	route = functions.aStarRouteFinder(routeBook, grid, chip)
 
 	print("score voor netlist =", functions.getScore(route[0]))
-
 	statistics.plotChip(gates, route[0], chip)

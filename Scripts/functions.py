@@ -128,7 +128,7 @@ def manhattanDist(routeBook):
     return lowerBound, netPointDist
 
 
-def randomRouteBook(routeBook, gates, chip, steps=100):
+def randomRouteBook(routeBook, gates, chip, response, steps=100):
     """ Probeert willekeurige volgordes van de netlist met het breaktrough
     algoritme op te lossen, onthoudt de beste uitkomst """
 
@@ -138,6 +138,8 @@ def randomRouteBook(routeBook, gates, chip, steps=100):
     # maak nodige variabelen aan
     bestRouteBookIn = []
     score = 2000
+    if response == '3':
+        steps = 10
 
     # maak pandas bestand aan voor score-opslag
     randomData = pd.DataFrame(columns=['I', 'Score'])
@@ -163,7 +165,9 @@ def randomRouteBook(routeBook, gates, chip, steps=100):
         finished = False
         # probeer nieuwe route te vinden met breaktrough algoritme
         try:
-            newRouteFound = breakThroughFinder(tmp_newRouteBook, grid)[1]
+            newRouteFound = breakThroughFinder(tmp_newRouteBook,
+                                               grid,
+                                               response)[1]
             finished = True
         except:
             finished = False
@@ -186,7 +190,7 @@ def randomRouteBook(routeBook, gates, chip, steps=100):
     return bestRouteBookIn, score, bestRouteFound, grid
 
 
-def breakThroughFinder(routeBook, grid):
+def breakThroughFinder(routeBook, grid, response):
     """ algoritme om lijnen in netlist te leggen
         heuristiek: weg belemmerd, ga omhoog!"""
 
@@ -360,14 +364,22 @@ def breakThroughFinder(routeBook, grid):
             route.append(netPoint.locTo)
             count += 1
 
-            if count == 300:
-                # print('meer dan 150')
-                sys.exit
-
-            for step in route:
-                if step[2] > 15:
-                    # print('te hoog')
+            # stop met leggen van wires wanneer de count te hoog wordt
+            # deze is aangepast voor netlist 3
+            if response == '3':
+                if count == 1002:
                     sys.exit
+                # stop met leggen van wires wanneer de lijnen te hoog lopen
+                for step in route:
+                    if step[2] > 30:
+                        sys.exit
+            else:
+                if count == 300:
+                    sys.exit
+
+                for step in route:
+                    if step[2] > 15:
+                        sys.exit
 
             # save route in netPoint object
             netPoint.route = route
@@ -413,7 +425,7 @@ def getScore(routeBook):
 def hillClimb(routeBook, score, gates, chip, steps=1000):
     # maak variabele om beste route book op te slaan
 
-    print("Hillclimber - Swap-2-Breakthrough algoritme")
+    print("\nHillclimber - Swap-2-Breakthrough algoritme")
 
 
     bestRouteBook = routeBook
@@ -1020,7 +1032,7 @@ def replaceLine(routeBook, grid, order, chip, steps=2000):
 
     # bereid voortgangsbar voor
     pbar = ProgressBar()
-    print("Hillclimber - replaceline algoritme")
+    print("\nHillclimber - replaceline algoritme")
     for i in pbar(range(0, steps)):
 
         # varianbelen voor deze interatie
@@ -1032,7 +1044,6 @@ def replaceLine(routeBook, grid, order, chip, steps=2000):
             index = random.randrange(0, len(newRouteBook))
         else:
             index = i % len(newRouteBook)
-
 
         # verwijder route uit grid
         delRoute(newRouteBook[index].route, newGrid)

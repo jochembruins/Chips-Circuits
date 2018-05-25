@@ -30,6 +30,8 @@ import pandas as pd
 import functions
 import options
 
+
+
 print("\n\nCHIPS & CIRCUITS\n"
       "Welkom bij de programmeertheoriecase van de Veganboyz\n"
       "(aka Melle Gelok, Jochem Bruins, Noah van Grinsven)\n")
@@ -106,6 +108,8 @@ routeBookEmpty = deepcopy(routeBook)
 lowerBound, netlistDist = functions.manhattanDist(routeBook)
 print("\nLowerbound score voor netlist", response2, ":", lowerBound)
 
+
+
 # keuze 1: leg één van de 6 netlists
 if response1 == '1':
     options.solveNetlist(routeBookEmpty, grid, size, gates)
@@ -116,7 +120,7 @@ if response1 == '2':
 
 # keuze 3: zoek de beste geldige routes met het breaktrough algoritme
 if response1 == '3':
-    options.breakThrough(routeBookEmpty, gates, size)
+        options.breakThrough(routeBookEmpty, gates, size, response2)
 
 # keuze 4: zoek de beste geldige routes het gewogen Astar algoritme
 if response1 == '4':
