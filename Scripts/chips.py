@@ -87,13 +87,14 @@ print("Lowerbound score voor netlist", commArg, ":", lowerBound)
 # netlistDalton = classes.wire.daltonMethod(netlist, gates)
 # netlistUi = classes.wire.uiMethod(netlist, gates)
 
+
 # # sla ingaande routebook van beste oplossing randomroute op
 # randomRouteBookIn = functions.randomRouteBook(routeBookEmpty, gates, size, 100)[0]
-# randomRouteNetlist = []
+# randomRouteNetlistIn = []
 # for object in randomRouteBookIn:
-#     randomRouteNetlist.append(object.netPoint)
+#     randomRouteNetlistIn.append(object.netPoint)
 
-# netlistCompare = [netlistDalton, netlistUi, randomRouteNetlist]
+# netlistCompare = [netlistDalton, netlistUi, randomRouteNetlistIn]
 
 # # bereid voortgangsbar voor
 # pbar = ProgressBar()
@@ -215,24 +216,26 @@ statistics.plotLine(compare, 'Hillclimber en Replacelines')
 
 # # plot gates en lijnen
 # statistics.plotChip(gates, routeBookBest, size)
-#
-# ## LEG MET Astar GEWOGEN EN VERBETER MET PURE
-# newRoutes = functions.aStarRouteFinder(routeBookEmpty, grid, size)
-# print(functions.checker(newRoutes[0]))
-# print(functions.getScore(newRoutes[0]))
-#
-#
-# # maak nieuw grid adhv het beste gevonden routebook
-# for route in newRoutes[0]:
-#     grid = functions.changeMat(route.route, grid)
-#
-# # DIT MOET NOG AANGEPAST WORDEN OP NIEUWE INDEX IN FUNCTIE
-# # verbeter route door met pure A* lijnen opnieuw te leggen
-# NewRoute = functions.replaceLine(newRoutes[0], grid, 1, size, 1000)
-#
-# # print info over uitkomsten
-# print(functions.getScore(NewRoute[0]))
-# print(functions.checker(NewRoute[0]))
-# print(len(NewRoute[0]))
-# statistics.plotChip(gates, NewRoute[0], size)
+
+## LEG MET Astar GEWOGEN EN VERBETER MET PURE
+newRoutes = functions.aStarRouteFinder(routeBookEmpty, grid, size)
+print(functions.checker(newRoutes[0]))
+print(functions.getScore(newRoutes[0]))
+
+
+# maak nieuw grid adhv het beste gevonden routebook
+for route in newRoutes[0]:
+    grid = functions.changeMat(route.route, grid)
+
+# DIT MOET NOG AANGEPAST WORDEN OP NIEUWE INDEX IN FUNCTIE
+# verbeter route door met pure A* lijnen opnieuw te leggen
+NewRoute = functions.replaceLine(newRoutes[0],
+                                 grid, 1,
+                                 size, 1000)
+
+# print info over uitkomsten
+print(functions.getScore(NewRoute[0]))
+print(functions.checker(NewRoute[0]))
+print(len(NewRoute[0]))
+statistics.plotChip(gates, NewRoute[0], size)
 

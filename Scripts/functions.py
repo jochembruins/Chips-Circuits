@@ -489,6 +489,7 @@ def checker(routeBook):
 
 def aStarRouteFinder(routeBook, grid, size):
     """ Functie zoekt naar valide oplossing met gewogen Astar """
+    print("\nGewogen A* algoritme")
 
     # maak benodige variabelen aan
     tic = time()
@@ -506,9 +507,13 @@ def aStarRouteFinder(routeBook, grid, size):
 
     # counter voor het aantal iteraties
     loops = 0
+    progress = 0
 
     # loop totdat de routeboek leeg is
     while routeBookEmpty != []:
+        print("Aantal netlists geprobeerd: ", progress,
+              end='\r')
+        progress += 1
         # loop over alle elementen in de routeboek
         for netPoint in routeBookEmpty:
 
@@ -556,7 +561,6 @@ def aStarRouteFinder(routeBook, grid, size):
             # begin opnieuw als maximaal aantal loops is bereikt
             if loops == 150:
                 lengthEmpty = len(routeBookEmpty)
-                print(lengthEmpty)
                 routeBookEmpty = routeBookEmpty + routeBookDone
                 routeBookDone = []
                 loops = 0
@@ -567,7 +571,6 @@ def aStarRouteFinder(routeBook, grid, size):
                     shuffle(routeBookEmpty)
 
                 # update laatste routeBook
-                print('update')
                 routeBookSolved = deepcopy(routeBookEmpty)
 
                 # maak grid weer leeg
@@ -577,12 +580,11 @@ def aStarRouteFinder(routeBook, grid, size):
     toc = time()
 
     # print('tijd: ', toc - tic)
-
-    for route in routeBookSolved:
-        print(route.netPoint, end=', ')
+    # print("ROUTEBOOKSOLVED")
+    # for route in routeBookSolved:
+    #     print(route.netPoint, end=', ')
 
     return routeBookDone, routeBookSolved
-
 
 
 def aStar(netPoint, grid, index, chip):
@@ -1005,7 +1007,10 @@ def GcostForGates(gates):
     return grid
 
 
-def replaceLine(routeBook, grid, order, chip, steps=2000):
+
+def replaceLine(routeBook, grid, order, chip, \
+                               steps = 2000):
+
     """ Hillclimber algoritme,
         neemt een bestaande oplossing, verwijderd vervolgens achter elkaar
         1 en zet deze terug met pure Astar algoritme
@@ -1024,7 +1029,6 @@ def replaceLine(routeBook, grid, order, chip, steps=2000):
     # maak variabelen om beste versies op te slaan
     bestRouteBook = routeBook
     bestGrid = grid
-
     # loop voor aantal steps
     for i in range(0, steps):
 
