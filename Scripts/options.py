@@ -126,8 +126,8 @@ def compareNetlists(netlist, gates, routeBook, size, grid):
 		runtime = toc - tic
 		print("runtime:", runtime)
 
-		# draai lijngrafiek uit om netlists te vergelijken
-		compare.columns = ['Dalton', 'Ui', 'Random']
+	# draai lijngrafiek uit om netlists te vergelijken
+	compare.columns = ['Dalton', 'Ui', 'Random']
 	statistics.plotLine(compare, 'Vergelijking sorteermethodes')
 
 
@@ -183,7 +183,7 @@ def breakThrough(routeBook, gates, chip, response):
 
 	bestRoute = functions.randomRouteBook(routeBook, gates, chip, response, steps=1000)
 
-	print("score voor netlist =", bestRoute[1])
+	print("Score voor netlist =", bestRoute[1])
 	statistics.plotChip(gates, bestRoute[2], chip)
 
 

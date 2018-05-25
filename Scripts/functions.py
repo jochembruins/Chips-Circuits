@@ -146,7 +146,7 @@ def randomRouteBook(routeBook, gates, chip, response, steps=100):
 
     # bereid voortgangsbar voor
     pbar = ProgressBar()
-    print("Randomroute algoritme")
+    print("\nRandomroute algoritme")
 
     # loop voor aantal iteraties willekeurig algoritme
     for i in pbar(range(0, steps)):
@@ -368,18 +368,18 @@ def breakThroughFinder(routeBook, grid, response):
             # deze is aangepast voor netlist 3
             if response == '3':
                 if count == 1002:
-                    sys.exit
+                    sys.exit(0)
                 # stop met leggen van wires wanneer de lijnen te hoog lopen
                 for step in route:
                     if step[2] > 30:
-                        sys.exit
+                        sys.exit(0)
             else:
                 if count == 300:
-                    sys.exit
+                    sys.exit(0)
 
                 for step in route:
                     if step[2] > 15:
-                        sys.exit
+                        sys.exit(0)
 
             # save route in netPoint object
             netPoint.route = route
