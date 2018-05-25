@@ -52,6 +52,7 @@ Indien het niet mogelijk blijkt dat de netlistvolgorde een valide oplossing geef
 
 ### Breakthrough algoritme
 Het breakthrough algoritme probeert ook de routes één voor één te leggen. Allereerst bepaald dit algoritme zijn mogelijke eerste en laatste stap, kan dit niet dan wordt er een lijn die onnodig blokkeerd weggebroken. Dit algoritme heeft als heuristiek: geen uitweg? Breek omhoog! Dat wil zeggen dat de snelste route wordt geprobeerd, bij blokkade wordt een stap omhoog gezet om vervolgens de route weer te vervolgen. Als de route zich boven het eindpunt bevind wordt er naar beneden doorgebroken, alle lijnen in de weg worden verwijderd. Verder wordt de de hoogte constraint (max hoogte = 7) niet toegepast. De te hoge lijnen kunnen later met behulp van de hillclimber weer naar beneden worden gebracht.
+De dalton en ui methode krijgen geen geldige oplossing, vandaar wordt deze alleen met random volgordes van netlists geprobeerd.
 
 ### Pure A* in combinatie met hillclimber
 
