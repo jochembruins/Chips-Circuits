@@ -557,6 +557,7 @@ def aStarRouteFinder(routeBook, grid, size):
             # begin opnieuw als maximaal aantal loops is bereikt
             if loops == 150:
                 lengthEmpty = len(routeBookEmpty)
+                print(lengthEmpty)
                 routeBookEmpty = routeBookEmpty + routeBookDone
                 routeBookDone = []
                 loops = 0
