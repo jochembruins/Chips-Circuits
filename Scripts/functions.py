@@ -585,6 +585,9 @@ def aStarRouteFinder(routeBook, grid, size):
     toc = time()
 
     # print('tijd: ', toc - tic)
+
+    print("\nGevonden!")
+
     # print("ROUTEBOOKSOLVED")
     # for route in routeBookSolved:
     #     print(route.netPoint, end=', ')
@@ -1012,9 +1015,7 @@ def GcostForGates(gates):
     return grid
 
 
-
-def replaceLine(routeBook, grid, order, chip, \
-                               steps = 2000):
+def replaceLine(routeBook, grid, order, chip, steps=2000):
 
     """ Hillclimber algoritme,
         neemt een bestaande oplossing, verwijderd vervolgens achter elkaar
@@ -1035,7 +1036,11 @@ def replaceLine(routeBook, grid, order, chip, \
     bestRouteBook = routeBook
     bestGrid = grid
     # loop voor aantal steps
-    for i in range(0, steps):
+
+    # bereid voortgangsbar voor
+    pbar = ProgressBar()
+    print("Hillclimber - replaceline algoritme")
+    for i in pbar(range(0, steps)):
 
         # varianbelen voor deze interatie
         newRouteBook = bestRouteBook

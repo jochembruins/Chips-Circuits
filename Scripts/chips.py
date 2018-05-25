@@ -28,12 +28,18 @@ import statistics
 import pandas as pd
 import functions
 
-if len(sys.argv) == 1:
-    print("Gebruik: chips.py N \nN = 1, 2, 3, 4, 5, 6; waar '1' "
-          "staat voor netlist 1")
-    exit()
+print("\n\nCHIPS & CIRCUITS\n"
+      "Welkom bij de programmeertheoriecase van de Veganboys\n"
+      "(aka Melle Gelok, Jochem Bruins, Noah van Grinsven)\n")
+print("Wat zou je willen zien?\n"
+      "1: Los één van de 6 netlists op\n"
+      "2: Het effect van de volgorde van een netlists\n"
+      "3: De Output van 'Breaktrough' en 'gewogen Astar' algoritmes\n"
+      "4: Hetzelfde als optie 3, beide verbeterd met pure Astar\n"
+      "5: Vergelijking van 3 verschillende hillclimbers")
+response1 = input("Maak een keuze: ")
 
-commArg = int(sys.argv[1])
+keuze = int(sys.argv[1])
 
 if commArg == 1:
     netlist = netlists.netlist_1
@@ -97,7 +103,6 @@ netlistCompare = [netlistDalton, netlistUi, randomRouteNetlistIn]
 
 # bereid voortgangsbar voor
 pbar = ProgressBar()
-print("Hillclimber - replaceline algoritme")
 
 for netlist in pbar(netlistCompare):
     tic = time()
@@ -212,25 +217,25 @@ statistics.plotLine(compare, 'Vergelijking sorteermethodes')
 # # plot gates en lijnen
 # statistics.plotChip(gates, routeBookBest, size)
 
-## LEG MET Astar GEWOGEN EN VERBETER MET PURE
-newRoutes = functions.aStarRouteFinder(routeBookEmpty, grid, size)
-print(functions.checker(newRoutes[0]))
-print(functions.getScore(newRoutes[0]))
-
-
-# maak nieuw grid adhv het beste gevonden routebook
-for route in newRoutes[0]:
-    grid = functions.changeMat(route.route, grid)
-
-# DIT MOET NOG AANGEPAST WORDEN OP NIEUWE INDEX IN FUNCTIE
-# verbeter route door met pure A* lijnen opnieuw te leggen
-NewRoute = functions.replaceLine(newRoutes[0],
-                                 grid, 1,
-                                 size, 1000)
-
-# print info over uitkomsten
-print(functions.getScore(NewRoute[0]))
-print(functions.checker(NewRoute[0]))
-print(len(NewRoute[0]))
-statistics.plotChip(gates, NewRoute[0], size)
+# ## LEG MET Astar GEWOGEN EN VERBETER MET PURE
+# newRoutes = functions.aStarRouteFinder(routeBookEmpty, grid, size)
+# print(functions.checker(newRoutes[0]))
+# print(functions.getScore(newRoutes[0]))
+#
+#
+# # maak nieuw grid adhv het beste gevonden routebook
+# for route in newRoutes[0]:
+#     grid = functions.changeMat(route.route, grid)
+#
+# # DIT MOET NOG AANGEPAST WORDEN OP NIEUWE INDEX IN FUNCTIE
+# # verbeter route door met pure A* lijnen opnieuw te leggen
+# NewRoute = functions.replaceLine(newRoutes[0],
+#                                  grid, 1,
+#                                  size, 1000)
+#
+# # print info over uitkomsten
+# print(functions.getScore(NewRoute[0]))
+# print(functions.checker(NewRoute[0]))
+# print(len(NewRoute[0]))
+# statistics.plotChip(gates, NewRoute[0], size)
 
