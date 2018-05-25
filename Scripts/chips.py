@@ -48,7 +48,8 @@ elif commArg == 6:
     netlist = netlists.netlist_6
 else:
     print("Gebruik niet correct")
-    print("Gebruik: chips.py N \nN = 1, 2, 3, 4, 5, 6; waar '1' staat voor netlist 1")
+    print("Gebruik: chips.py N \nN = 1, 2, 3, 4, 5, 6; "
+          "waar '1' staat voor netlist 1")
     exit()
 
 # gebruik kleine of grote grid
@@ -68,45 +69,65 @@ gates = functions.makeLocations(gatesLoc)
 # maak grid met gates
 grid = functions.gridMat(gates, size)
 
-# maak object van iedere netPoint in netlist
+# # maak object van iedere netPoint in netlist DIT MOET NAAR BENEDEN ZOMETEENEEE
 routeBook = functions.makeObjects(netlist, gates)
+# # maak kopie van routeboek
+routeBookEmpty = deepcopy(routeBook)
 
 # bepaal lowerbound aka Manhattan distance van netlist
 # DIT MOET IN DE OUTPUTTABEL ERGENS NEERGEZET WORDEN
-lowerBound = functions.getLowerBound(routeBook)
-
-# maak kopie van routeboek
-routeBookEmpty = deepcopy(routeBook)
+# lowerBound = functions.getLowerBound(routeBook)
+# print("Lowerbound netlist", commArg, ":", lowerBound)
 
 
-# ## RANDOM ROUTEFINDER
-# leg wires van netlist adhv random netlist volgordes
-# met breakthrough algoritme
-# 3e argument = aantal verschillende netlists
-# randomRoute = functions.randomRouteBook(routeBookEmpty, gates, 100)
+# ## VERGELIJK VERSCHILLENDE NETLISTS ---------------------------------------
+# # maak netlists met Ui/Dalton methode
+# netlistDalton = classes.wire.daltonMethod(netlist, gates)
+# netlistUi = classes.wire.uiMethod(netlist, gates)
+# netlistCompare = [netlistDalton, netlistUi]
+
+# for netlist in netlistCompare:
+#     # maak object van iedere netPoint, maak lijst van alle netPoints
+#     routeBook = functions.makeObjects(netlist, gates)
+#     routeBookEmpty = deepcopy(routeBook)
+
+#     # leg routes met gewogen Astar algoritme
+#     routesFound = functions.aStarRouteFinder(routeBookEmpty, grid, size)
+
+#     # maak nieuw grid adhv het beste gevonden routebook
+#     for route in routesFound[0]:
+#         grid = functions.changeMat(route.route, grid)
+
+#     # verbeter route door met pure A* lijnen opnieuw te leggen
+#     routesBetter = functions.replaceLine(routesFound[0], grid, 1, size, 500)
+
+#     # print info over uitkomsten
+#     print("score voor netlist =", functions.getScore(routesBetter[0]))
+#     statistics.plotChip(gates, routesBetter[0], size)
+
+#     # reset grid
+#     grid = functions.gridMat(gates, size)
 
 
+# ## RANDOM ROUTEFINDER --------------------------------------------------
+# # leg wires van netlist adhv random netlist volgordes
+# # met breakthrough algoritme
+# # 4e argument = aantal verschillende netlists <<<< dit moet in docstring volgens mij
+# randomRoute = functions.randomRouteBook(routeBookEmpty, gates, size, 100)
+#
 # # print info over uitkomst
 # score = functions.getScore(randomRoute[2])
 # print("Beste score van random:", score)
 # check = functions.checker(randomRoute[2])
 # statistics.plotChip(gates, randomRoute[2], size)
-
-# ## DALTON METHODE
-# netlistDalton = classes.wire.daltonMethod(netlist, gates)
-# # maak object van iedere netPoint
-# daltonRouteBook = functions.makeObjects(netlistDalton, gates)
 #
-# HIER ASTAR GEWOGEN EN HILLCLIMBER OP DALTONLIST
+# zelfdemiss = functions.breakThroughFinder(randomRoute[0], grid)
+# check = functions.checker(zelfdemiss[1])
+# score = functions.getScore(zelfdemiss[1])
+# print(score)
 
-## UI METHODE
-# netlistUi = classes.wire.UIMethod_forprint1(netlist, gates)
-# # maak object van iedere netPoint
-# uiRouteBook = functions.makeObjects(netlistUi, gates)
-#
-# HIER ASTAR GEWOGEN EN HILLCLIMBER OP UILIST
 
-## HILLCLIMBER: VERWIJDER ÉÉN LIJN, LEG TERUG MET A*
+## HILLCLIMBER: VERWIJDER ÉÉN LIJN, LEG TERUG MET A* --------------------------
 # maak nieuw grid adhv het beste gevonden routebook
 # for route in randomRoute[2]:
 #     grid = functions.changeMat(route.route, grid)
@@ -127,9 +148,10 @@ routeBookEmpty = deepcopy(routeBook)
 # replaceData = NewRoute[1]
 # print(replaceData)
 
-## HILLCLIMBER: WISSEL TWEE NETPOINTS, LEG HELE NETLIST OPNIEUW
+## HILLCLIMBER: WISSEL TWEE NETPOINTS, LEG HELE NETLIST OPNIEUW ----------
 # # laat hilclimber werken
-# HillClimber = functions.hillClimb(randomRoute[0], randomRoute[1], gates, 1000)
+# HillClimber = functions.hillClimb(randomRoute[0],
+# randomRoute[1], gates, size, 1000)
 # hillData = HillClimber[2]
 # print(hillData)
 
@@ -150,7 +172,7 @@ routeBookEmpty = deepcopy(routeBook)
 # # plot gates en lijnen
 # statistics.plotChip(gates, routeBookBest, size)
 
-#
+## LEG MET Astar GEWOGEN EN VERBETER MET PURE
 newRoutes = functions.aStarRouteFinder(routeBookEmpty, grid, size)
 print(functions.checker(newRoutes[0]))
 print(functions.getScore(newRoutes[0]))
@@ -169,3 +191,4 @@ print(functions.getScore(NewRoute[0]))
 print(functions.checker(NewRoute[0]))
 print(len(NewRoute[0]))
 statistics.plotChip(gates, NewRoute[0], size)
+

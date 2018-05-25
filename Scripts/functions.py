@@ -94,7 +94,7 @@ def makeObjects(netlist, gates):
     return emptyRouteBook
 
 
-def gridMat(gates, chip="small"):
+def gridMat(gates, chip):
     """" Maakt matrix van de grid met gateslocatie-info"""
     if chip == "large":
         matGrid = np.zeros([18, 17, 30]) + 99
@@ -120,7 +120,7 @@ def getLowerBound(routeBook):
     return lowerBound
 
 
-def randomRouteBook(routeBook, gates, steps=1000):
+def randomRouteBook(routeBook, gates, chip, steps=1000):
     """ Probeert willekeurige volgordes van de netlist met het breaktrough
     algoritme op te lossen, onthoudt de beste uitkomst """
 
@@ -142,7 +142,7 @@ def randomRouteBook(routeBook, gates, steps=1000):
         shuffle(newRouteBook)
 
         # maak nieuw lege grid aan
-        grid = gridMat(gates)
+        grid = gridMat(gates, chip)
 
         # maak nieuwe routebook aan waarin gewerkt kan worden
         tmp_newRouteBook = deepcopy(newRouteBook)
@@ -398,7 +398,7 @@ def getScore(routeBook):
     return score
 
 
-def hillClimb(routeBook, score, gates, steps=1000):
+def hillClimb(routeBook, score, gates, chip, steps=1000):
     # maak variabele om beste route book op te slaan
     print('in Hillclimber')
     bestRouteBook = routeBook
@@ -409,7 +409,7 @@ def hillClimb(routeBook, score, gates, steps=1000):
     # loop voor het aantal stappen
     for i in range(0, steps):
         # maak lege grid
-        grid = gridMat(gates)
+        grid = gridMat(gates, chip)
 
         if i != 0:
             # verwissel willekeurig twee punten van de netlist
@@ -487,7 +487,6 @@ def aStarRouteFinder(routeBook, grid, size):
 
     # lege grid
     gridEmpty = deepcopy(grid)
-
     # lijst met routes die nog gelegd moeten worden
     routeBookEmpty = deepcopy(routeBook)
 
@@ -528,16 +527,14 @@ def aStarRouteFinder(routeBook, grid, size):
 
             # verwijdert onnodige lijnen indien ingesloten
             if count == 5:
-                routeBookEmpty, routeBookDone, grid = searchLocTo(netPoint,
-                                                                  routeBookEmpty,
-                                                                  routeBookDone,
-                                                                  grid)[0:3]
+                routeBookEmpty, routeBookDone, grid, locTo \
+                    = searchLocTo(netPoint, routeBookEmpty,
+                                  routeBookDone, grid)
 
             # leg de route met Astar
             route = aStar(netPoint, grid, 2, size)
 
-
-            # voeg nieuwe route toe aan netPoins als Astar succesvol is
+            # voeg nieuwe route toe aan netPoints als Astar succesvol is
             if route != []:
                 netPoint.route = route
 
@@ -551,7 +548,6 @@ def aStarRouteFinder(routeBook, grid, size):
             # begin opnieuw als maximaal aantal loops is bereikt
             if loops == 150:
                 lengthEmpty = len(routeBookEmpty)
-                print(lengthEmpty)
                 routeBookEmpty = routeBookEmpty + routeBookDone
                 routeBookDone = []
                 loops = 0
@@ -559,7 +555,6 @@ def aStarRouteFinder(routeBook, grid, size):
                 # alleen shuffelen als de er meer dan vier
                 # routes onopgelost bleven
                 if lengthEmpty > 4:
-                    print('shuffle')
                     shuffle(routeBookEmpty)
 
                 # update laatste routeBook
@@ -573,7 +568,8 @@ def aStarRouteFinder(routeBook, grid, size):
     toc = time()
     print('tijd: ', toc - tic)
 
-    return routeBookDone, routeBookSolved, time
+    return routeBookDone, routeBookSolved
+
 
 
 def aStar(netPoint, grid, index, chip):
@@ -945,7 +941,6 @@ def searchLocTo(netPoint, routeBookEmpty, routeBookDone, grid):
                         routeBookEmpty.append(netPointToDelete)
                         # verwijder lijn vanuit routebookdone list
                         del routeBookDone[routeBookDone.index(netPointToDelete)]
-
                         return routeBookEmpty, routeBookDone, grid, nextLocTo
 
 
@@ -993,7 +988,6 @@ def GcostForGates(gates):
     return grid
 
 
-
 def replaceLine(routeBook, grid, order, chip, steps = 2000):
     """ Hillclimber algoritme,
         neemt een bestaande oplossing, verwijderd vervolgens achter elkaar
@@ -1029,22 +1023,21 @@ def replaceLine(routeBook, grid, order, chip, steps = 2000):
         else:
             index = i % len(newRouteBook)
 
+
         # verwijder route uit grid
         delRoute(newRouteBook[index].route, newGrid)
         
         # herleg route met pure Astar
         newRouteBook[index].route = aStar(newRouteBook[index], newGrid, 0, chip)
 
-        # voeg nieuwe route toe aan de grid
+        # vervang beste grid, score en routeboek als score lager is
         changeMat(newRouteBook[index].route, newGrid)
-
-        # bereken  nieuwe score
         newScore = getScore(newRouteBook)
 
-        # vervang beste grid, score en routeboek als score lager is
         if newScore < score:
             bestGrid = newGrid
             score = newScore
+            # print(score)
             bestRouteBook = newRouteBook
         # voeg nieuwe rij toe aan pandabestand
         replaceData = \
