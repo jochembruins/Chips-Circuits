@@ -33,7 +33,7 @@ Voer de volgende command uit om het programma te laten draaien:
 cd scripts
 python3 chips.py <netlist>
 ```
-Hierbij is '<netlist>' het nummer van de op te lossen netlist (1 t/m 6)
+Hierbij is \'<netlist>' het nummer van de op te lossen netlist (1 t/m 6)
 
 ## Dank
 
