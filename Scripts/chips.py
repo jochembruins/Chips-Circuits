@@ -89,11 +89,11 @@ netlistUi = classes.wire.uiMethod(netlist, gates)
 
 # sla ingaande routebook van beste oplossing randomroute op
 randomRouteBookIn = functions.randomRouteBook(routeBookEmpty, gates, size, 100)[0]
-randomRouteNetlist = []
+randomRouteNetlistIn = []
 for object in randomRouteBookIn:
-    randomRouteNetlist.append(object.netPoint)
+    randomRouteNetlistIn.append(object.netPoint)
 
-netlistCompare = [netlistDalton, netlistUi, randomRouteNetlist]
+netlistCompare = [netlistDalton, netlistUi, randomRouteNetlistIn]
 
 # bereid voortgangsbar voor
 pbar = ProgressBar()
