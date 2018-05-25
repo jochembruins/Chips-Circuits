@@ -75,9 +75,9 @@ routeBook = functions.makeObjects(netlist, gates)
 # DIT MOET IN DE OUTPUTTABEL ERGENS NEERGEZET WORDEN
 lowerBound = functions.getLowerBound(routeBook)
 
-
 # maak kopie van routeboek
 routeBookEmpty = deepcopy(routeBook)
+
 
 # ## RANDOM ROUTEFINDER
 # leg wires van netlist adhv random netlist volgordes
@@ -155,9 +155,6 @@ newRoutes = functions.aStarRouteFinder(routeBookEmpty, grid, size)
 print(functions.checker(newRoutes[0]))
 print(functions.getScore(newRoutes[0]))
 
-for route in newRoutes[1]:
-	print(route.netPoint, end = ", ")
-statistics.plotChip(gates, newRoutes[0], size)
 
 # maak nieuw grid adhv het beste gevonden routebook
 for route in newRoutes[0]:
@@ -165,7 +162,7 @@ for route in newRoutes[0]:
 
 # DIT MOET NOG AANGEPAST WORDEN OP NIEUWE INDEX IN FUNCTIE
 # verbeter route door met pure A* lijnen opnieuw te leggen
-NewRoute = functions.replaceLine(newRoutes[0], grid, 1, size, 500)
+NewRoute = functions.replaceLine(newRoutes[0], grid, 1, size, 1000)
 
 # print info over uitkomsten
 print(functions.getScore(NewRoute[0]))
