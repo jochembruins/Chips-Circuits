@@ -1012,7 +1012,10 @@ def GcostForGates(gates):
     return grid
 
 
-def replaceLine(routeBook, grid, order, chip, steps=2000):
+
+def replaceLine(routeBook, grid, order, chip, \
+                               steps = 2000):
+
     """ Hillclimber algoritme,
         neemt een bestaande oplossing, verwijderd vervolgens achter elkaar
         1 en zet deze terug met pure Astar algoritme
@@ -1031,7 +1034,6 @@ def replaceLine(routeBook, grid, order, chip, steps=2000):
     # maak variabelen om beste versies op te slaan
     bestRouteBook = routeBook
     bestGrid = grid
-
     # loop voor aantal steps
     for i in range(0, steps):
 
