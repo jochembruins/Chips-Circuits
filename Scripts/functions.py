@@ -112,12 +112,15 @@ def gridMat(gates, chip):
 def getLowerBound(routeBook):
     """ Bereken de lowerbound (manhattan distance) van gekozen netlist"""
     lowerBound = 0
+    netPointDist = ''
     for netPoint in routeBook:
         x_dist = abs(netPoint.locFrom[0] - netPoint.locTo[0])
         y_dist = abs(netPoint.locFrom[1] - netPoint.locTo[1])
         z_dist = abs(netPoint.locFrom[2] - netPoint.locTo[2])
         lowerBound += z_dist + y_dist + x_dist
-    return lowerBound
+        netPointDist += str(lowerBound) + ';'
+
+    return lowerBound, netPointDist
 
 
 def randomRouteBook(routeBook, gates, chip, steps=1000):
@@ -471,10 +474,10 @@ def checker(routeBook):
                 seen.append(step)
 
     if len(repeated) == 0:
-        print('check: goed')
+        # print('check: goed')
         return True
     else:
-        print('check: fout')
+        # print('check: fout')
         print(repeated)
         return False
 
@@ -566,7 +569,7 @@ def aStarRouteFinder(routeBook, grid, size):
 
     # bereken tijd
     toc = time()
-    print("Runningtime :", toc - tic)
+    # print("Runningtime :", toc - tic)
 
     return routeBookDone, routeBookSolved
 
