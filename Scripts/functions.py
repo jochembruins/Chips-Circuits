@@ -415,8 +415,6 @@ def hillClimb(routeBook, score, gates, chip, steps=1000):
     # maak variabele om beste route book op te slaan
     print('in Hillclimber')
     bestRouteBook = routeBook
-    file = open('../csv/hill.csv', "w")
-    writer = csv.writer(file, delimiter=',')
     hillData = pd.DataFrame(columns=['Score Hillclimber'])
 
     # loop voor het aantal stappen
@@ -462,12 +460,9 @@ def hillClimb(routeBook, score, gates, chip, steps=1000):
                 else:
                     print('hoger')
 
-        writer.writerow([i, score])
         hillData = hillData.append({'Score Hillclimber': score},
                                    ignore_index=True)
     print(hillData)
-    statistics.plotLine(hillData, 'Hillclimber')
-    file.close()
     return bestRouteFound, score, hillData
 
 
@@ -1053,6 +1048,7 @@ def replaceLine(routeBook, grid, order, chip, steps=2000):
         # vervang beste grid, score en routeboek als score lager is
         changeMat(newRouteBook[index].route, newGrid)
         newScore = getScore(newRouteBook)
+        print(newScore)
 
         if newScore < score:
             bestGrid = newGrid

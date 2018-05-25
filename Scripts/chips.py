@@ -82,71 +82,71 @@ lowerBound, netlistDist = functions.manhattanDist(routeBook)
 print("Lowerbound score voor netlist", commArg, ":", lowerBound)
 
 
-## VERGELIJK VERSCHILLENDE NETLISTS ---------------------------------------
-# maak netlists met Ui/Dalton methode
-netlistDalton = classes.wire.daltonMethod(netlist, gates)
-netlistUi = classes.wire.uiMethod(netlist, gates)
+# ## VERGELIJK VERSCHILLENDE NETLISTS ---------------------------------------
+# # maak netlists met Ui/Dalton methode
+# netlistDalton = classes.wire.daltonMethod(netlist, gates)
+# netlistUi = classes.wire.uiMethod(netlist, gates)
 
-# sla ingaande routebook van beste oplossing randomroute op
-randomRouteBookIn = functions.randomRouteBook(routeBookEmpty, gates, size, 100)[0]
-randomRouteNetlist = []
-for object in randomRouteBookIn:
-    randomRouteNetlist.append(object.netPoint)
+# # sla ingaande routebook van beste oplossing randomroute op
+# randomRouteBookIn = functions.randomRouteBook(routeBookEmpty, gates, size, 100)[0]
+# randomRouteNetlist = []
+# for object in randomRouteBookIn:
+#     randomRouteNetlist.append(object.netPoint)
 
-netlistCompare = [netlistDalton, netlistUi, randomRouteNetlist]
+# netlistCompare = [netlistDalton, netlistUi, randomRouteNetlist]
 
-# bereid voortgangsbar voor
-pbar = ProgressBar()
-print("Hillclimber - replaceline algoritme")
+# # bereid voortgangsbar voor
+# pbar = ProgressBar()
+# print("Hillclimber - replaceline algoritme")
 
-for netlist in pbar(netlistCompare):
-    tic = time()
+# for netlist in pbar(netlistCompare):
+#     tic = time()
 
-    # maar variabel aan
-    eindstandNetlist = []
+#     # maar variabel aan
+#     eindstandNetlist = []
 
-    # maak object van iedere netPoint, maak lijst van alle netPoints
-    routeBook = functions.makeObjects(netlist, gates)
-    routeBookEmpty = deepcopy(routeBook)
+#     # maak object van iedere netPoint, maak lijst van alle netPoints
+#     routeBook = functions.makeObjects(netlist, gates)
+#     routeBookEmpty = deepcopy(routeBook)
 
-    # leg routes met gewogen Astar algoritme
-    routesFound = functions.aStarRouteFinder(routeBookEmpty, grid, size)
+#     # leg routes met gewogen Astar algoritme
+#     routesFound = functions.aStarRouteFinder(routeBookEmpty, grid, size)
 
-    # maak nieuw grid adhv het beste gevonden routebook
-    for route in routesFound[0]:
-        grid = functions.changeMat(route.route, grid)
+#     # maak nieuw grid adhv het beste gevonden routebook
+#     for route in routesFound[0]:
+#         grid = functions.changeMat(route.route, grid)
 
-    # verbeter route door met pure A* lijnen opnieuw te leggen
-    routesBetter = functions.replaceLine(routesFound[0], grid, 0, size, 500)
+#     # verbeter route door met pure A* lijnen opnieuw te leggen
+#     routesBetter = functions.replaceLine(routesFound[0], grid, 0, size, 500)
 
-    if netlistCompare.index(netlist) == 0:
-        compare = routesBetter[1]
-    else:
-        compare = pd.concat([compare, routesBetter[1]], axis=1, join='inner')
+#     if netlistCompare.index(netlist) == 0:
+#         compare = routesBetter[1]
+#     else:
+#         compare = pd.concat([compare, routesBetter[1]], axis=1, join='inner')
 
-    # info ingaande routeBook
-    print("\nBeginstand netlist: ", netlist)
-    netlistDist = functions.manhattanDist(routeBook)[1]
-    print("Manhattan distance van netPoints: ", netlistDist)
+#     # info ingaande routeBook
+#     print("\nBeginstand netlist: ", netlist)
+#     netlistDist = functions.manhattanDist(routeBook)[1]
+#     print("Manhattan distance van netPoints: ", netlistDist)
 
-    for object in routesBetter[0]:
-        eindstandNetlist.append(object.netPoint)
-    # print info over resultaten
-    print("Eindstand netlist: ", eindstandNetlist)
-    print("Manhattan distance van netPoints: ", functions.manhattanDist(routesBetter[0])[1])
+#     for object in routesBetter[0]:
+#         eindstandNetlist.append(object.netPoint)
+#     # print info over resultaten
+#     print("Eindstand netlist: ", eindstandNetlist)
+#     print("Manhattan distance van netPoints: ", functions.manhattanDist(routesBetter[0])[1])
 
-    print("score voor netlist =", functions.getScore(routesBetter[0]))
-    # statistics.plotChip(gates, routesBetter[0], size)
+#     print("score voor netlist =", functions.getScore(routesBetter[0]))
+#     # statistics.plotChip(gates, routesBetter[0], size)
 
-    # reset grid
-    grid = functions.gridMat(gates, size)
+#     # reset grid
+#     grid = functions.gridMat(gates, size)
 
-    toc = time()
-    runtime = toc - tic
-    print("runtime:", runtime)
+#     toc = time()
+#     runtime = toc - tic
+#     print("runtime:", runtime)
 
-compare.columns = ['Dalton', 'Ui', 'Random']
-statistics.plotLine(compare, 'Vergelijking sorteermethodes')
+# compare.columns = ['Dalton', 'Ui', 'Random']
+# statistics.plotLine(compare, 'Vergelijking sorteermethodes')
 
 
 # ## RANDOM ROUTEFINDER --------------------------------------------------
@@ -167,39 +167,43 @@ statistics.plotLine(compare, 'Vergelijking sorteermethodes')
 # print(score)
 
 
-## HILLCLIMBER: VERWIJDER ÉÉN LIJN, LEG TERUG MET A* --------------------------
-# maak nieuw grid adhv het beste gevonden routebook
-# for route in randomRoute[2]:
-#     grid = functions.changeMat(route.route, grid)
+# Vergelijk HillClimbers A* --------------------------
 
-# DIT MOET NOG AANGEPAST WORDEN OP NIEUWE INDEX IN FUNCTIE
-# # verbeter route door met pure A* lijnen opnieuw te leggen
-# NewRoute = functions.replaceLine(randomRoute[2], grid, 1, size, 1000)
-#
-# # print info over uitkomsten
-# print(functions.getScore(NewRoute[0]))
-# print(functions.checker(NewRoute[0]))
-# print(len(NewRoute[0]))
-# for route in NewRoute:
-#     print(route.route)
-# functions.plotLines(gates, NewRoute)
+randomRouteBook = functions.randomRouteBook(routeBookEmpty, gates, size, 100)
+#maak nieuw grid adhv het beste gevonden routebook
 
-# returnt lijst met scores na iedere iteratie
-# replaceData = NewRoute[1]
-# print(replaceData)
+# HILLCLIMBER: WISSEL TWEE NETPOINTS, LEG HELE NETLIST OPNIEUW ----------
+# laat hilclimber werken
+HillClimber = functions.hillClimb(randomRouteBook[2], randomRouteBook[1] , gates, size, 1000)
 
-## HILLCLIMBER: WISSEL TWEE NETPOINTS, LEG HELE NETLIST OPNIEUW ----------
-# # laat hilclimber werken
-# HillClimber = functions.hillClimb(randomRoute[0],
-# randomRoute[1], gates, size, 1000)
-# hillData = HillClimber[2]
-# print(hillData)
+# sla data op om HillClimbers te vergelijken
+compare = HillClimber[2]
 
-#
-# # maak een plot van beide hillclimbers
-# result = pd.concat([replaceData, hillData], axis=1, join='inner')
-# print(result)
-# statistics.plotLine(result, 'Hillclimber en Replacelines')
+# verkrijg kloppende grid
+for route in randomRouteBook[2]:
+    grid = functions.changeMat(route.route, grid)
+
+# verbeter route door met pure A* lijnen opnieuw te leggen
+# eerst in volgorde van de routeboek, daarna op willekeurige volgorde
+for i in range(0, 2):
+    # maak deepcopy zodat we de routeboek twee keer kunnen gebruiken
+    routeBook = deepcopy(randomRouteBook[2])
+    
+    # verkrijg kloppende grid
+    for route in randomRouteBook[2]:
+        grid = functions.changeMat(route.route, grid)
+    
+    # verbeter met replaceLine
+    NewRoute = functions.replaceLine(routeBook, grid, i, size, 1000)
+    
+    # voeg de data bij elkaar
+    compare = pd.concat([compare, NewRoute[1]], axis=1, join='inner')
+
+# verander namen columns
+compare.columns = ['Hillclimber met Breakthrough', 'Replacelines op volgorde', 'Replacelines willekeurig']
+
+# plot lijngrafiek
+statistics.plotLine(compare, 'Hillclimber en Replacelines')
 
 # # krijg beste routeboek
 # routeBookBest = HillClimber[0]
