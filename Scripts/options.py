@@ -35,7 +35,7 @@ def userInterface():
 		  "(aka Melle Gelok, Jochem Bruins, Noah van Grinsven)\n")
 	print("Wat zou je willen zien?\n"
 		  "1: Los één van de 6 netlists op\n"
-		  "2: Het effect van de volgorde van een netlists\n"
+		  "2: Het effect van de volgorde van een netlists op het resultaat\n"
 		  "3: De output van 'Breaktrough algoritme'\n"
 		  "4: De output van 'Gewogen Astar' algoritme\n"
 		  "5: Vergelijking van 3 verschillende hillclimbers")
@@ -48,7 +48,7 @@ def userInterface():
 		else:
 			break
 
-	if response1 == '1':
+	if response1 == '1' or response1 == '4':
 		print("Kies uit netlist 1 - 6")
 
 		while (True):
@@ -116,6 +116,7 @@ def solveNetlist(routeBook, grid, size, gates):
 	# print info over uitkomsten
 	print('Score na replaceLine: ', functions.getScore(NewRoutes[0]))
 	print('Check op correctheid: ', functions.checker(NewRoutes[0]))
+	print('Tip: draai plot door muis in te drukken en te bewegen.')
 
 	# plot grafiek
 	statistics.plotChip(gates, NewRoutes[0], size)
@@ -249,8 +250,9 @@ def breakThrough(routeBook, gates, chip, response):
 	toc = time()
 
 	print("Score voor netlist =", bestRoute[1])
-	print('Check op correctheid: ', functions.checker(bestRoute[1]))
+	print('Check op correctheid: ', functions.checker(bestRoute[2]))
 	print('Runtime: ', toc - tic)
+	print('Tip: draai plot door muis in te drukken en te bewegen.')
 
 	statistics.plotChip(gates, bestRoute[2], chip)
 
@@ -266,5 +268,6 @@ def weightedAStar(routeBook, gates, grid, chip):
 	print("Score voor netlist =", functions.getScore(route[0]))
 	print('Check op correctheid: ', functions.checker(route[0]))
 	print('Runtime: ', toc - tic)
+	print('Tip: draai plot door muis in te drukken en te bewegen.')
 
 	statistics.plotChip(gates, route[0], chip)

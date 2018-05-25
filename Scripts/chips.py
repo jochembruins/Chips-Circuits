@@ -16,7 +16,6 @@
 import sys
 sys.path.insert(0, '../Data')
 
-
 from numpy import genfromtxt
 from copy import deepcopy
 import functions

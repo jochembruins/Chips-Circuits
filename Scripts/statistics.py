@@ -18,6 +18,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d.axes3d import Axes3D
 
 
 def plotRandom(data, bins=20):
