@@ -39,19 +39,28 @@ print("Wat zou je willen zien?\n"
       "5: Vergelijking van 3 verschillende hillclimbers")
 response1 = input("Maak een keuze: ")
 
-commArg = int(sys.argv[1])
+if int(response1) > 0 and int(response1) < 6:
+    continue
+else:
+    print("Dit is geen geldige input")
+    exit()
 
-if commArg == 1:
+if response1 == '1':
+    print("Kies uit netlist 1 - 6")
+    response2 = input("Maak een keuze: ")
+
+
+if response2 == 1:
     netlist = netlists.netlist_1
-elif commArg == 2:
+elif response2 == 2:
     netlist = netlists.netlist_2
-elif commArg == 3:
+elif response2 == 3:
     netlist = netlists.netlist_3
-elif commArg == 4:
+elif response2 == 4:
     netlist = netlists.netlist_4
-elif commArg == 5:
+elif response2 == 5:
     netlist = netlists.netlist_5
-elif commArg == 6:
+elif response2 == 6:
     netlist = netlists.netlist_6
 else:
     print("Gebruik niet correct")
