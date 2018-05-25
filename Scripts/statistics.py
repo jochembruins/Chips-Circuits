@@ -4,7 +4,7 @@ from mpl_toolkits.mplot3d.axes3d import Axes3D
 import pandas as pd
 
 
-def plotRandom(data, bins = 20):
+def plotRandom(data, bins=20):
     hist = data['Score'].plot.hist(bins=20)
     plt.title('Histogram Random Algoritme')
     plt.xlabel('Score: Totale lengte wires')

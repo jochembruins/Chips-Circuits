@@ -56,18 +56,17 @@ def solveNetlist(routeBook, grid, size, gates):
 	statistics.plotChip(gates, NewRoutes[0], size)
 
 
-def compareNetlists(netlist, gates, routeBook, size, grid):
+def compareNetlists(netlist, gates, routeBook, size, response, grid):
 	"""Vergelijk verschillende netlists door ze met gewogen A-star
 	op te lossen en met pure A-star te optimaliseren"""
-
-	print("\nHillclimber - replaceline algoritme")
 
 	# maak netlists met Ui/Dalton methode
 	netlistDalton = classes.wire.daltonMethod(netlist, gates)
 	netlistUi = classes.wire.uiMethod(netlist, gates)
 
 	# sla ingaande routebook van beste oplossing randomroute op
-	randomRouteBookIn = functions.randomRouteBook(routeBook, gates, size, 1000)[
+	randomRouteBookIn = functions.randomRouteBook(routeBook, gates,
+												  size, response, 100)[
 		0]
 	randomRouteNetlistIn = []
 	for object in randomRouteBookIn:
@@ -131,18 +130,20 @@ def compareNetlists(netlist, gates, routeBook, size, grid):
 	statistics.plotLine(compare, 'Vergelijking sorteermethodes')
 
 
-def compareHillClimbers(routeBook, gates, size, grid):
+def compareHillClimbers(routeBook, gates, size, response, grid):
 	""" Functie vergelijkt de Swap-2-Breaktrough-hillclimber met
 	de hillclimber ReplaceLine (zowel willekeurig als op volgorde)"""
 
 	# vind een werkend willekeurig routebook
-	randomRouteBook = functions.randomRouteBook(routeBook, gates, size, 100)
-	# maak nieuw grid adhv het beste gevonden routebook
+	randomRouteBook = functions.randomRouteBook(routeBook, gates,
+												size, response, 100)
+
+	print("Score voor netlist =", randomRouteBook[1])
 
 	# HILLCLIMBER: WISSEL TWEE NETPOINTS, LEG HELE NETLIST OPNIEUW ----------
 	# laat hilclimber werken
 	HillClimber = functions.hillClimb(randomRouteBook[2], randomRouteBook[1],
-									  gates, size, 600)
+									  gates, size, response, 1000)
 
 	# sla data op om HillClimbers te vergelijken
 	compare = HillClimber[2]

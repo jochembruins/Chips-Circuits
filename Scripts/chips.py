@@ -126,7 +126,7 @@ if response1 == '1':
 
 # keuze 2: vergelijk verschillende invoernetlists (Dalton, Ui, beste uit random)
 if response1 == '2':
-    options.compareNetlists(netlist, gates, routeBookEmpty, size, grid)
+    options.compareNetlists(netlist, gates, routeBookEmpty, size, response2, grid)
 
 # keuze 3: zoek de beste geldige routes met het breaktrough algoritme
 if response1 == '3':
@@ -138,4 +138,4 @@ if response1 == '4':
 
 # keuze 5: vergelijk 3 verschillende hillclimbers
 if response1 == '5':
-    options.compareHillClimbers(routeBookEmpty, gates, size, grid)
+    options.compareHillClimbers(routeBookEmpty, gates, size, response2, grid)

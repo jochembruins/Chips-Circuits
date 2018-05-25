@@ -190,7 +190,7 @@ def randomRouteBook(routeBook, gates, chip, response, steps=100):
     return bestRouteBookIn, score, bestRouteFound, grid
 
 
-def breakThroughFinder(routeBook, grid, response):
+def breakThroughFinder(routeBook, grid, response=0):
     """ algoritme om lijnen in netlist te leggen
         heuristiek: weg belemmerd, ga omhoog!"""
 
@@ -368,18 +368,18 @@ def breakThroughFinder(routeBook, grid, response):
             # deze is aangepast voor netlist 3
             if response == '3':
                 if count == 1002:
-                    sys.exit(0)
+                    sys.exit
                 # stop met leggen van wires wanneer de lijnen te hoog lopen
                 for step in route:
                     if step[2] > 30:
-                        sys.exit(0)
+                        sys.exit
             else:
                 if count == 300:
-                    sys.exit(0)
+                    sys.exit
 
                 for step in route:
                     if step[2] > 15:
-                        sys.exit(0)
+                        sys.exit
 
             # save route in netPoint object
             netPoint.route = route
@@ -422,13 +422,13 @@ def getScore(routeBook):
     return score
 
 
-def hillClimb(routeBook, score, gates, chip, steps=1000):
+def hillClimb(routeBook, score, gates, chip, response, steps=1000):
     # maak variabele om beste route book op te slaan
 
     print("\nHillclimber - Swap-2-Breakthrough algoritme")
 
-
     bestRouteBook = routeBook
+    bestRouteFound = bestRouteBook
     hillData = pd.DataFrame(columns=['Score Hillclimber'])
 
     # # bereid voortgangsbar voor
@@ -454,7 +454,7 @@ def hillClimb(routeBook, score, gates, chip, steps=1000):
 
         # probeer nieuwe route te vinden
         try:
-            newRouteFound = breakThroughFinder(tmp_newRouteBook, grid)[1]
+            newRouteFound = breakThroughFinder(tmp_newRouteBook, grid, response)[1]
             finished = True
         except:
             finished = False
@@ -594,8 +594,7 @@ def aStarRouteFinder(routeBook, grid, size):
     toc = time()
 
     print('\ntijd: ', toc - tic)
-
-    print("\nGevonden!")
+    print("Gevonden!")
 
     # print("ROUTEBOOKSOLVED")
     # for route in routeBookSolved:
