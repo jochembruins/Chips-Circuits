@@ -415,12 +415,14 @@ def hillClimb(routeBook, score, gates, chip, steps=1000):
     # maak variabele om beste route book op te slaan
     print('in Hillclimber')
     bestRouteBook = routeBook
-    file = open('../csv/hill.csv', "w")
-    writer = csv.writer(file, delimiter=',')
     hillData = pd.DataFrame(columns=['Score Hillclimber'])
 
+    # # bereid voortgangsbar voor
+    pbar = ProgressBar()
+    print("Hillclimber - replaceline algoritme")
+
     # loop voor het aantal stappen
-    for i in range(0, steps):
+    for i in pbar(range(0, steps)):
         # maak lege grid
         grid = gridMat(gates, chip)
 
@@ -428,7 +430,7 @@ def hillClimb(routeBook, score, gates, chip, steps=1000):
             # verwissel willekeurig twee punten van de netlist
             newRouteBook = classes.wire.changeRouteBook(bestRouteBook)
         else:
-            print('same')
+            # print('same')
             newRouteBook = bestRouteBook
 
         tmp_newRouteBook = deepcopy(newRouteBook)
@@ -447,8 +449,6 @@ def hillClimb(routeBook, score, gates, chip, steps=1000):
         # bereken nieuwe score   
         if finished:
             newScore = getScore(newRouteFound)
-            print("oude score: ", score)
-            print("nieuwe score: ", newScore)
 
             check = checker(newRouteFound)
 
@@ -458,16 +458,10 @@ def hillClimb(routeBook, score, gates, chip, steps=1000):
                     bestRouteBook = deepcopy(newRouteBook)
                     bestRouteFound = deepcopy(newRouteFound)
                     score = newScore
-                    print('lager')
-                else:
-                    print('hoger')
 
-        writer.writerow([i, score])
         hillData = hillData.append({'Score Hillclimber': score},
                                    ignore_index=True)
-    print(hillData)
-    statistics.plotLine(hillData, 'Hillclimber')
-    file.close()
+    # print(hillData)
     return bestRouteFound, score, hillData
 
 
@@ -1062,6 +1056,7 @@ def replaceLine(routeBook, grid, order, chip, steps=2000):
         # vervang beste grid, score en routeboek als score lager is
         changeMat(newRouteBook[index].route, newGrid)
         newScore = getScore(newRouteBook)
+        # print(newScore)
 
         if newScore < score:
             bestGrid = newGrid
