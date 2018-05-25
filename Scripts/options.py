@@ -185,10 +185,11 @@ def breakThrough(routeBook, gates, chip):
 	statistics.plotChip(gates, bestRoute[2], chip)
 
 
-def weightedAStar(routeBook, grid, chip):
+def weightedAStar(routeBook, gates, grid, chip):
 	"""vind een route met de gewogen A-star. Dit is dus een valide, 
 	maar geen geoptimaliseerde route"""
 	route = functions.aStarRouteFinder(routeBook, grid, chip)
-	print(print("score voor netlist =", functions.getScore(route[0])
+
+	print("score voor netlist =", functions.getScore(route[0]))
 
 	statistics.plotChip(gates, route[0], chip)

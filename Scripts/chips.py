@@ -120,7 +120,7 @@ if response1 == '3':
 
 # keuze 4: zoek de beste geldige routes het gewogen Astar algoritme
 if response1 == '4':
-    options.weightedAStar(routeBookEmpty, grid, size)
+    options.weightedAStar(routeBookEmpty, gates, grid, size)
 
 # keuze 5: vergelijk 3 verschillende hillclimbers
 if response1 == '5':

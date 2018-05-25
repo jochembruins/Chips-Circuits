@@ -557,9 +557,10 @@ def aStarRouteFinder(routeBook, grid, size):
 
             # begin opnieuw als maximaal aantal loops is bereikt
             if loops == 150:
+                progress += 1
+
                 print("Aantal netlists geprobeerd: ", progress,
                       end='\r')
-                progress += 1
 
                 lengthEmpty = len(routeBookEmpty)
                 routeBookEmpty = routeBookEmpty + routeBookDone
