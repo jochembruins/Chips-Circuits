@@ -14,6 +14,7 @@
 ############################################################
 
 from time import time
+from progressbar import ProgressBar
 from numpy import genfromtxt
 import numpy as np
 import matplotlib.pyplot as plt
@@ -75,8 +76,8 @@ routeBookEmpty = deepcopy(routeBook)
 
 # bepaal lowerbound aka Manhattan distance van netlist
 # DIT MOET IN DE OUTPUTTABEL ERGENS NEERGEZET WORDEN
-lowerBound = functions.getLowerBound(routeBook)[0]
-print("Lowerbound netlist", commArg, ":", lowerBound)
+lowerBound, netlistDist = functions.manhattanDist(routeBook)
+print("Lowerbound score voor netlist", commArg, ":", lowerBound)
 
 
 ## VERGELIJK VERSCHILLENDE NETLISTS ---------------------------------------
@@ -91,8 +92,16 @@ for object in randomRouteBookIn:
     randomRouteNetlist.append(object.netPoint)
 
 netlistCompare = [netlistDalton, netlistUi, randomRouteNetlist]
-for netlist in netlistCompare:
+
+# bereid voortgangsbar voor
+pbar = ProgressBar()
+print("Hillclimber - replaceline algoritme")
+
+for netlist in pbar(netlistCompare):
     tic = time()
+
+    # maar variabel aan
+    eindstandNetlist = []
 
     # maak object van iedere netPoint, maak lijst van alle netPoints
     routeBook = functions.makeObjects(netlist, gates)
@@ -106,9 +115,19 @@ for netlist in netlistCompare:
         grid = functions.changeMat(route.route, grid)
 
     # verbeter route door met pure A* lijnen opnieuw te leggen
-    routesBetter = functions.replaceLine(routesFound[0], grid, 0, size, 2000)
+    routesBetter = functions.replaceLine(routesFound[0], grid, 0, size, 500)
 
-    # print info over uitkomsten
+    # info ingaande routeBook
+    print("\nBeginstand netlist: ", netlist)
+    netlistDist = functions.manhattanDist(routeBook)[1]
+    print("Manhattan distance van netPoints: ", netlistDist)
+
+    for object in routesBetter[0]:
+        eindstandNetlist.append(object.netPoint)
+    # print info over resultaten
+    print("Eindstand netlist: ", eindstandNetlist)
+    print("Manhattan distance van netPoints: ", functions.manhattanDist(routesBetter[0])[1])
+
     print("score voor netlist =", functions.getScore(routesBetter[0]))
     # statistics.plotChip(gates, routesBetter[0], size)
 
@@ -182,24 +201,24 @@ for netlist in netlistCompare:
 
 # # plot gates en lijnen
 # statistics.plotChip(gates, routeBookBest, size)
-
-## LEG MET Astar GEWOGEN EN VERBETER MET PURE
-newRoutes = functions.aStarRouteFinder(routeBookEmpty, grid, size)
-print(functions.checker(newRoutes[0]))
-print(functions.getScore(newRoutes[0]))
-
-
-# maak nieuw grid adhv het beste gevonden routebook
-for route in newRoutes[0]:
-    grid = functions.changeMat(route.route, grid)
-
-# DIT MOET NOG AANGEPAST WORDEN OP NIEUWE INDEX IN FUNCTIE
-# verbeter route door met pure A* lijnen opnieuw te leggen
-NewRoute = functions.replaceLine(newRoutes[0], grid, 1, size, 1000)
-
-# print info over uitkomsten
-print(functions.getScore(NewRoute[0]))
-print(functions.checker(NewRoute[0]))
-print(len(NewRoute[0]))
-statistics.plotChip(gates, NewRoute[0], size)
+#
+# ## LEG MET Astar GEWOGEN EN VERBETER MET PURE
+# newRoutes = functions.aStarRouteFinder(routeBookEmpty, grid, size)
+# print(functions.checker(newRoutes[0]))
+# print(functions.getScore(newRoutes[0]))
+#
+#
+# # maak nieuw grid adhv het beste gevonden routebook
+# for route in newRoutes[0]:
+#     grid = functions.changeMat(route.route, grid)
+#
+# # DIT MOET NOG AANGEPAST WORDEN OP NIEUWE INDEX IN FUNCTIE
+# # verbeter route door met pure A* lijnen opnieuw te leggen
+# NewRoute = functions.replaceLine(newRoutes[0], grid, 1, size, 1000)
+#
+# # print info over uitkomsten
+# print(functions.getScore(NewRoute[0]))
+# print(functions.checker(NewRoute[0]))
+# print(len(NewRoute[0]))
+# statistics.plotChip(gates, NewRoute[0], size)
 
