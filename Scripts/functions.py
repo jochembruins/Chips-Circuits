@@ -23,8 +23,8 @@ import classes
 import random
 from random import shuffle
 from copy import deepcopy
-from Data.surroundings_gates import surroundListLarge
-from Data.surroundings_gates import surroundList
+from surroundings_gates import surroundListLarge
+from surroundings_gates import surroundList
 import pandas as pd
 import statistics
 
@@ -577,6 +577,9 @@ def aStarRouteFinder(routeBook, grid, size):
     toc = time()
 
     print('tijd: ', toc - tic)
+
+    for route in routeBookSolved:
+        print(route.netPoint, end=', ')
 
     return routeBookDone, routeBookSolved
 
