@@ -580,7 +580,7 @@ def aStarRouteFinder(routeBook, grid, size):
 
     # print('tijd: ', toc - tic)
 
-    print("\nGevonden!")
+    print("Gevonden!")
 
     # print("ROUTEBOOKSOLVED")
     # for route in routeBookSolved:

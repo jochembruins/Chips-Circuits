@@ -8,8 +8,6 @@ Groepsproject voor Heuristieken waarbij wordt gezocht naar de meest optimale man
 * Melle Gelok (Veganboy 2)
 * Jochem Bruins (Veganboy 3)
 
-## Aan de slag
-
 ### Vereisten
 
 Onze code is volledig geschreven in Python 3. In requirements.txt staat alle packages die nodig zijn om de code succesvol te laten draaien. Installatie is mogelijk met pip. 
@@ -34,13 +32,6 @@ cd scripts
 python3 chips.py <netlist>
 ```
 Hierbij is \<netlist\> het nummer van de op te lossen netlist (1 t/m 6).
-
-## Dank
-
-* Nicole Silverio - begeleider
-
-
-
 
 ### Opbouw algoritmen
 
@@ -70,7 +61,17 @@ Nu er een valide oplossing is gevonden, kan deze oplossing verbeterd worden. Als
 
 ### experimentatie
 
-De experimentatie die is toegepast is als volgt samen te vatten. Allereerst valt er te testen wat de verschillen in score en eventueel runtime zijn met de verschillende startnetlisten (UI-methode, Dalton-methode, willekeurige netlist). Ook zijn de verschillen in score en runtime te testen tussen de eindscores (verbeterd met pure A*) van breakthrough en gewogen A*. Als laatste wordt er geëxperimenteerd  met het verschil in het verbeteren van de valide oplossing in de volgorde waarin er wires worden teruggelegd. De wires kunnen in willekeurige volgorde verbeterd worden. Ook kan er verbeterd worden door de routebookvolgorde aan te houden. Merk op dat het terugleggen van A* niet slecht n keer (n= netlistlengte) gebeurd maar veel vaker.
+De experimentatie die is toegepast is als volgt samen te vatten. Allereerst valt er te testen wat de verschillen in score en eventueel runtime zijn met de verschillende startnetlisten (UI-methode, Dalton-methode, willekeurige netlist). Ook zijn de verschillen in score en runtime te testen tussen de eindscores (verbeterd met pure A*) van breakthrough en gewogen A*. Als laatste wordt er geëxperimenteerd  met het verschil in het verbeteren van de valide oplossing in de volgorde waarin er wires worden teruggelegd. De wires kunnen in willekeurige volgorde verbeterd worden. Ook kan er verbeterd worden door de routebookvolgorde aan te houden. Merk op dat het terugleggen van A* niet slechts n keer (n= netlistlengte) gebeurd maar veel vaker.
+
+## Dank
+
+* Nicole Silverio - begeleider
+
+
+### Foto Nicole met Jochem
+Deze foto is genomen in 2013 te Boedapest.
+
+![foto_nicole_en jochem](https://user-images.githubusercontent.com/36193067/40553514-2f67a432-6043-11e8-8454-998a12dbcbd5.png)
 
 
 
