@@ -52,7 +52,7 @@ De manier waarop een chipcircuit wordt aangelegd is gestructureerd zoals in de a
 
 De netlist volgorde bepaalt in welke volgorde de wires worden aangelegd. Om de netlist volgorde te bepalen worden de Dalton-methode, Ui-methode en de willekeurige netlist volgorde gebruikt. 
 Bij de Dalton-methode wordt de netlist geordend op basis van Manhattan-distance tussen de gates. De bedoeling is dat de wires met kleine Manhattan-distance tussen gates eerder worden gelegd dan wires met een grote Manhattan-distance. 
-De Ui-methode ordent de netlist volgorde op gates-positie. Als een wire wordt gelegd tussen gates die relatief veel aan de buitenkant liggen wordt deze wire eerder gelegd dan een wire met gates in het midden van de chip.
+De Ui-methode ordent de netlist volgorde op gates-positie. Als een wire wordt gelegd tussen gates die relatief dichtbij de buitenkant van de grid liggen wordt deze wire eerder gelegd dan een wire met gates in het midden van de chip.
 
 ### Gewogen A*
 
