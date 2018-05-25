@@ -96,6 +96,7 @@ lowerBound, netlistDist = functions.manhattanDist(routeBook)
 print("Lowerbound score voor netlist", response2, ":", lowerBound)
 
 options.compareNetlists(netlist, gates, routeBookEmpty, size, grid)
+options.compareHillClimbers(routeBook, gates, size, grid)
 # ## VERGELIJK VERSCHILLENDE NETLISTS ---------------------------------------
 # # maak netlists met Ui/Dalton methode
 # netlistDalton = classes.wire.daltonMethod(netlist, gates)

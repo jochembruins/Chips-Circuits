@@ -26,6 +26,8 @@ from copy import deepcopy
 import pandas as pd
 
 def solveNetlist(routeBook, grid, size, gates):
+	"""Algoritme dat met behulp van A-star elke netlist kan oplossen"""
+	
 	# Leg met gewogen A-star
 	routes = functions.aStarRouteFinder(routeBook, grid, size)
 
@@ -51,7 +53,9 @@ def solveNetlist(routeBook, grid, size, gates):
 
 
 def compareNetlists(netlist, gates, routeBook, size, grid):
-	## VERGELIJK VERSCHILLENDE NETLISTS ---------------------------------------
+	"""Vergelijk verschillende netlists door ze met gewogen A-star 
+	op te lossen en met pure A-star te optimaliseren"""
+	
 	# maak netlists met Ui/Dalton methode
 	netlistDalton = classes.wire.daltonMethod(netlist, gates)
 	netlistUi = classes.wire.uiMethod(netlist, gates)
@@ -89,6 +93,7 @@ def compareNetlists(netlist, gates, routeBook, size, grid):
 	    # verbeter route door met pure A* lijnen opnieuw te leggen
 	    routesBetter = functions.replaceLine(routesFound[0], grid, 0, size, 500)
 
+	    
 	    if netlistCompare.index(netlist) == 0:
 	        compare = routesBetter[1]
 	    else:
@@ -115,5 +120,50 @@ def compareNetlists(netlist, gates, routeBook, size, grid):
 	    runtime = toc - tic
 	    print("runtime:", runtime)
 
+	# draai lijngrafiek uit om netlists te vergelijken
 	compare.columns = ['Dalton', 'Ui', 'Random']
 	statistics.plotLine(compare, 'Vergelijking sorteermethodes')
+
+
+def compareHillClimbers(routeBook, gates, size, grid):
+	""" Functie vergelijkt de Swap-2-Breaktrough-hillclimber met 
+	de hillclimber ReplaceLine (zowel willekeurig als op volgorde)"""
+	
+	# vind een werkend willekeurig routebook 
+	randomRouteBook = functions.randomRouteBook(routeBook, gates, size, 100)
+	#maak nieuw grid adhv het beste gevonden routebook
+
+	# HILLCLIMBER: WISSEL TWEE NETPOINTS, LEG HELE NETLIST OPNIEUW ----------
+	# laat hilclimber werken
+	HillClimber = functions.hillClimb(randomRouteBook[2], randomRouteBook[1] , gates, size, 1000)
+
+	# sla data op om HillClimbers te vergelijken
+	compare = HillClimber[2]
+
+	# verkrijg kloppende grid
+	for route in randomRouteBook[2]:
+	    grid = functions.changeMat(route.route, grid)
+
+	# verbeter route door met pure A* lijnen opnieuw te leggen
+	# eerst in volgorde van de routeboek, daarna op willekeurige volgorde
+	for i in range(0, 2):
+	    # maak deepcopy zodat we de routeboek twee keer kunnen gebruiken
+	    routeBook = deepcopy(randomRouteBook[2])
+	    
+	    # verkrijg kloppende grid
+	    for route in randomRouteBook[2]:
+	        grid = functions.changeMat(route.route, grid)
+	    
+	    # verbeter met replaceLine
+	    NewRoute = functions.replaceLine(routeBook, grid, i, size, 1000)
+	    
+	    # voeg de data bij elkaar
+	    compare = pd.concat([compare, NewRoute[1]], axis=1, join='inner')
+
+	# verander namen columns
+	compare.columns = ['Hillclimber met Breakthrough', 'Replacelines op volgorde', 'Replacelines willekeurig']
+
+	# plot lijngrafiek
+	statistics.plotLine(compare, 'Hillclimber en Replacelines')
+
+
