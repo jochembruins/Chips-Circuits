@@ -12,6 +12,8 @@
 #
 # Chips & Circuits
 ############################################################
+import sys
+sys.path.insert(0, '../Data')
 
 from time import time
 from progressbar import ProgressBar
@@ -24,7 +26,6 @@ from copy import deepcopy
 from random import shuffle
 import statistics
 import pandas as pd
-import sys
 import functions
 
 if len(sys.argv) == 1:
@@ -74,6 +75,7 @@ routeBook = functions.makeObjects(netlist, gates)
 # # maak kopie van routeboek
 routeBookEmpty = deepcopy(routeBook)
 
+
 # bepaal lowerbound aka Manhattan distance van netlist
 # DIT MOET IN DE OUTPUTTABEL ERGENS NEERGEZET WORDEN
 lowerBound, netlistDist = functions.manhattanDist(routeBook)
@@ -117,6 +119,11 @@ for netlist in pbar(netlistCompare):
     # verbeter route door met pure A* lijnen opnieuw te leggen
     routesBetter = functions.replaceLine(routesFound[0], grid, 0, size, 500)
 
+    if netlistCompare.index(netlist) == 0:
+        compare = routesBetter[1]
+    else:
+        compare = pd.concat([compare, routesBetter[1]], axis=1, join='inner')
+
     # info ingaande routeBook
     print("\nBeginstand netlist: ", netlist)
     netlistDist = functions.manhattanDist(routeBook)[1]
@@ -137,6 +144,9 @@ for netlist in pbar(netlistCompare):
     toc = time()
     runtime = toc - tic
     print("runtime:", runtime)
+
+compare.columns = ['Dalton', 'Ui', 'Random']
+statistics.plotLine(compare, 'Vergelijking sorteermethodes')
 
 
 # ## RANDOM ROUTEFINDER --------------------------------------------------

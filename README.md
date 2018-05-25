@@ -31,14 +31,9 @@ In de hoofdfolder verschillende subfolders:
 Voer de volgende command uit om het programma te laten draaien:
 ```
 cd scripts
-python3 chips.py
+python3 chips.py <netlist>
 ```
-
-#
-
-Lowerbound = x = som directe afstanden wires
-Upperbound = x + som die loopt van i = 0 tot lambda over 2i (hierbij is lambda gelijk aan aantal netlists - 1) + 2y
-(hierbij is y gates dubbel in netlist)
+Hierbij is \<netlist\> het nummer van de op te lossen netlist (1 t/m 6).
 
 ## Dank
 
